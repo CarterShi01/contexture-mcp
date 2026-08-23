@@ -1,17 +1,19 @@
 # Contexture
 
-**A context framework for agents.**
+**One Controller framework for agent and human Views.**
 
-MCP lets an agent *call* your system. Contexture lets an agent *understand* it.
+MCP lets an agent *call* your system. REST lets a human-facing application do
+the same. Contexture keeps both on one Controller model.
 
 The official SDK turns a Python function into a tool. Contexture turns a domain
 into a capability graph an agent can navigate — one with responsibility
 boundaries, procedural knowledge, and a context bill you pay only for what gets
 selected.
 
-Declare your roles, skills and tools once. Contexture serves them as
-a native MCP server that Claude Code, Codex, and anything else speaking MCP
-connect to directly.
+Declare your roles, skills and tools once. Contexture serves them through two
+explicit Host adapters: a progressively disclosed native MCP surface for
+Claude Code, Codex and other agents, and a REST/ASGI surface for human-facing
+dashboards. Both resolve and execute the same compiled Tool bindings.
 
 It does not run an agent loop, choose tools, or talk to a model. It is what
 those runtimes connect to.
@@ -22,22 +24,23 @@ Everything in this repository follows from two sentences.
 
 **The runtime model — what Contexture *is* while it runs.**
 
-> Contexture organizes Role, Skill and Tool into a single MCP server surface,
-> and discloses them progressively over the course of the interaction.
+> Contexture organizes Role, Skill and Tool into one compiled Controller
+> runtime. Its MCP Host discloses that tree progressively to agents; its REST
+> Host publishes an explicit route allowlist to human-facing applications.
 
 **The framework model — how a developer *uses* it.**
 
-> Contexture provides the abstractions, the lifecycle, the inversion of control,
-> and the MCP runtime. A business developer **subclasses** three node kinds to
-> define capabilities, and two pointer kinds for the ways a person or a host
-> may enter them; the framework turns the result into a native, progressively
-> disclosed MCP server.
+> Contexture provides the abstractions, lifecycle, inversion of control and
+> shared execution runtime. A business developer **subclasses** three node
+> kinds to define capabilities, then selects MCP and/or explicit REST Host
+> adapters as Views over the same Controller tree.
 
 The first answers *what is running*. The second answers *what do I write*.
 
-They meet in exactly one place — `contexture.server` — which is why that is the
-only layer permitted to import the MCP SDK, and why `contexture.core` is
-forbidden from it.
+They meet at the compiled runtime exposed by `contexture.server`. The MCP Host
+adapter lives there because it is the only layer permitted to import the MCP
+SDK; `contexture.web` is the independent REST/ASGI Host adapter, and
+`contexture.core` remains forbidden from either transport.
 
 The two are also the admission test for every new concept. Before a compiler, a
 registry, a resolver, a descriptor, or a request object earns a place here, it
@@ -632,6 +635,38 @@ this is that sentence applied to callers rather than to agents.
 Over stdio `current_principal()` is always `None`. Nobody authenticated, the
 host launched the process, and the operating system already decided who that is.
 
+## Publish explicit REST routes for a human View
+
+MCP progressively discloses the Controller tree so a model can decide where to
+go. A dashboard has already made that navigation decision in its pages and
+buttons, so its HTTP surface is an explicit allowlist of stable routes instead:
+
+```python
+from contexture.server import compile_application
+from contexture.web import RestSurface, Route
+from my_context import app
+
+compiled = compile_application(app)
+rest = RestSurface(compiled.runtime(), routes=(
+    Route("GET", "/v1/projects", "project/list-projects"),
+    Route("POST", "/v1/projects", "project/upsert-project", status=201),
+))
+asgi_app = rest.asgi_app()
+```
+
+Mount `asgi_app` in an ASGI server or application. A `Route` is only an HTTP
+address pointing at a Tool the compiled tree already owns; it is not a fourth
+Controller kind and it is intentionally not exported from `contexture`.
+Unpublished Tool refs are unreachable over REST, and construction refuses a
+GET/HEAD route pointing at a writing Tool or a writing route pointing at a
+read-only Tool.
+
+Pass an `authenticate(WebRequest) -> Principal | None` callback when the REST
+surface is protected. Contexture binds the returned identity for exactly one
+Tool call; the capability continues to make its own permission decision with
+`current_principal()`. Request headers are never interpreted as a Principal by
+the framework.
+
 ## Quick start
 
 Python 3.10 or newer.
@@ -716,6 +751,7 @@ contexture/
 │   └── mcp_interface/  what each of MCP's three primitives carries; a
 │                    business extends prompt and resource, never tool
 │   └── errors.py, types.py, constants.py — shared by both
+├── web/             explicit Route declarations and the REST/ASGI Host adapter
 ├── server/          the MCP server: messages (what is said to somebody),
 │                    instructions (fitting it to a host), binding (hanging the
 │                    surface on the SDK), app, launch
@@ -748,6 +784,9 @@ visual map.
 - [`docs/05-controller-framework-and-mvc.md`](docs/05-controller-framework-and-mvc.md)
   — the corrected MVC mapping: the Host is the View, Contexture is the whole
   Controller layer, and the business application owns the Model.
+- [`docs/06-multiple-host-surfaces-plan.md`](docs/06-multiple-host-surfaces-plan.md)
+  — how MCP and explicit REST routes share one Controller runtime without adding
+  a fourth node kind.
 - [`docs/adr/013-a-constructor-is-the-declaration.md`](docs/adr/013-a-constructor-is-the-declaration.md)
   — why a class body is no longer read, what the twenty never-served objects it
   built at import were, and the three-language table that forced it.
@@ -812,9 +851,9 @@ will.
 | Unit | a flat list of tools, resources, prompts | a forest of roles with boundaries |
 | Scale it assumes | a dozen tools, all resident | hundreds of capabilities, most of them out of context |
 | Context budget | not its problem | a first-class constraint |
-| Wire format, schema, transport | owns it | never touches it |
+| Wire format, schema, transport | owns MCP | delegates MCP to the SDK; owns its small REST/ASGI adapter |
 
-The entire dependency is seven imports inside `contexture/server/` and nine SDK
+The dependency stays confined to `contexture/server/` and a small set of SDK
 entry points: the constructor and the two async runners; `add_tool`,
 `add_prompt`, `add_resource` and `completion` for registration; and
 `Tool.from_function`, `Prompt.from_function` and `FunctionResource.from_function`

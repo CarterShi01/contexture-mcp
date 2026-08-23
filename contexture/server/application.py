@@ -16,6 +16,7 @@ from ..core.mcp_interface import Prompt, Resource, published
 from ..core.model import ControllerManager, register_root
 from ..core.model.disclosure import Disclosure
 from ..core.model.index import Index
+from ..core.model.runtime import ApplicationRuntime
 from .binding import TypeHintBinding
 from .options import ContextureOptions
 from .server import ContextureServer
@@ -45,6 +46,11 @@ class CompiledApplication:
             prompts=self.prompts,
             resources=self.resources,
         )
+
+    def runtime(self) -> ApplicationRuntime:
+        """Return the Host-neutral invocation API over this compiled forest."""
+
+        return ApplicationRuntime(self.index)
 
 
 def compile_application(application: Contexture) -> CompiledApplication:

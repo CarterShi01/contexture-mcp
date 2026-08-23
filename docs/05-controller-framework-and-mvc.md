@@ -27,8 +27,9 @@ Model        业务应用自己的领域对象、业务规则和持久化
 ```
 
 Contexture 是一个没有自带最终 UI、也不拥有业务状态的 **Controller Framework**。
-它让业务开发者声明 Controller，负责把它们构造、编译、寻址、渐进披露并放到 MCP
-入口上；真正的 View 在连接它的 Host 中，真正的 Model 在使用它的业务项目中。
+它让业务开发者声明 Controller，负责把它们构造、编译、寻址，并通过不同 Host
+Surface 暴露；Agent 走 MCP 渐进披露，人的看板走显式 REST 路由。真正的 View 在连接
+它的 Host 中，真正的 Model 在使用它的业务项目中。
 
 ## 2. 容易发生的错误映射
 
@@ -49,7 +50,8 @@ policy，不是最终 View。
 | Contexture / 业务应用 | MVC 位置 | 责任 |
 | --- | --- | --- |
 | Claude Code、Codex、Chat UI、IDE | View | 接收用户意图，呈现能力和结果，决定交互体验 |
-| MCP Surface / gateway | Controller 的输入适配器 | 把协议请求送入固定的 discover/open/invoke 门 |
+| MCP Surface / gateway | Agent 输入适配器 | 把协议请求送入固定的 discover/open/invoke 门 |
+| REST Surface / Route | Human View 输入适配器 | 把显式 HTTP 路由送入同一个 Tool invocation runtime |
 | `Contexture` Application | Controller composition root | 声明应用由哪些根 Controller、Channels 和 host-facing 入口组成 |
 | `ControllerManager` | Controller registry + lifecycle | 构造并持有 Controller，供给 Channels，管理生命周期 |
 | `Index` | compiled router table | 固化 ref、父子关系、Tool schema 与调用 binding |
@@ -227,8 +229,8 @@ Persistence
    schema dispatch 已由 Contexture 回答。
 6. **让 Tool 成为清楚的接缝。** 参数签名控制用例入口，调用领域 Model/Repository，
    返回业务结果；不在 Tool 内再造 ORM、事务或披露机制。
-7. **View 可以更换而 Controller 与 Model 不变。** Claude Code、Codex 或未来 Host
-   都连接同一个 Contexture Application；这正是该框架存在的理由。
+7. **View 可以更换而 Controller 与 Model 不变。** Claude Code、Codex、Cockpit
+   或未来 Host 都连接同一个 Contexture Application；这正是该框架存在的理由。
 
 ## 10. 最终心智模型
 

@@ -22,6 +22,16 @@ class DeclarationError(ModelValidationError):
     """Raised when a declarative class states something the model cannot accept."""
 
 
+class WrongDoorError(ContextureError):
+    """A Tool was invoked through a door with the wrong mutation semantics."""
+
+    def __init__(self, *, ref: str, read_only: bool) -> None:
+        self.ref = ref
+        self.read_only = read_only
+        stated = "read-only" if read_only else "writing"
+        super().__init__(f"{ref!r} is a {stated} Tool")
+
+
 class LookupFailure(str, Enum):
     """Every way a reference can fail to name a node.
 

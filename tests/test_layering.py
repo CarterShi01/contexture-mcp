@@ -69,6 +69,10 @@ ALLOWED: dict[str, set[str]] = {
         "core.mcp_interface",
         "application",
     },
+    # The human-facing inbound adapter. It publishes explicit HTTP addresses
+    # over a runtime that core.model already owns; it may not import MCP or the
+    # MCP server layer.
+    "web": {"core.__base__", "core.model"},
     # The bundled reference application sits above everything and is imported
     # by nothing. It reaches everything a declaration writes with through the
     # public facade — `Role`, `Skill`, `Tool`, `Prompt` and `Resource` all
@@ -380,7 +384,7 @@ class LayeringTests(unittest.TestCase):
 
 
 class IOBoundaryTests(unittest.TestCase):
-    """Only the scaffold may write, and nothing may reach the network.
+    """Only the scaffold may write, and only inbound adapters touch networking modules.
 
     One module in the whole package touches the filesystem, and it is the one
     that writes a project *for the user*. Nothing on the path from a
@@ -395,7 +399,9 @@ class IOBoundaryTests(unittest.TestCase):
     # split did not change the rule; it changed how much code the rule has to
     # excuse.
     FILESYSTEM_WRITERS = {"cli/scaffold.py"}
-    NETWORK_MODULES: set[str] = set()
+    # `web.surface` imports urllib only for standards-compliant query decoding;
+    # it is itself the human-facing inbound transport and opens no connection.
+    NETWORK_MODULES: set[str] = {"web/surface.py"}
 
     WRITE_CALLS = {"write_text", "write_bytes", "mkdir", "touch", "unlink"}
     NETWORK_PACKAGES = {"urllib", "socket", "http", "httpx", "requests", "aiohttp"}

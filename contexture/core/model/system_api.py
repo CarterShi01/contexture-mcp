@@ -44,9 +44,11 @@ from ..constants import (
     INVOKE_TOOL,
     OPEN_TOOL,
 )
-from ..errors import ContextureError, LookupFailure, NodeNotFoundError
+from ..errors import ContextureError, LookupFailure, NodeNotFoundError, WrongDoorError
+from ..principal import Principal
 from ..types import CompiledContext
 from .disclosure import Disclosure
+from .runtime import ApplicationRuntime
 
 
 class Refused(ContextureError):
@@ -278,7 +280,9 @@ class SystemAPI:
 
         return self._resolved(lambda: self.tree.open(ref))
 
-    async def read_for_a_host(self, ref: str) -> Any:
+    async def read_for_a_host(
+        self, ref: str, *, principal: Principal | None = None,
+    ) -> Any:
         """Read one document, as the host that was given its address.
 
         A host reads a resource with no arguments and no model in the loop, so
@@ -292,8 +296,12 @@ class SystemAPI:
         and a caller's identity in reach of the capability's own code.
         """
 
-        self._resolved(lambda: self.tree.tool(ref))
-        return await self.tree.index.binding_of(ref).call(None, None)
+        try:
+            return await ApplicationRuntime(self.tree.index).invoke_read_only(
+                ref, principal=principal
+            )
+        except NodeNotFoundError as failure:
+            raise Refused(unresolved(failure)) from failure
 
     async def invoke_read_only(
         self,
@@ -301,10 +309,12 @@ class SystemAPI:
         arguments: dict[str, Any] | None = None,
         *,
         context: Any = None,
+        principal: Principal | None = None,
     ) -> Any:
         """Run a tool that leaves the world unchanged."""
 
-        return await self._invoke(ref, arguments, read_only=True, context=context)
+        return await self._invoke(ref, arguments, read_only=True, context=context,
+                                  principal=principal)
 
     async def invoke(
         self,
@@ -312,10 +322,12 @@ class SystemAPI:
         arguments: dict[str, Any] | None = None,
         *,
         context: Any = None,
+        principal: Principal | None = None,
     ) -> Any:
         """Run a tool that changes something."""
 
-        return await self._invoke(ref, arguments, read_only=False, context=context)
+        return await self._invoke(ref, arguments, read_only=False, context=context,
+                                  principal=principal)
 
     async def _invoke(
         self,
@@ -324,6 +336,7 @@ class SystemAPI:
         *,
         read_only: bool,
         context: Any,
+        principal: Principal | None,
     ) -> Any:
         """Resolve, check the door, then run.
 
@@ -336,10 +349,19 @@ class SystemAPI:
         host can still act on it.
         """
 
-        tool = self._resolved(lambda: self.tree.tool(ref))
-        if tool.read_only is not read_only:
-            raise Refused(wrong_door(ref, is_read_only=tool.read_only))
-        return await self.tree.index.binding_of(ref).call(arguments, context)
+        runtime = ApplicationRuntime(self.tree.index)
+        try:
+            if read_only:
+                return await runtime.invoke_read_only(
+                    ref, arguments, context=context, principal=principal
+                )
+            return await runtime.invoke(
+                ref, arguments, context=context, principal=principal
+            )
+        except WrongDoorError as failure:
+            raise Refused(wrong_door(ref, is_read_only=failure.read_only)) from failure
+        except NodeNotFoundError as failure:
+            raise Refused(unresolved(failure)) from failure
 
     @staticmethod
     def _resolved(lookup: Callable[[], Any]) -> Any:

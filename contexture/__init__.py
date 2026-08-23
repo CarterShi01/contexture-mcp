@@ -1,8 +1,8 @@
-"""Contexture — a context framework for agents.
+"""Contexture — one Controller framework for agent and human Views.
 
 An application declares its roles, skills and tools once against this object
-model. Contexture then serves that declaration as a native MCP
-server, which any number of agent runtimes connect to.
+model. Contexture can publish that declaration through a native MCP server for
+agents and explicit REST routes for human-facing dashboards.
 
 It does not run an agent loop, choose tools, or talk to a model. Those belong
 to the runtime that connects.
@@ -12,7 +12,8 @@ The package is layered, and the layering is the architecture:
     contexture.core.model          the kernel: what a capability is, where it
                                    hangs, and the four calls an agent makes
     contexture.core.mcp_interface  what each MCP primitive carries; still no SDK
-    contexture.server              the native MCP server; the only layer importing mcp
+    contexture.server              compilation and the native MCP Host adapter
+    contexture.web                 the explicit REST/ASGI Host adapter
 
 Each layer may import the ones below it and never the reverse. This facade
 exports what a business developer *declares* with, and nothing the framework

@@ -4,15 +4,15 @@ build-backend = "uv_build"
 
 [project]
 name = "contexture-mcp"
-version = "0.6.0"
-description = "A context framework for agents: declare roles, skills, tools, and resources once, then serve them to any agent runtime over MCP"
+version = "0.7.0"
+description = "A Controller framework for agent and human Views: declare once, then publish through MCP and explicit REST routes"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
 authors = [
   { name = "Contexture" }
 ]
-keywords = ["agent", "context", "mcp", "llm", "claude-code", "codex", "cursor"]
+keywords = ["agent", "context", "controller", "mcp", "rest", "asgi", "llm", "claude-code", "codex"]
 dependencies = [
   "mcp>=2.0.0",
   "tomli>=2.0; python_version < '3.11'",

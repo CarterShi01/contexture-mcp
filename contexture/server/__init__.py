@@ -1,9 +1,8 @@
-"""The inbound MCP surface: Contexture served as a native MCP server.
+"""Application compilation and the inbound MCP Host adapter.
 
-This is the layer the two mental models meet in. A business application
-declares its context once in `contexture.core`, and every agent runtime —
-Claude Code, Codex, anything else that speaks MCP — connects to the one server
-this package builds, rather than reading a file compiled for it in advance.
+This layer compiles a business application into one runtime. Agent hosts connect
+to its native MCP server; human-facing hosts can pass that same runtime to
+``contexture.web``.
 
 **What** this server exposes is declared one layer down, in
 `core.mcp_interface`, one module per MCP primitive. This package is **how**:
@@ -17,7 +16,7 @@ rather than one:
     server          the container: one compiled index, built and served
     options         how to serve it — transport, address, who may knock
     binding         the one seam `core` opens: a tool's schema, and running it
-                    with its arguments checked and its caller in reach
+                    with its arguments checked
     identity        who is calling: the socket a business plugs its token
                     verifier into, and the protocol facts around it. Moves
                     when the authorization specification does.
@@ -43,6 +42,7 @@ from typing import Any
 
 #: Exported name -> the submodule that defines it.
 _EXPORTS = {
+    "ApplicationRuntime": "..core.model.runtime",
     "CompiledApplication": ".application",
     "build_server": ".application",
     "compile_application": ".application",

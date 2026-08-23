@@ -30,11 +30,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.mcpserver import Context, MCPServer
 from mcp_types import ToolAnnotations
 
 from ...core.model.system_api import GATEWAY, SystemAPI
 from ...core.types import CompiledContext
+from ..identity import principal_of
 from . import translated
 
 
@@ -66,7 +68,10 @@ class Tools:
             arguments: dict[str, Any] | None = None,
         ) -> Any:
             with translated():
-                return await api.invoke_read_only(ref, arguments, context=ctx)
+                return await api.invoke_read_only(
+                    ref, arguments, context=ctx,
+                    principal=principal_of(get_access_token()),
+                )
 
         async def contexture_invoke(
             ctx: Context,
@@ -74,7 +79,10 @@ class Tools:
             arguments: dict[str, Any] | None = None,
         ) -> Any:
             with translated():
-                return await api.invoke(ref, arguments, context=ctx)
+                return await api.invoke(
+                    ref, arguments, context=ctx,
+                    principal=principal_of(get_access_token()),
+                )
 
         implementations = dict(
             zip(

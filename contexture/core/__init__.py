@@ -40,6 +40,7 @@ _EXPORTS = {
     "DuplicateNameError": ".errors",
     "ModelValidationError": ".errors",
     "NodeNotFoundError": ".errors",
+    "WrongDoorError": ".errors",
     "Principal": ".principal",
     "bound": ".principal",
     "current_principal": ".principal",

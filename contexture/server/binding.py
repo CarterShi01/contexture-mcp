@@ -20,13 +20,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.mcpserver.tools import Tool as SDKTool
 
 from ..core.model.tool import Tool
-from ..core.principal import bound
 from ..core.types import JsonObject
-from .identity import principal_of
 
 
 @dataclass(slots=True)
@@ -61,22 +58,14 @@ class TypeHintBinding:
         arguments: dict[str, Any] | None,
         context: Any = None,
     ) -> Any:
-        """Run this tool, with its caller in reach of its own code.
+        """Validate arguments and run the Tool body.
 
-        The identity is bound here, and only here, because this is the one
-        point at which business code runs. Discovering and opening reach no
-        declaration's own code, so binding around them would widen the scope of
-        a context variable for nobody's benefit.
-
-        The translation goes through `AccessToken` rather than a side table kept
-        by a verifier, so a deployment that installs an SDK-native verifier
-        instead of `Auth` still gets a working `current_principal()`. Unsecured
-        transports bind `None`, which is the honest answer and the one every
-        capability that cares must already handle.
+        Caller identity is already request-bound by ``ApplicationRuntime``.
+        Keeping that concern out of this SDK-derived binding lets MCP and REST
+        use the exact same validation and invocation seam.
         """
 
-        with bound(principal_of(get_access_token())):
-            return await self._derived.run(arguments or {}, context)
+        return await self._derived.run(arguments or {}, context)
 
 
 #: JSON Schema keywords whose value is one schema.

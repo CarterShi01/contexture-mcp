@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Awaitable, Callable
 
+from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.resources import FunctionResource
 
@@ -19,6 +20,7 @@ from ...core.errors import ModelValidationError
 from ...core.mcp_interface.resource import Resource
 from ...core.model.system_api import SystemAPI
 from . import published_name, translated
+from ..identity import principal_of
 
 
 class Resources:
@@ -105,7 +107,9 @@ def _reader(api: SystemAPI, ref: str) -> Callable[[], Awaitable[Any]]:
 
     async def read() -> Any:
         with translated():
-            return await api.read_for_a_host(ref)
+            return await api.read_for_a_host(
+                ref, principal=principal_of(get_access_token())
+            )
 
     return read
 
