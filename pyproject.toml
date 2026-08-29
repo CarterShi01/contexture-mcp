@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "contexture-mcp"
-version = "0.7.0"
+version = "0.8.0"
 description = "A Controller framework for agent and human Views: declare once, then publish through MCP and explicit REST routes"
 readme = "README.md"
 requires-python = ">=3.10"

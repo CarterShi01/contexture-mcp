@@ -20,6 +20,8 @@ from .core import (
     Skill as Skill,
     Tool as Tool,
     bound as bound,
+    current_graph as current_graph,
+    current_telemetry as current_telemetry,
     current_principal as current_principal,
 )
 from .core.mcp_interface import Prompt as Prompt, Resource as Resource

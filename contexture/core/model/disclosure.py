@@ -164,11 +164,12 @@ class Disclosure:
     def open(self, ref: str) -> CompiledContext:
         """Return one node's own detail, plus a card for each member it holds.
 
-        One line, and every kind-specific decision that used to live here now
-        lives on the kind: opening a role delivers its members, opening a skill
-        delivers its procedure and the cards of what it references, opening a
-        tool delivers the same card the tool would have shown anywhere else.
-        Adding a fourth kind would not touch this method — see ADR 014.
+        Every kind-specific decision lives on the kind: opening a role delivers
+        its members, opening a skill delivers its procedure and the cards of
+        what it references, opening a tool delivers its complete card. Whole-
+        graph relations such as reverse dependents belong behind an explicit
+        architecture Tool; adding them here would reveal sibling branches the
+        caller has not entered. Usage telemetry likewise never enters payloads.
         """
 
         return self.index.find(ref).compile(CompileLevel.ACTIVE, view=self)

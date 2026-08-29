@@ -40,6 +40,7 @@ from ...core.mcp_interface.prompt import Prompt
 from ...core.mcp_interface.resource import Resource
 from ...core.model.disclosure import SEPARATOR, Disclosure
 from ...core.model.system_api import SystemAPI
+from ...core.model.telemetry import InMemoryTelemetry, Telemetry
 
 
 def published_name(entry: Prompt | Resource) -> str:
@@ -101,10 +102,11 @@ class Surface:
     @classmethod
     def of(
         cls,
-        tree: Disclosure,
+        tree: Any,
         *,
         prompts: Sequence[Any] = (),
         resources: Sequence[Any] = (),
+        telemetry: Telemetry | None = None,
     ) -> "Surface":
         """Build every door over one view, validating as each is constructed.
 
@@ -127,7 +129,11 @@ class Surface:
         reserved = frozenset(
             entry.opens for entry in prompt_entries if not entry.model_may_open
         )
-        api = SystemAPI(tree=tree, reserved=reserved)
+        api = SystemAPI(
+            tree=tree,
+            reserved=reserved,
+            telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
+        )
 
         # Constructed here, all three, before anything is installed: a door
         # checks its own declarations in its constructor, so a refusal leaves

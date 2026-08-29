@@ -36,7 +36,7 @@ fact about that host's release, so it stays in `contexture.server.instructions`.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from ..constants import (
     DISCOVER_TOOL,
@@ -49,6 +49,8 @@ from ..principal import Principal
 from ..types import CompiledContext
 from .disclosure import Disclosure
 from .runtime import ApplicationRuntime
+from .telemetry import InMemoryTelemetry, Telemetry, report
+from .tool import Tool
 
 
 class Refused(ContextureError):
@@ -128,7 +130,6 @@ GATEWAY = (
 #: Every entry point this server will ever expose, in the order they are
 #: registered.
 GATEWAY_TOOLS = tuple(entry.name for entry in GATEWAY)
-
 
 # ------------------------------------------------------------ what is said
 
@@ -229,14 +230,13 @@ def taken_by_a_person(ref: str) -> str:
 class SystemAPI:
     """The four calls, bound to one tree.
 
-    Frozen and holding nothing but its collaborators: **nothing here is
-    remembered between calls**, which is what keeps the surface legal on a
-    protocol that forbids a server to vary its answers as a consequence of an
-    earlier request. Two sessions asking the same question get the same answer,
-    and the order they ask in changes nothing.
+    It remembers no traversal state, which keeps disclosure legal on a protocol
+    that forbids a server to vary its surface as a consequence of an earlier
+    request.  Usage telemetry is a side-channel collaborator: it records that a
+    node was used but never changes what any disclosure call returns.
     """
 
-    tree: Disclosure
+    tree: Any
 
     #: Refs a person has claimed, and a model may therefore not open.
     #:
@@ -245,6 +245,9 @@ class SystemAPI:
     #: package answers (ADR 008). What fills it is the published prompt list,
     #: which the layer above assembles and passes in.
     reserved: frozenset[str] = field(default=frozenset())
+
+    #: Framework-owned usage evidence. It is not included in disclosure.
+    telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
 
     async def discover(self) -> CompiledContext:
         """The roots, as cards. The cost of entering, once, per session."""
@@ -278,7 +281,19 @@ class SystemAPI:
         how to call it is worse than either answer alone.
         """
 
-        return self._resolved(lambda: self.tree.open(ref))
+        try:
+            node = self.tree.find(ref)
+        except NodeNotFoundError as failure:
+            raise Refused(unresolved(failure)) from failure
+        if isinstance(node, Tool):
+            return self.tree.open(ref)
+        try:
+            opened = self.tree.open(ref)
+        except Exception:
+            report(self.telemetry, ref, failed=True)
+            raise
+        report(self.telemetry, ref)
+        return opened
 
     async def read_for_a_host(
         self, ref: str, *, principal: Principal | None = None,
@@ -297,7 +312,9 @@ class SystemAPI:
         """
 
         try:
-            return await ApplicationRuntime(self.tree.index).invoke_read_only(
+            return await ApplicationRuntime(
+                self.tree.index, self.telemetry
+            ).invoke_read_only(
                 ref, principal=principal
             )
         except NodeNotFoundError as failure:
@@ -349,7 +366,7 @@ class SystemAPI:
         host can still act on it.
         """
 
-        runtime = ApplicationRuntime(self.tree.index)
+        runtime = ApplicationRuntime(self.tree.index, self.telemetry)
         try:
             if read_only:
                 return await runtime.invoke_read_only(
@@ -362,21 +379,6 @@ class SystemAPI:
             raise Refused(wrong_door(ref, is_read_only=failure.read_only)) from failure
         except NodeNotFoundError as failure:
             raise Refused(unresolved(failure)) from failure
-
-    @staticmethod
-    def _resolved(lookup: Callable[[], Any]) -> Any:
-        """Turn a failed lookup into the sentence the agent is owed.
-
-        The facts travel this far and become prose exactly here, which is the
-        one place that has both of them: what went wrong, and the name of the
-        call that recovers from it.
-        """
-
-        try:
-            return lookup()
-        except NodeNotFoundError as failure:
-            raise Refused(unresolved(failure)) from failure
-
 
 __all__ = [
     "GATEWAY",

@@ -24,17 +24,25 @@ a declaration is imported: a class is a zero-argument factory, and a
 # four entry points to do it, and every caller that wants them is a caller that
 # is about to serve something.
 from .channels import Channels
+from .graph_context import current_graph
 from .manager import ControllerManager, register_root
-from .node import CompileLevel, ContextNode, View
+from .node import CompiledGraph, CompileLevel, ContextNode, View
 from .role import Role
 from .skill import Skill
+from .telemetry import InMemoryTelemetry, NodeUsage, Telemetry, current_telemetry
 from .tool import Tool
 
 __all__ = [
     "Channels",
+    "CompiledGraph",
     "CompileLevel",
     "ContextNode",
     "ControllerManager",
+    "current_graph",
+    "InMemoryTelemetry",
+    "NodeUsage",
+    "Telemetry",
+    "current_telemetry",
     "View",
     "Role",
     "Skill",

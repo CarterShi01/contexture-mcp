@@ -38,6 +38,8 @@ from .core import (
     Skill,
     Tool,
     bound,
+    current_graph,
+    current_telemetry,
     current_principal,
 )
 
@@ -83,5 +85,7 @@ __all__ = [
     "Tool",
     "__version__",
     "bound",
+    "current_graph",
+    "current_telemetry",
     "current_principal",
 ]

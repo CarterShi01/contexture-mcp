@@ -55,6 +55,7 @@ from ..core.mcp_interface.tool import TOOLS, ToolPlane
 from ..core.model.channels import Channels
 from ..core.model.disclosure import Disclosure
 from ..core.model.index import Index
+from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from . import instructions as instructions_module
 from .identity import Auth
 from .options import ContextureOptions, ServeError, Transport, configure_logging
@@ -66,7 +67,10 @@ LOG = logging.getLogger(__name__)
 class ContextureServer:
     """One sealed graph, served over MCP."""
 
-    __slots__ = ("_index", "_surface", "name", "version", "instructions", "_built", "_auth")
+    __slots__ = (
+        "_index", "_surface", "_telemetry", "name", "version",
+        "instructions", "_built", "_auth",
+    )
 
     def __init__(
         self,
@@ -78,6 +82,7 @@ class ContextureServer:
         tools: ToolPlane = TOOLS,
         prompts: Any = (),
         resources: Any = (),
+        telemetry: Telemetry | None = None,
     ) -> None:
         """Serve one compiled index, with what a person and a host may reach it by.
 
@@ -98,8 +103,13 @@ class ContextureServer:
                 "being registered on this plane."
             )
         self._index = index
+        self._telemetry = telemetry if telemetry is not None else InMemoryTelemetry()
+        disclosure = Disclosure(index)
         self._surface = Surface.of(
-            Disclosure(index), prompts=prompts, resources=resources
+            disclosure,
+            prompts=prompts,
+            resources=resources,
+            telemetry=self._telemetry,
         )
         self.name = name
         self.version = version
@@ -121,6 +131,12 @@ class ContextureServer:
         """The compiled forest this server serves. Frozen."""
 
         return self._index
+
+    @property
+    def telemetry(self) -> Telemetry:
+        """Framework-owned node usage evidence, separate from disclosure."""
+
+        return self._telemetry
 
     # ---- building --------------------------------------------------------
 

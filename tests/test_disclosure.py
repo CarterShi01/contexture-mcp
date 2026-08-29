@@ -779,24 +779,22 @@ class ReferenceValidationTests(unittest.TestCase):
 
         self.assertIn("itself", str(caught.exception))
 
-    def test_naming_a_role_is_refused(self) -> None:
-        """Routing to a role is what its card and `contexture_open` are for."""
+    def test_a_reference_may_name_a_role(self) -> None:
+        """A dependency may cross to a responsibility, not only a capability."""
 
-        with self.assertRaises(ModelValidationError) as caught:
-            ReferenceTests._with_uses("team/operator")
+        tree = ReferenceTests._with_uses("team/operator")
 
-        self.assertIn("role", str(caught.exception))
+        card, = tree.open("team/troubleshooter/triage")["uses"]
+        self.assertEqual(card["kind"], "role")
+        self.assertEqual(card["ref"], "team/operator")
 
-    def test_naming_an_ancestor_is_refused_by_the_role_rule(self) -> None:
-        """Every ancestor is a Role, so one rule covers both.
+    def test_a_reference_may_name_an_ancestor(self) -> None:
+        """Containment and dependency answer different questions."""
 
-        Recorded as its own test because the coverage is a coincidence of
-        "only a Role holds members". Allowing role references later would
-        silently reopen this case.
-        """
+        tree = ReferenceTests._with_uses("team/troubleshooter")
 
-        with self.assertRaises(ModelValidationError):
-            ReferenceTests._with_uses("team/troubleshooter")
+        card, = tree.open("team/troubleshooter/triage")["uses"]
+        self.assertEqual(card["ref"], "team/troubleshooter")
 
     def test_the_same_reference_twice_is_refused(self) -> None:
         """Two cards for one capability say there are two capabilities."""

@@ -18,13 +18,24 @@ Every application starts with exactly four concepts:
 | Concept | Question it answers | First file |
 | --- | --- | --- |
 | `Contexture` / `app` | What makes up this application? | package `__init__.py` |
-| `Role` | Which business responsibility owns this request? | `role.py` |
+| `Role` | Which stable responsibility should the agent enter? | `role.py` |
 | `Skill` | Which procedure should an agent follow? | `skills.py` |
 | `Tool` | Which deterministic action should code perform? | `tools.py` |
 
-Role, Skill, and Tool are equally first-class. A Role owns a responsibility
-boundary. A Skill gives an agent a procedure to follow; Contexture does not
-execute it. A Tool is typed Python code that Contexture does execute.
+Role, Skill, and Tool are equally first-class. A Role owns a stable
+responsibility boundary, whether that responsibility is online business work,
+scheduling, messaging, infrastructure, or another system concern. A Skill gives
+an agent a procedure to follow; Contexture does not execute it. A Tool is typed
+Python code that Contexture does execute. Runtime records such as processes,
+jobs, and connector instances remain Tool-returned data rather than Roles.
+
+There is one Disclosure for all of them. Opening a Role shows one containment
+level, and explicit `uses` cards show declared dependencies; it never runs a
+health probe or reveals reverse edges from unentered branches. Whole-graph
+introspection belongs behind an application Tool. Health and other live domain
+state belong to read-only Tools. Contexture separately records the
+minimal call count, error count, and last-use time for each entered Role/Skill
+and invoked Tool; that Telemetry is runtime evidence, not Agent context.
 
 ## 2. Install and generate a project
 

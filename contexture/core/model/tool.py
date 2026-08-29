@@ -132,11 +132,14 @@ class Tool(ContextNode):
         # `ContextNode.card` explicitly rather than `super()`: a slotted
         # dataclass is rebuilt by the decorator, so the zero-argument form
         # closes over a class object that is no longer this one.
-        return {
+        payload = {
             **ContextNode.card(self, view),
             "read_only": self.read_only,
             "input_schema": view.schema_of(self),
         }
+        if self.uses:
+            payload["uses"] = [view.card_for(ref) for ref in self.uses]
+        return payload
 
     def _compile_active(self, view: View) -> CompiledContext:
         # The card, exactly. Reaching a capability two ways and being told two

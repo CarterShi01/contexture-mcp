@@ -28,6 +28,14 @@ Everything in this repository follows from two sentences.
 > runtime. Its MCP Host discloses that tree progressively to agents; its REST
 > Host publishes an explicit route allowlist to human-facing applications.
 
+A Role is any stable responsibility boundary an agent must recognize, enter,
+and choose—not only a persona or an online business module. One progressive
+Disclosure exposes every business and system responsibility from the same
+compiled Role/Skill/Tool graph. Concrete health and runtime state are queried
+through ordinary Tools; framework-owned call counts and errors travel through a
+Telemetry side channel and never enter disclosure. `Application` remains only
+the technical composition root; it is not another semantic node.
+
 **The framework model — how a developer *uses* it.**
 
 > Contexture provides the abstractions, lifecycle, inversion of control and

@@ -8,7 +8,7 @@ it, and hands that frozen index to the existing server.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 from ..application import Contexture
@@ -17,6 +17,7 @@ from ..core.model import ControllerManager, register_root
 from ..core.model.disclosure import Disclosure
 from ..core.model.index import Index
 from ..core.model.runtime import ApplicationRuntime
+from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from .binding import TypeHintBinding
 from .options import ContextureOptions
 from .server import ContextureServer
@@ -30,6 +31,7 @@ class CompiledApplication:
     index: Index
     prompts: tuple[Prompt, ...] = ()
     resources: tuple[Resource, ...] = ()
+    telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
 
     @property
     def disclosure(self) -> Disclosure:
@@ -45,15 +47,20 @@ class CompiledApplication:
             name=self.name,
             prompts=self.prompts,
             resources=self.resources,
+            telemetry=self.telemetry,
         )
 
     def runtime(self) -> ApplicationRuntime:
         """Return the Host-neutral invocation API over this compiled forest."""
 
-        return ApplicationRuntime(self.index)
+        return ApplicationRuntime(self.index, self.telemetry)
 
 
-def compile_application(application: Contexture) -> CompiledApplication:
+def compile_application(
+    application: Contexture,
+    *,
+    telemetry: Telemetry | None = None,
+) -> CompiledApplication:
     """Build one fresh forest from an Application's factories."""
 
     channels = application.channels() if application.channels is not None else None
@@ -63,6 +70,7 @@ def compile_application(application: Contexture) -> CompiledApplication:
         channels=channels,
         prompts=application.prompts,
         resources=application.resources,
+        telemetry=telemetry,
     )
 
 
@@ -73,6 +81,7 @@ def compile_parts(
     channels: Any = None,
     prompts: Iterable[object] = (),
     resources: Iterable[object] = (),
+    telemetry: Telemetry | None = None,
 ) -> CompiledApplication:
     """Compile known declaration parts through the one runtime path.
 
@@ -94,6 +103,7 @@ def compile_parts(
         index=Index.of(manager, bind=TypeHintBinding),
         prompts=normal_prompts,
         resources=normal_resources,
+        telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
     )
 
 

@@ -213,8 +213,11 @@ class Role(ContextNode):
         lives in this method.
         """
 
-        return {
+        payload = {
             **self.card(view),
             "instructions": self.instructions,
             **group_cards(self.members(), view),
         }
+        if self.uses:
+            payload["uses"] = [view.card_for(ref) for ref in self.uses]
+        return payload

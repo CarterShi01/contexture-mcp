@@ -43,6 +43,9 @@ from typing import Any
 #: Exported name -> the submodule that defines it.
 _EXPORTS = {
     "ApplicationRuntime": "..core.model.runtime",
+    "InMemoryTelemetry": "..core.model.telemetry",
+    "NodeUsage": "..core.model.telemetry",
+    "Telemetry": "..core.model.telemetry",
     "CompiledApplication": ".application",
     "build_server": ".application",
     "compile_application": ".application",

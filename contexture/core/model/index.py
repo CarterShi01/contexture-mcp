@@ -82,6 +82,11 @@ class Index:
     #: a cache keyed by object identity was not.
     _bindings: dict[str, Binding] = field(default_factory=dict, repr=False)
 
+    #: Reverse dependency edges, derived once from every node's `uses`.  Values
+    #: are source refs in declaration order so an impact query never has to walk
+    #: the forest or reconstruct the graph.
+    _dependents: dict[str, tuple[str, ...]] = field(default_factory=dict, repr=False)
+
     # ---- building --------------------------------------------------------
 
     @classmethod
@@ -119,6 +124,7 @@ class Index:
         # only a forest that survived both is worth deriving bindings for.
         index._reject_ambiguous_names()
         index._reject_unresolvable_uses()
+        index._derive_dependents()
         index._derive_bindings(bind)
         return index
 
@@ -142,6 +148,16 @@ class Index:
         for node in self.of_kind(Tool.kind):
             assert isinstance(node, Tool)  # `of_kind` is keyed by `Tool.kind`
             self._bindings[self.ref_of(node)] = bind(node)
+
+    def _derive_dependents(self) -> None:
+        """Compile the reverse of the declared dependency overlay."""
+
+        for source_ref, node in self.walk():
+            for target_ref in node.uses:
+                self._dependents[target_ref] = (
+                    *self._dependents.get(target_ref, ()),
+                    source_ref,
+                )
 
     # ---- lifecycle -------------------------------------------------------
 
@@ -195,6 +211,17 @@ class Index:
         if not isinstance(node, Role):
             return ()
         return tuple(node.members())
+
+    def uses_of(self, ref: str) -> tuple[str, ...]:
+        """The addresses this object declares as dependencies."""
+
+        return self.find(ref).uses
+
+    def dependents_of(self, ref: str) -> tuple[str, ...]:
+        """The addresses of objects whose `uses` names `ref`."""
+
+        self.find(ref)  # refuse an unknown target rather than reporting no impact
+        return self._dependents.get(ref, ())
 
     def binding_of(self, ref: str) -> Binding:
         """How the tool at `ref` is described and run.
@@ -408,7 +435,7 @@ class Index:
     def crossings(self) -> Iterator[tuple[str, str, str]]:
         """Every reference that leaves the root branch it was made from.
 
-        `(skill_ref, target_ref, target_root)`. Nothing refuses these — a person
+        `(source_ref, target_ref, target_root)`. Nothing refuses these — a person
         composing two branches is an authorised act, and ADR 004's rule is about
         a model guessing. But a responsibility boundary that gets crossed
         silently is one nobody reviews, and the reason orchestration is a
@@ -416,7 +443,7 @@ class Index:
         precisely that a crossing can be listed, tested and linted.
         """
 
-        for ref, node in self.skills():
+        for ref, node in self.walk():
             home = ref.split(SEPARATOR, 1)[0]
             for target in node.uses:
                 root = target.split(SEPARATOR, 1)[0]
@@ -449,11 +476,11 @@ class Index:
                 )
 
     def _reject_unresolvable_uses(self) -> None:
-        """Refuse a procedure that names something the forest cannot answer for.
+        """Refuse an object that names something the forest cannot answer for.
 
         Checked while compiling, beside the separator check, because
-        registration is additive: a skill in the first registered root may
-        legitimately name a capability in a root that has not been registered
+        registration is additive: an object in the first registered root may
+        legitimately name an object in a root that has not been registered
         yet, so this is the earliest moment the binding *can* be checked.
 
         Reference cycles are deliberately not checked. `diagnose -> remediate ->
@@ -461,38 +488,23 @@ class Index:
         render at ROUTE, so a cycle is two cards naming each other. See ADR 008.
         """
 
-        for ref, node in self.skills():
+        for ref, node in self.walk():
             for target in node.uses:
                 if target == ref:
                     raise ModelValidationError(
-                        f"Skill {ref!r} names itself in `uses`. A procedure "
-                        "does not need a card for the procedure it is."
+                        f"{node.kind.title()} {ref!r} names itself in `uses`. "
+                        "An object does not depend on itself."
                     )
                 try:
-                    named = self.find(target)
+                    self.find(target)
                 except NodeNotFoundError as failure:
                     raise ModelValidationError(
-                        f"Skill {ref!r} names {target!r} in `uses`, which "
+                        f"{node.kind.title()} {ref!r} names {target!r} in `uses`, which "
                         f"resolves to nothing ({failure.reason.value}). A "
-                        "procedure whose steps do not exist is a broken "
-                        "procedure, and the reference is checked here so that "
+                        "dependency that does not exist is a broken declaration, "
+                        "and the reference is checked here so that "
                         "it fails on the way up rather than in front of a user."
                     ) from None
-                if isinstance(named, Role):
-                    # This also happens to reject every ancestor of `ref`,
-                    # because only a Role holds members and so every ancestor is
-                    # one. If Role references are ever allowed, an explicit
-                    # ancestor check has to be added back: a skill naming the
-                    # role it already lives inside is a modelling mistake that
-                    # nothing else here would catch.
-                    raise ModelValidationError(
-                        f"Skill {ref!r} names the role {target!r} in `uses`. "
-                        "A reference may name a skill, a tool or a resource, "
-                        "never a role: routing to a role is what its own card "
-                        "and `contexture_open` are for, and a procedure that "
-                        "must choose a role at run time should read a resource "
-                        "that lists them."
-                    )
 
     # ---- size ------------------------------------------------------------
 

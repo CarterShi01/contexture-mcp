@@ -20,6 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from mcp.server.mcpserver.exceptions import ToolError, UnexpectedToolError
 from mcp.server.mcpserver.tools import Tool as SDKTool
 
 from ..core.model.tool import Tool
@@ -65,7 +66,15 @@ class TypeHintBinding:
         use the exact same validation and invocation seam.
         """
 
-        return await self._derived.run(arguments or {}, context)
+        try:
+            return await self._derived.run(arguments or {}, context)
+        except UnexpectedToolError as failure:
+            # PermissionError is an intentional business refusal, not a crash.
+            # Newer MCP SDKs redact unexpected exception text, so translate this
+            # one standard refusal before the outer gateway serialises it.
+            if isinstance(failure.__cause__, PermissionError):
+                raise ToolError(str(failure.__cause__)) from failure.__cause__
+            raise
 
 
 #: JSON Schema keywords whose value is one schema.

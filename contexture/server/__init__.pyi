@@ -1,6 +1,11 @@
 """Advanced hosting API for a Contexture Application."""
 
 from ..core.model.runtime import ApplicationRuntime as ApplicationRuntime
+from ..core.model.telemetry import (
+    InMemoryTelemetry as InMemoryTelemetry,
+    NodeUsage as NodeUsage,
+    Telemetry as Telemetry,
+)
 from .application import (
     CompiledApplication as CompiledApplication,
     build_server as build_server,

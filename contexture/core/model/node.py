@@ -63,6 +63,32 @@ class View(Protocol):
         """The input schema an agent needs in order to call `tool`."""
 
 
+class CompiledGraph(Protocol):
+    """Read-only structural facts available to a compiled object.
+
+    This is intentionally smaller than the concrete Index.  A Tool such as an
+    architecture query may inspect the graph it belongs to without importing
+    the compiler or receiving a second registry through application Channels.
+    """
+
+    @property
+    def roots(self) -> tuple[ContextNode, ...]: ...
+
+    def walk(self) -> Iterator[tuple[str, ContextNode]]: ...
+
+    def find(self, ref: str) -> ContextNode: ...
+
+    def ref_of(self, node: ContextNode) -> str: ...
+
+    def parent_of(self, node: ContextNode) -> ContextNode | None: ...
+
+    def children_of(self, node: ContextNode) -> tuple[ContextNode, ...]: ...
+
+    def uses_of(self, ref: str) -> tuple[str, ...]: ...
+
+    def dependents_of(self, ref: str) -> tuple[str, ...]: ...
+
+
 @dataclass(slots=True, kw_only=True)
 class ContextNode(ABC):
     """A node that can be progressively disclosed to an LLM context.
@@ -82,6 +108,12 @@ class ContextNode(ABC):
     #: inside is what opening delivers, and describing it twice is how the two
     #: copies start disagreeing.
     description: str
+
+    #: Addresses of other Contexture objects this object depends on but does not
+    #: contain.  Containment answers ownership and navigation; `uses` answers
+    #: dependency and impact.  It is shared by Role, Skill and Tool so the same
+    #: object graph describes both business execution and system operation.
+    uses: tuple[str, ...] = ()
 
     #: The segments that reach this node, or `()` until a `ControllerManager`
     #: has registered it. A node still cannot *work out* where it hangs — it is
@@ -121,6 +153,17 @@ class ContextNode(ABC):
         if not self.description.strip():
             raise ModelValidationError(
                 f"Context node {self.name!r} must have a routing description."
+            )
+        self.uses = tuple(self.uses)
+        for ref in self.uses:
+            if not isinstance(ref, str) or not ref.strip():
+                raise ModelValidationError(
+                    f"{self.kind.title()} {self.name!r} names an empty reference in `uses`."
+                )
+        if len(set(self.uses)) != len(self.uses):
+            raise ModelValidationError(
+                f"{self.kind.title()} {self.name!r} names the same reference twice in "
+                "`uses`; one dependency must have one edge."
             )
 
     def compile(
