@@ -643,6 +643,32 @@ this is that sentence applied to callers rather than to agents.
 Over stdio `current_principal()` is always `None`. Nobody authenticated, the
 host launched the process, and the operating system already decided who that is.
 
+## Serve an independent disclosure-only View
+
+An operational or architecture View is often data in its own right, not a
+filtered copy of the application's runtime graph. Declare it as a separate
+`Contexture` application and compile it through the disclosure-only door:
+
+```python
+from contexture.server import compile_disclosure_application
+from my_architecture import app as architecture_app
+
+compiled = compile_disclosure_application(architecture_app)
+server = compiled.server()
+```
+
+This produces an independent, unbound `Index`. Its MCP surface contains only
+`contexture_discover` and `contexture_open`, while preserving the same
+one-level-at-a-time navigation and optional Prompts. It rejects Channels and
+Resources, cannot construct an `ApplicationRuntime` or `ExecutionAPI`, and a
+Tool node is disclosed only as a structural card without `read_only` or
+`input_schema`.
+
+Use `compile_application` for the separately declared runtime application. Do
+not reuse its declaration objects or Index for the operational View: the two
+applications may overlap in facts, but each owns its data, telemetry, server,
+and lifecycle.
+
 ## Publish explicit REST routes for a human View
 
 MCP progressively discloses the Controller tree so a model can decide where to
