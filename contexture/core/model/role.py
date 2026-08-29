@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import ClassVar, Iterator
 
-from .node import ContextNode, View, group_cards
+from .node import ContextNode, View
 from ..errors import (
     DuplicateNameError,
     LookupFailure,
@@ -216,8 +216,8 @@ class Role(ContextNode):
         payload = {
             **self.card(view),
             "instructions": self.instructions,
-            **group_cards(self.members(), view),
+            **view.cards_of(self.members()),
         }
         if self.uses:
-            payload["uses"] = [view.card_for(ref) for ref in self.uses]
+            payload["uses"] = view.cards_for(self.uses)
         return payload

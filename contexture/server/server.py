@@ -59,7 +59,7 @@ from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from . import instructions as instructions_module
 from .identity import Auth
 from .options import ContextureOptions, ServeError, Transport, configure_logging
-from .surface import Surface
+from .surface import DisclosureSurface, Surface
 
 LOG = logging.getLogger(__name__)
 
@@ -83,6 +83,7 @@ class ContextureServer:
         prompts: Any = (),
         resources: Any = (),
         telemetry: Telemetry | None = None,
+        surface: Surface | DisclosureSurface | None = None,
     ) -> None:
         """Serve one compiled index, with what a person and a host may reach it by.
 
@@ -104,13 +105,27 @@ class ContextureServer:
             )
         self._index = index
         self._telemetry = telemetry if telemetry is not None else InMemoryTelemetry()
-        disclosure = Disclosure(index)
-        self._surface = Surface.of(
-            disclosure,
-            prompts=prompts,
-            resources=resources,
-            telemetry=self._telemetry,
-        )
+        if surface is not None:
+            if surface.tree.index is not index:
+                raise ServeError(
+                    "A prepared surface must disclose the same Index passed to "
+                    "ContextureServer. Independent applications cannot share a "
+                    "server container."
+                )
+            if prompts or resources:
+                raise ServeError(
+                    "A prepared surface already owns its prompts and resources; "
+                    "do not pass them to ContextureServer again."
+                )
+            self._surface = surface
+        else:
+            disclosure = Disclosure(index)
+            self._surface = Surface.of(
+                disclosure,
+                prompts=prompts,
+                resources=resources,
+                telemetry=self._telemetry,
+            )
         self.name = name
         self.version = version
         #: What a host reads before it calls anything. Derived from the tree
@@ -121,7 +136,7 @@ class ContextureServer:
         self._auth: Auth | None = None
 
     @property
-    def surface(self) -> Surface:
+    def surface(self) -> Surface | DisclosureSurface:
         """What this server serves: its doors, and the view behind them."""
 
         return self._surface

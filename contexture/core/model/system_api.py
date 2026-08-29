@@ -44,7 +44,13 @@ from ..constants import (
     INVOKE_TOOL,
     OPEN_TOOL,
 )
-from ..errors import ContextureError, LookupFailure, NodeNotFoundError, WrongDoorError
+from ..errors import (
+    ContextureError,
+    LookupFailure,
+    ModelValidationError,
+    NodeNotFoundError,
+    WrongDoorError,
+)
 from ..principal import Principal
 from ..types import CompiledContext
 from .disclosure import Disclosure
@@ -126,6 +132,11 @@ GATEWAY = (
         ),
     ),
 )
+
+# The two independently installable halves. ``GATEWAY`` and
+# ``GATEWAY_TOOLS`` remain the compatibility contract of the runtime surface.
+DISCLOSURE_GATEWAY = GATEWAY[:2]
+EXECUTION_GATEWAY = GATEWAY[2:]
 
 #: Every entry point this server will ever expose, in the order they are
 #: registered.
@@ -227,8 +238,8 @@ def taken_by_a_person(ref: str) -> str:
 
 
 @dataclass(slots=True, frozen=True)
-class SystemAPI:
-    """The four calls, bound to one tree.
+class DisclosureAPI:
+    """Progressive navigation over one disclosure dataset.
 
     It remembers no traversal state, which keeps disclosure legal on a protocol
     that forbids a server to vary its surface as a consequence of an earlier
@@ -267,7 +278,7 @@ class SystemAPI:
             raise Refused(taken_by_a_person(ref))
         return await self.open_for_a_person(ref)
 
-    async def open_for_a_person(self, ref: str) -> CompiledContext:
+    async def open_for_person(self, ref: str) -> CompiledContext:
         """Open one node, as the person who owns this server.
 
         Nothing reserves a node *from a person*: `reserved` exists to keep a
@@ -295,7 +306,27 @@ class SystemAPI:
         report(self.telemetry, ref)
         return opened
 
-    async def read_for_a_host(
+    async def open_for_a_person(self, ref: str) -> CompiledContext:
+        """Compatibility spelling retained through the 0.9 transition."""
+
+        return await self.open_for_person(ref)
+
+
+@dataclass(slots=True, frozen=True)
+class ExecutionAPI:
+    """Invocation over one independently compiled, bound runtime Index."""
+
+    index: Any
+    telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+
+    def __post_init__(self) -> None:
+        if not self.index.is_bound:
+            raise ModelValidationError(
+                "ExecutionAPI requires a bound Index. Disclosure-only data "
+                "has no execution interface."
+            )
+
+    async def read_for_host(
         self, ref: str, *, principal: Principal | None = None,
     ) -> Any:
         """Read one document, as the host that was given its address.
@@ -312,13 +343,18 @@ class SystemAPI:
         """
 
         try:
-            return await ApplicationRuntime(
-                self.tree.index, self.telemetry
-            ).invoke_read_only(
+            return await ApplicationRuntime(self.index, self.telemetry).invoke_read_only(
                 ref, principal=principal
             )
         except NodeNotFoundError as failure:
             raise Refused(unresolved(failure)) from failure
+
+    async def read_for_a_host(
+        self, ref: str, *, principal: Principal | None = None,
+    ) -> Any:
+        """Compatibility spelling retained through the 0.9 transition."""
+
+        return await self.read_for_host(ref, principal=principal)
 
     async def invoke_read_only(
         self,
@@ -366,7 +402,7 @@ class SystemAPI:
         host can still act on it.
         """
 
-        runtime = ApplicationRuntime(self.tree.index, self.telemetry)
+        runtime = ApplicationRuntime(self.index, self.telemetry)
         try:
             if read_only:
                 return await runtime.invoke_read_only(
@@ -380,9 +416,87 @@ class SystemAPI:
         except NodeNotFoundError as failure:
             raise Refused(unresolved(failure)) from failure
 
+
+@dataclass(slots=True, frozen=True)
+class SystemAPI:
+    """Compatibility facade composing disclosure and execution APIs.
+
+    Existing runtime callers still see the original four-method object. New
+    code can depend on ``disclosure`` or ``execution`` separately, and a
+    disclosure-only surface never constructs this facade.
+    """
+
+    tree: Any
+    reserved: frozenset[str] = field(default=frozenset())
+    telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+    disclosure: DisclosureAPI = field(init=False, repr=False)
+    execution: ExecutionAPI = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "disclosure",
+            DisclosureAPI(self.tree, self.reserved, self.telemetry),
+        )
+        object.__setattr__(
+            self,
+            "execution",
+            ExecutionAPI(self.tree.index, self.telemetry),
+        )
+
+    async def discover(self) -> CompiledContext:
+        return await self.disclosure.discover()
+
+    async def open(self, ref: str) -> CompiledContext:
+        return await self.disclosure.open(ref)
+
+    async def open_for_person(self, ref: str) -> CompiledContext:
+        return await self.disclosure.open_for_person(ref)
+
+    async def open_for_a_person(self, ref: str) -> CompiledContext:
+        return await self.disclosure.open_for_person(ref)
+
+    async def read_for_host(
+        self, ref: str, *, principal: Principal | None = None,
+    ) -> Any:
+        return await self.execution.read_for_host(ref, principal=principal)
+
+    async def read_for_a_host(
+        self, ref: str, *, principal: Principal | None = None,
+    ) -> Any:
+        return await self.execution.read_for_host(ref, principal=principal)
+
+    async def invoke_read_only(
+        self,
+        ref: str,
+        arguments: dict[str, Any] | None = None,
+        *,
+        context: Any = None,
+        principal: Principal | None = None,
+    ) -> Any:
+        return await self.execution.invoke_read_only(
+            ref, arguments, context=context, principal=principal
+        )
+
+    async def invoke(
+        self,
+        ref: str,
+        arguments: dict[str, Any] | None = None,
+        *,
+        context: Any = None,
+        principal: Principal | None = None,
+    ) -> Any:
+        return await self.execution.invoke(
+            ref, arguments, context=context, principal=principal
+        )
+
 __all__ = [
+    "DISCLOSURE_GATEWAY",
+    "EXECUTION_GATEWAY",
     "GATEWAY",
     "GATEWAY_TOOLS",
+    "DisclosureAPI",
+    "ExecutionAPI",
     "Refused",
     "SystemAPI",
     "SystemTool",

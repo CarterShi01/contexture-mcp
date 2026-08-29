@@ -134,11 +134,10 @@ class Tool(ContextNode):
         # closes over a class object that is no longer this one.
         payload = {
             **ContextNode.card(self, view),
-            "read_only": self.read_only,
-            "input_schema": view.schema_of(self),
+            **view.execution_of(self),
         }
         if self.uses:
-            payload["uses"] = [view.card_for(ref) for ref in self.uses]
+            payload["uses"] = view.cards_for(self.uses)
         return payload
 
     def _compile_active(self, view: View) -> CompiledContext:

@@ -34,7 +34,7 @@ from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.mcpserver import Context, MCPServer
 from mcp_types import ToolAnnotations
 
-from ...core.model.system_api import GATEWAY, SystemAPI
+from ...core.model.system_api import DisclosureAPI, ExecutionAPI, GATEWAY
 from ...core.types import CompiledContext
 from ..identity import principal_of
 from . import translated
@@ -43,24 +43,26 @@ from . import translated
 class Tools:
     """The fixed four. Nothing a declaration says changes them."""
 
-    __slots__ = ("_api",)
+    __slots__ = ("_disclosure", "_execution")
 
-    def __init__(self, api: SystemAPI) -> None:
-        self._api = api
+    def __init__(self, disclosure: DisclosureAPI, execution: ExecutionAPI) -> None:
+        self._disclosure = disclosure
+        self._execution = execution
 
     def install(self, wire: MCPServer) -> None:
-        api = self._api
+        disclosure = self._disclosure
+        execution = self._execution
 
         # Four wrappers holding no rules of their own. Each exists for one thing
         # the kernel cannot have: an SDK `Context` to thread through, and a
         # signature for the SDK to derive this entry point's own schema from.
         async def contexture_discover() -> CompiledContext:
             with translated():
-                return await api.discover()
+                return await disclosure.discover()
 
         async def contexture_open(ref: str) -> CompiledContext:
             with translated():
-                return await api.open(ref)
+                return await disclosure.open(ref)
 
         async def contexture_invoke_read_only(
             ctx: Context,
@@ -68,7 +70,7 @@ class Tools:
             arguments: dict[str, Any] | None = None,
         ) -> Any:
             with translated():
-                return await api.invoke_read_only(
+                return await execution.invoke_read_only(
                     ref, arguments, context=ctx,
                     principal=principal_of(get_access_token()),
                 )
@@ -79,7 +81,7 @@ class Tools:
             arguments: dict[str, Any] | None = None,
         ) -> Any:
             with translated():
-                return await api.invoke(
+                return await execution.invoke(
                     ref, arguments, context=ctx,
                     principal=principal_of(get_access_token()),
                 )

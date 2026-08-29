@@ -44,7 +44,7 @@ of an earlier call.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 from ..constants import SEPARATOR
 from ..types import CompiledContext, JsonObject
@@ -143,6 +143,26 @@ class Disclosure:
 
         return self.index.find(ref).card(self)
 
+    def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        """Render one sibling set through this disclosure policy."""
+
+        return group_cards(nodes, self)
+
+    def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        """Render the structural dependency cards named by ``refs``."""
+
+        return [self.card_for(ref) for ref in refs]
+
+    def execution_of(self, tool: ContextNode) -> CompiledContext:
+        """Disclose a Tool's callable facet only for a bound Index."""
+
+        if not self.index.is_bound:
+            return {}
+        return {
+            "read_only": bool(getattr(tool, "read_only", False)),
+            "input_schema": self.schema_of(tool),
+        }
+
     def schema_of(self, tool: ContextNode) -> JsonObject:
         """The input schema an agent needs in order to call `tool`."""
 
@@ -159,7 +179,7 @@ class Disclosure:
         of roots, not the size of the forest.
         """
 
-        return group_cards(self.roots, self)
+        return self.cards_of(self.roots)
 
     def open(self, ref: str) -> CompiledContext:
         """Return one node's own detail, plus a card for each member it holds.

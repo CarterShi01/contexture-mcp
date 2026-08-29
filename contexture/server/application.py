@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 from ..application import Contexture
+from ..core.errors import ModelValidationError
 from ..core.mcp_interface import Prompt, Resource, published
 from ..core.model import ControllerManager, register_root
 from ..core.model.disclosure import Disclosure
@@ -21,6 +22,7 @@ from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from .binding import TypeHintBinding
 from .options import ContextureOptions
 from .server import ContextureServer
+from .surface import DisclosureSurface
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +58,33 @@ class CompiledApplication:
         return ApplicationRuntime(self.index, self.telemetry)
 
 
+@dataclass(frozen=True, slots=True)
+class CompiledDisclosureApplication:
+    """An independently compiled application that can only be disclosed."""
+
+    name: str
+    index: Index
+    prompts: tuple[Prompt, ...] = ()
+    telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+
+    @property
+    def disclosure(self) -> Disclosure:
+        return Disclosure(self.index)
+
+    def server(self) -> ContextureServer:
+        surface = DisclosureSurface.of(
+            self.disclosure,
+            prompts=self.prompts,
+            telemetry=self.telemetry,
+        )
+        return ContextureServer(
+            self.index,
+            name=self.name,
+            telemetry=self.telemetry,
+            surface=surface,
+        )
+
+
 def compile_application(
     application: Contexture,
     *,
@@ -71,6 +100,57 @@ def compile_application(
         prompts=application.prompts,
         resources=application.resources,
         telemetry=telemetry,
+    )
+
+
+def compile_disclosure_application(
+    application: Contexture,
+    *,
+    telemetry: Telemetry | None = None,
+) -> CompiledDisclosureApplication:
+    """Compile an independent, progressive, non-executable application.
+
+    The declaration syntax stays the same, but execution dependencies are
+    rejected rather than ignored. This is the lower-level guarantee required
+    by operational and architecture views: their MCP surface cannot acquire a
+    Tool binding, a Resource door, or application Channels.
+    """
+
+    if application.channels is not None:
+        raise ModelValidationError(
+            "A disclosure-only Contexture application cannot declare Channels."
+        )
+    if application.resources:
+        raise ModelValidationError(
+            "A disclosure-only Contexture application cannot declare Resources; "
+            "a Resource executes a read-only Tool."
+        )
+    return compile_disclosure_parts(
+        name=application.name,
+        roots=application.roots,
+        prompts=application.prompts,
+        telemetry=telemetry,
+    )
+
+
+def compile_disclosure_parts(
+    *,
+    name: str,
+    roots: Iterable[object],
+    prompts: Iterable[object] = (),
+    telemetry: Telemetry | None = None,
+) -> CompiledDisclosureApplication:
+    """Compile structural data into an unbound Index."""
+
+    manager = ControllerManager()
+    for root in roots:
+        register_root(manager, root)
+    normal_prompts = tuple(_published(entry, Prompt, "prompt") for entry in prompts)
+    return CompiledDisclosureApplication(
+        name=name,
+        index=Index.unbound(manager),
+        prompts=normal_prompts,
+        telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
     )
 
 
@@ -134,8 +214,11 @@ def _published(entry: object, expected: type[Any], label: str) -> Any:
 
 __all__ = [
     "CompiledApplication",
+    "CompiledDisclosureApplication",
     "build_server",
     "compile_application",
+    "compile_disclosure_application",
+    "compile_disclosure_parts",
     "compile_parts",
     "serve",
 ]

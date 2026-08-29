@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..errors import WrongDoorError
+from ..errors import ModelValidationError, WrongDoorError
 from ..principal import Principal, bound
 from .graph_context import bound_graph
 from .index import Index
@@ -18,6 +18,13 @@ class ApplicationRuntime:
 
     index: Index
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+
+    def __post_init__(self) -> None:
+        if not self.index.is_bound:
+            raise ModelValidationError(
+                "ApplicationRuntime requires a bound Index. A disclosure-only "
+                "Index cannot be upgraded into an execution surface."
+            )
 
     async def invoke_read_only(
         self, ref: str, arguments: dict[str, Any] | None = None, *,

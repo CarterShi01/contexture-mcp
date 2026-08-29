@@ -47,8 +47,11 @@ _EXPORTS = {
     "NodeUsage": "..core.model.telemetry",
     "Telemetry": "..core.model.telemetry",
     "CompiledApplication": ".application",
+    "CompiledDisclosureApplication": ".application",
     "build_server": ".application",
     "compile_application": ".application",
+    "compile_disclosure_application": ".application",
+    "compile_disclosure_parts": ".application",
     "compile_parts": ".application",
     "serve": ".application",
     "ContextureServer": ".server",
@@ -70,8 +73,13 @@ _EXPORTS = {
     # they are defined there, and this is a pointer rather than a second copy.
     "DISCOVER_TOOL": "..core.constants",
     "GATEWAY": "..core.model.system_api",
+    "DISCLOSURE_GATEWAY": "..core.model.system_api",
+    "EXECUTION_GATEWAY": "..core.model.system_api",
     "GATEWAY_TOOLS": "..core.model.system_api",
     "SystemTool": "..core.model.system_api",
+    "DisclosureAPI": "..core.model.system_api",
+    "ExecutionAPI": "..core.model.system_api",
+    "SystemAPI": "..core.model.system_api",
     "INVOKE_READ_ONLY_TOOL": "..core.constants",
     "INVOKE_TOOL": "..core.constants",
     "OPEN_TOOL": "..core.constants",
@@ -79,6 +87,8 @@ _EXPORTS = {
     "unresolved": "..core.model.system_api",
     "TypeHintBinding": ".binding",
     "Surface": ".surface",
+    "RuntimeSurface": ".surface",
+    "DisclosureSurface": ".surface",
     # A server serves a compiled index, and the tool plane it is handed is
     # fixed. Both are `core`, and both are forwarded here because building a
     # server is where a caller reaches for them — the same way the four entry

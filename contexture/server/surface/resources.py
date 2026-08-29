@@ -18,7 +18,8 @@ from mcp.server.mcpserver.resources import FunctionResource
 
 from ...core.errors import ModelValidationError
 from ...core.mcp_interface.resource import Resource
-from ...core.model.system_api import SystemAPI
+from ...core.model.disclosure import Disclosure
+from ...core.model.system_api import ExecutionAPI
 from . import published_name, translated
 from ..identity import principal_of
 
@@ -26,9 +27,14 @@ from ..identity import principal_of
 class Resources:
     """The declared documents, checked against what they name."""
 
-    __slots__ = ("_api", "_entries")
+    __slots__ = ("_execution", "_entries")
 
-    def __init__(self, api: SystemAPI, entries: tuple[Resource, ...]) -> None:
+    def __init__(
+        self,
+        tree: Disclosure,
+        execution: ExecutionAPI,
+        entries: tuple[Resource, ...],
+    ) -> None:
         """Refuse a resource that does not name content already sitting there.
 
         A resource is *fetched*, not computed: two reads return the same bytes
@@ -43,7 +49,6 @@ class Resources:
         same-named nodes apart.
         """
 
-        tree = api.tree
         names: dict[str, str] = {}
         uris: dict[str, str] = {}
         for entry in entries:
@@ -75,15 +80,15 @@ class Resources:
                     "arguments. A host reads a resource with none, so what it "
                     "names has to answer with none."
                 )
-        self._api = api
+        self._execution = execution
         self._entries = entries
 
     def install(self, wire: MCPServer) -> None:
-        api = self._api
+        execution = self._execution
         for entry in self._entries:
             wire.add_resource(
                 FunctionResource.from_function(
-                    _reader(api, entry.opens),
+                    _reader(execution, entry.opens),
                     uri=entry.uri,
                     name=published_name(entry),
                     description=entry.description,
@@ -92,7 +97,7 @@ class Resources:
             )
 
 
-def _reader(api: SystemAPI, ref: str) -> Callable[[], Awaitable[Any]]:
+def _reader(api: ExecutionAPI, ref: str) -> Callable[[], Awaitable[Any]]:
     """Build the function a host calls when it reads this resource.
 
     Resolved per call rather than captured, for the same reason a command's text
@@ -107,7 +112,7 @@ def _reader(api: SystemAPI, ref: str) -> Callable[[], Awaitable[Any]]:
 
     async def read() -> Any:
         with translated():
-            return await api.read_for_a_host(
+            return await api.read_for_host(
                 ref, principal=principal_of(get_access_token())
             )
 

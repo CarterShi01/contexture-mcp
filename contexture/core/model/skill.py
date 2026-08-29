@@ -86,5 +86,5 @@ class Skill(ContextNode):
             "instructions": self.instructions,
         }
         if self.uses:
-            payload["uses"] = [view.card_for(ref) for ref in self.uses]
+            payload["uses"] = view.cards_for(self.uses)
         return payload

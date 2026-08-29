@@ -26,7 +26,7 @@ from mcp_types import Completion
 
 from ...core.errors import ModelValidationError
 from ...core.mcp_interface.prompt import Prompt
-from ...core.model.system_api import SystemAPI
+from ...core.model.system_api import DisclosureAPI, SystemAPI
 from .. import messages
 from . import published_name, translated
 
@@ -36,7 +36,9 @@ class Prompts:
 
     __slots__ = ("_api", "_entries")
 
-    def __init__(self, api: SystemAPI, entries: tuple[Prompt, ...]) -> None:
+    def __init__(
+        self, api: DisclosureAPI | SystemAPI, entries: tuple[Prompt, ...]
+    ) -> None:
         """Refuse two commands a person would reach the same way.
 
         A node's name only has to be unique among its siblings, because a ref
@@ -123,7 +125,9 @@ class Prompts:
             )
 
 
-def _command(api: SystemAPI, ref: str) -> Callable[[], Awaitable[str]]:
+def _command(
+    api: DisclosureAPI | SystemAPI, ref: str
+) -> Callable[[], Awaitable[str]]:
     """Build the one prompt that opens `ref`.
 
     The text is assembled per call rather than at registration, so a command and
@@ -137,7 +141,7 @@ def _command(api: SystemAPI, ref: str) -> Callable[[], Awaitable[str]]:
     return command
 
 
-async def open_by_name(api: SystemAPI, ref: str) -> str:
+async def open_by_name(api: DisclosureAPI | SystemAPI, ref: str) -> str:
     """Render one node for a person who named it rather than navigated to it.
 
     Shared by `goto` and by every declared command, which is what makes them the
@@ -157,7 +161,7 @@ async def open_by_name(api: SystemAPI, ref: str) -> str:
     """
 
     with translated():
-        payload = await api.open_for_a_person(ref)
+        payload = await api.open_for_person(ref)
         levels = api.tree.index.signpost(ref)
     sections = [
         messages.COMMAND_PREAMBLE.format(ref=ref),

@@ -60,6 +60,11 @@ class Index:
     #: lifecycle. See `provisioned`.
     channels: Any = None
 
+    #: Whether this snapshot contains executable bindings.  A disclosure-only
+    #: application deliberately compiles the same structural facts without
+    #: deriving a callable body or an input schema for any Tool node.
+    execution_bound: bool = True
+
     #: Address to controller. The one table everything else here reads.
     _by_ref: dict[str, ContextNode] = field(default_factory=dict, repr=False)
 
@@ -110,11 +115,56 @@ class Index:
         go of the registry costs nothing.
         """
 
+        return cls.bound(registry, bind=bind)
+
+    @classmethod
+    def bound(
+        cls,
+        registry: Any,
+        *,
+        bind: Callable[[Tool], Binding] = PlainBinding,
+    ) -> "Index":
+        """Compile an executable forest and derive one binding per Tool."""
+
+        return cls._compile(registry, bind=bind, execution_bound=True)
+
+    @classmethod
+    def unbound(cls, registry: Any) -> "Index":
+        """Compile structural disclosure data with no executable bindings.
+
+        Channels are an execution dependency.  Refusing them here makes the
+        isolation guarantee true below every server and compiler entry point:
+        an unbound index cannot accidentally retain an MCP client, connection
+        pool, or other handle merely because no caller happens to invoke it.
+        """
+
+        manager = _as_registry(registry)
+        if manager.channels is not None:
+            raise ModelValidationError(
+                "An unbound Index cannot own channels. Disclosure-only "
+                "applications contain structural data, not execution handles."
+            )
+        return cls._compile(manager, bind=None, execution_bound=False)
+
+    @classmethod
+    def _compile(
+        cls,
+        registry: Any,
+        *,
+        bind: Callable[[Tool], Binding] | None,
+        execution_bound: bool,
+    ) -> "Index":
+        """Compile the common structural snapshot, optionally binding Tools."""
+
         manager = _as_registry(registry)
         if not manager.roots:
             raise ModelValidationError("A context tree needs at least one root role.")
 
-        index = cls(roots=manager.roots, channels=manager.channels)
+        index = cls(
+            roots=manager.roots,
+            channels=manager.channels,
+            execution_bound=execution_bound,
+        )
         for root in manager.roots:
             index._absorb(root, (root.name,), parent=None)
 
@@ -125,8 +175,15 @@ class Index:
         index._reject_ambiguous_names()
         index._reject_unresolvable_uses()
         index._derive_dependents()
-        index._derive_bindings(bind)
+        if bind is not None:
+            index._derive_bindings(bind)
         return index
+
+    @property
+    def is_bound(self) -> bool:
+        """Whether this index may be used to construct an execution runtime."""
+
+        return self.execution_bound
 
     def _absorb(
         self,
@@ -233,6 +290,11 @@ class Index:
         that reaches here.
         """
 
+        if not self.execution_bound:
+            raise ModelValidationError(
+                "This Index is disclosure-only and has no executable bindings. "
+                "Compile an independent bound Index for runtime execution."
+            )
         return self._bindings[ref]
 
     def schema_of(self, tool: ContextNode) -> Any:

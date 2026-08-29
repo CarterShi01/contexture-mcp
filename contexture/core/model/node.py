@@ -59,6 +59,15 @@ class View(Protocol):
     def card_for(self, ref: str) -> CompiledContext:
         """One routing card for a node named by address rather than held."""
 
+    def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        """One sibling set, grouped by kind."""
+
+    def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        """Routing cards for a declared reference overlay."""
+
+    def execution_of(self, tool: ContextNode) -> CompiledContext:
+        """The callable facet this view elects to disclose for a Tool."""
+
     def schema_of(self, tool: ContextNode) -> JsonObject:
         """The input schema an agent needs in order to call `tool`."""
 
@@ -268,6 +277,18 @@ class _Alone:
             "that holds it and open it through that."
         )
 
+    def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        return group_cards(nodes, self)
+
+    def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        return [self.card_for(ref) for ref in refs]
+
+    def execution_of(self, tool: ContextNode) -> CompiledContext:
+        return {
+            "read_only": bool(getattr(tool, "read_only", False)),
+            "input_schema": self.schema_of(tool),
+        }
+
     def schema_of(self, tool: ContextNode) -> JsonObject:
         return {}
 
@@ -295,7 +316,7 @@ def group_cards(
 
     grouped: CompiledContext = {"roles": [], "skills": [], "tools": []}
     for node in nodes:
-        grouped[node.group].append(node.card(view))
+        grouped[node.group].append(view.card_of(node))
     return grouped
 
 

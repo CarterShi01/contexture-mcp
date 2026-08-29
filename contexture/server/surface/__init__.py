@@ -39,7 +39,7 @@ from ...core.mcp_interface import published as _published
 from ...core.mcp_interface.prompt import Prompt
 from ...core.mcp_interface.resource import Resource
 from ...core.model.disclosure import SEPARATOR, Disclosure
-from ...core.model.system_api import SystemAPI
+from ...core.model.system_api import DisclosureAPI, SystemAPI
 from ...core.model.telemetry import InMemoryTelemetry, Telemetry
 
 
@@ -139,9 +139,9 @@ class Surface:
         # checks its own declarations in its constructor, so a refusal leaves
         # nothing half-registered on an SDK server that does not yet exist.
         doors = (
-            Tools(api),
-            Prompts(api, prompt_entries),
-            Resources(api, resource_entries),
+            Tools(api.disclosure, api.execution),
+            Prompts(api.disclosure, prompt_entries),
+            Resources(tree, api.execution, resource_entries),
         )
         return cls(
             tree=tree,
@@ -160,6 +160,74 @@ class Surface:
     def install(self, wire: MCPServer) -> None:
         """Hang all three doors on one SDK server, in a fixed order."""
 
+        for door in self._doors:
+            door.install(wire)
+
+
+# Name the executable form explicitly for new callers while keeping ``Surface``
+# source-compatible for the 0.9 transition.
+RuntimeSurface = Surface
+
+
+@dataclass(frozen=True, slots=True)
+class DisclosureSurface:
+    """Progressive disclosure with no execution or Resource door.
+
+    This surface accepts only an independently compiled unbound Index.  The
+    restriction is intentionally checked here as well as in the compiler, so a
+    caller cannot produce an "architecture" endpoint by hiding the invoke tools
+    in front of runtime data.
+    """
+
+    tree: Disclosure
+    api: DisclosureAPI
+    prompts: tuple[Prompt, ...] = ()
+    resources: tuple[Resource, ...] = ()
+    _doors: tuple[Any, ...] = field(default=(), repr=False)
+
+    @classmethod
+    def of(
+        cls,
+        tree: Disclosure,
+        *,
+        prompts: Sequence[Any] = (),
+        resources: Sequence[Any] = (),
+        telemetry: Telemetry | None = None,
+    ) -> "DisclosureSurface":
+        from .navigation import NavigationTools
+        from .prompts import Prompts
+
+        if tree.index.is_bound:
+            raise ModelValidationError(
+                "DisclosureSurface requires an independent unbound Index. "
+                "Do not reuse the runtime Index for an operational view."
+            )
+        if resources:
+            raise ModelValidationError(
+                "DisclosureSurface cannot publish Resources: reading a "
+                "Resource executes a read-only Tool. Use a Prompt or disclose "
+                "the content as ContextNodes instead."
+            )
+
+        prompt_entries = tuple(_as(Prompt, entry) for entry in prompts)
+        for entry in prompt_entries:
+            _require_resolvable(tree, entry.opens, entry.kind)
+        reserved = frozenset(
+            entry.opens for entry in prompt_entries if not entry.model_may_open
+        )
+        api = DisclosureAPI(
+            tree=tree,
+            reserved=reserved,
+            telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
+        )
+        doors = (NavigationTools(api), Prompts(api, prompt_entries))
+        return cls(tree=tree, api=api, prompts=prompt_entries, _doors=doors)
+
+    @property
+    def published(self) -> tuple[Prompt, ...]:
+        return self.prompts
+
+    def install(self, wire: MCPServer) -> None:
         for door in self._doors:
             door.install(wire)
 
@@ -195,4 +263,10 @@ def _require_resolvable(tree: Disclosure, ref: str, kind: str) -> None:
         ) from None
 
 
-__all__ = ["Surface", "published_name", "translated"]
+__all__ = [
+    "DisclosureSurface",
+    "RuntimeSurface",
+    "Surface",
+    "published_name",
+    "translated",
+]
