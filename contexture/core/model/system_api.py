@@ -274,7 +274,7 @@ class DisclosureAPI:
         second kind of node.
         """
 
-        if ref in self.reserved:
+        if not self.tree.model_can_see(ref) or ref in self.reserved:
             raise Refused(taken_by_a_person(ref))
         return await self.open_for_a_person(ref)
 
@@ -292,14 +292,15 @@ class DisclosureAPI:
         how to call it is worse than either answer alone.
         """
 
+        tree = self.tree.unrestricted()
         try:
-            node = self.tree.find(ref)
+            node = tree.find(ref)
         except NodeNotFoundError as failure:
             raise Refused(unresolved(failure)) from failure
         if isinstance(node, Tool):
-            return self.tree.open(ref)
+            return tree.open(ref)
         try:
-            opened = self.tree.open(ref)
+            opened = tree.open(ref)
         except Exception:
             report(self.telemetry, ref, failed=True)
             raise
@@ -318,6 +319,7 @@ class ExecutionAPI:
 
     index: Any
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+    prompt_roots: frozenset[str] = field(default=frozenset())
 
     def __post_init__(self) -> None:
         if not self.index.is_bound:
@@ -402,6 +404,10 @@ class ExecutionAPI:
         host can still act on it.
         """
 
+        root = ref.split("/", 1)[0]
+        if root in self.prompt_roots:
+            raise Refused(taken_by_a_person(ref))
+
         runtime = ApplicationRuntime(self.index, self.telemetry)
         try:
             if read_only:
@@ -441,7 +447,11 @@ class SystemAPI:
         object.__setattr__(
             self,
             "execution",
-            ExecutionAPI(self.tree.index, self.telemetry),
+            ExecutionAPI(
+                self.tree.index,
+                self.telemetry,
+                self.tree.prompt_roots,
+            ),
         )
 
     async def discover(self) -> CompiledContext:

@@ -27,6 +27,12 @@
 
 轴是**谁触发**，不是身份、作者或内容。
 
+当一整棵业务树只为 Prompt 服务时，Application 用 `prompt_roots=` 声明它。
+这棵树仍进入同一个 Index，Prompt 因而打开真实节点；但 Disclosure 把它从模型的
+instructions、discover、open 和 invoke 路径全部排除。这个边界必须由框架守住，
+不能依赖模型「看见但别调用」的提示词，也不能靠某个宿主把同一个 Prompt 再包装成
+模型 Tool。缺少 Prompt UI 的宿主应在宿主适配层补入口，而不是污染模型平面。
+
 留意 Resource 是 **application**-controlled 而不是 user-controlled：宿主可以让人
 挑，也可以自动附上，协议不规定。
 

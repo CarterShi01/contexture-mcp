@@ -47,6 +47,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
 from ..constants import SEPARATOR
+from ..errors import ModelValidationError
 from ..types import CompiledContext, JsonObject
 from .binding import Binding, PlainBinding
 from .index import Index
@@ -88,6 +89,32 @@ class Disclosure:
     #: directly rather than through here.
     index: Index
 
+    #: Root references held for the user-controlled Prompt plane and omitted
+    #: from the model-controlled navigation plane.  The nodes remain in the
+    #: same compiled Index so a Prompt opens the canonical declaration rather
+    #: than a projected copy.
+    prompt_roots: frozenset[str] = frozenset()
+
+    def __post_init__(self) -> None:
+        for ref in self.prompt_roots:
+            node = self.index.find(ref)
+            if self.index.parent_of(node) is not None:
+                raise ModelValidationError(
+                    f"Prompt-only reference {ref!r} is not a root. "
+                    "Only a complete root tree can be removed from model navigation."
+                )
+
+    def unrestricted(self) -> "Disclosure":
+        """Return the same compiled forest without model-plane exclusions."""
+
+        return self if not self.prompt_roots else Disclosure(self.index)
+
+    def model_can_see(self, ref: str) -> bool:
+        """Whether ``ref`` belongs to the model-controlled root forest."""
+
+        root = ref.split(SEPARATOR, 1)[0]
+        return root not in self.prompt_roots
+
     @classmethod
     def of(
         cls,
@@ -101,9 +128,12 @@ class Disclosure:
 
     @property
     def roots(self) -> tuple[ContextNode, ...]:
-        """Everything registered at the top, in registration order."""
+        """Roots visible to model navigation, in registration order."""
 
-        return self.index.roots
+        return tuple(
+            root for root in self.index.roots
+            if self.model_can_see(self.index.ref_of(root))
+        )
 
     @property
     def registry(self) -> Index:
@@ -141,17 +171,24 @@ class Disclosure:
         to traverse.
         """
 
+        if not self.model_can_see(ref):
+            raise ModelValidationError(
+                f"{ref!r} belongs to a Prompt-only root and has no model routing card."
+            )
         return self.index.find(ref).card(self)
 
     def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
         """Render one sibling set through this disclosure policy."""
 
-        return group_cards(nodes, self)
+        return group_cards(
+            (node for node in nodes if self.model_can_see(self.index.ref_of(node))),
+            self,
+        )
 
     def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
         """Render the structural dependency cards named by ``refs``."""
 
-        return [self.card_for(ref) for ref in refs]
+        return [self.card_for(ref) for ref in refs if self.model_can_see(ref)]
 
     def execution_of(self, tool: ContextNode) -> CompiledContext:
         """Disclose a Tool's callable facet only for a bound Index."""

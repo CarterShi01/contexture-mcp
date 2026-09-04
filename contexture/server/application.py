@@ -31,6 +31,7 @@ class CompiledApplication:
 
     name: str
     index: Index
+    prompt_root_refs: tuple[str, ...] = ()
     prompts: tuple[Prompt, ...] = ()
     resources: tuple[Resource, ...] = ()
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
@@ -39,7 +40,7 @@ class CompiledApplication:
     def disclosure(self) -> Disclosure:
         """The view used by local inspection and the MCP surface."""
 
-        return Disclosure(self.index)
+        return Disclosure(self.index, frozenset(self.prompt_root_refs))
 
     def server(self) -> ContextureServer:
         """Create the immutable MCP server for this compiled declaration."""
@@ -49,6 +50,7 @@ class CompiledApplication:
             name=self.name,
             prompts=self.prompts,
             resources=self.resources,
+            prompt_roots=self.prompt_root_refs,
             telemetry=self.telemetry,
         )
 
@@ -64,12 +66,13 @@ class CompiledDisclosureApplication:
 
     name: str
     index: Index
+    prompt_root_refs: tuple[str, ...] = ()
     prompts: tuple[Prompt, ...] = ()
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
 
     @property
     def disclosure(self) -> Disclosure:
-        return Disclosure(self.index)
+        return Disclosure(self.index, frozenset(self.prompt_root_refs))
 
     def server(self) -> ContextureServer:
         surface = DisclosureSurface.of(
@@ -96,6 +99,7 @@ def compile_application(
     return compile_parts(
         name=application.name,
         roots=application.roots,
+        prompt_roots=application.prompt_roots,
         channels=channels,
         prompts=application.prompts,
         resources=application.resources,
@@ -128,6 +132,7 @@ def compile_disclosure_application(
     return compile_disclosure_parts(
         name=application.name,
         roots=application.roots,
+        prompt_roots=application.prompt_roots,
         prompts=application.prompts,
         telemetry=telemetry,
     )
@@ -137,18 +142,25 @@ def compile_disclosure_parts(
     *,
     name: str,
     roots: Iterable[object],
+    prompt_roots: Iterable[object] = (),
     prompts: Iterable[object] = (),
     telemetry: Telemetry | None = None,
 ) -> CompiledDisclosureApplication:
     """Compile structural data into an unbound Index."""
 
+    model_roots = tuple(roots)
+    user_roots = tuple(prompt_roots)
     manager = ControllerManager()
-    for root in roots:
+    for root in (*model_roots, *user_roots):
         register_root(manager, root)
     normal_prompts = tuple(_published(entry, Prompt, "prompt") for entry in prompts)
+    index = Index.unbound(manager)
     return CompiledDisclosureApplication(
         name=name,
-        index=Index.unbound(manager),
+        index=index,
+        prompt_root_refs=tuple(
+            index.ref_of(root) for root in index.roots[len(model_roots):]
+        ),
         prompts=normal_prompts,
         telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
     )
@@ -158,6 +170,7 @@ def compile_parts(
     *,
     name: str,
     roots: Iterable[object],
+    prompt_roots: Iterable[object] = (),
     channels: Any = None,
     prompts: Iterable[object] = (),
     resources: Iterable[object] = (),
@@ -170,17 +183,23 @@ def compile_parts(
     binding, and publication path while old projects are still supported.
     """
 
+    model_roots = tuple(roots)
+    user_roots = tuple(prompt_roots)
     manager = ControllerManager(channels=channels)
-    for root in roots:
+    for root in (*model_roots, *user_roots):
         register_root(manager, root)
 
     normal_prompts = tuple(_published(entry, Prompt, "prompt") for entry in prompts)
     normal_resources = tuple(
         _published(entry, Resource, "resource") for entry in resources
     )
+    index = Index.of(manager, bind=TypeHintBinding)
     return CompiledApplication(
         name=name,
-        index=Index.of(manager, bind=TypeHintBinding),
+        index=index,
+        prompt_root_refs=tuple(
+            index.ref_of(root) for root in index.roots[len(model_roots):]
+        ),
         prompts=normal_prompts,
         resources=normal_resources,
         telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),

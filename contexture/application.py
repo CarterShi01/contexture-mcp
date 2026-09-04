@@ -29,6 +29,16 @@ class Contexture:
 
         app = Contexture(name="hello", roots=(Hello,))
 
+    A command tree that only a person should enter is declared separately but
+    compiled into the same canonical Index::
+
+        app = Contexture(
+            name="hello",
+            roots=(Hello,),
+            prompt_roots=(Commands,),
+            prompts=(RunCommand,),
+        )
+
     The values are classes, never constructed nodes.  Importing this module or
     creating ``app`` is therefore safe in a CLI, a test collector, and an IDE.
     ``contexture.server.compile_application`` is the first operation that
@@ -37,6 +47,10 @@ class Contexture:
 
     name: str
     roots: Sequence[RootFactory]
+    #: Complete root trees owned by MCP's user-controlled Prompt plane. They
+    #: remain addressable by Prompt and ``goto``, but are absent from
+    #: ``contexture_discover``, server routing instructions, and model opens.
+    prompt_roots: Sequence[RootFactory] = ()
     channels: type[Channels] | None = None
     prompts: Sequence[type[Prompt]] = ()
     resources: Sequence[type[Resource]] = ()
@@ -53,6 +67,10 @@ class Contexture:
         for root in roots:
             self._require_factory(root, (Role, Skill, Tool), "roots")
 
+        prompt_roots = tuple(self.prompt_roots)
+        for root in prompt_roots:
+            self._require_factory(root, (Role, Skill, Tool), "prompt_roots")
+
         if self.channels is not None:
             self._require_factory(self.channels, (Channels,), "channels")
 
@@ -66,6 +84,7 @@ class Contexture:
 
         object.__setattr__(self, "name", self.name.strip())
         object.__setattr__(self, "roots", roots)
+        object.__setattr__(self, "prompt_roots", prompt_roots)
         object.__setattr__(self, "prompts", prompts)
         object.__setattr__(self, "resources", resources)
 

@@ -82,6 +82,7 @@ class ContextureServer:
         tools: ToolPlane = TOOLS,
         prompts: Any = (),
         resources: Any = (),
+        prompt_roots: Any = (),
         telemetry: Telemetry | None = None,
         surface: Surface | DisclosureSurface | None = None,
     ) -> None:
@@ -112,14 +113,14 @@ class ContextureServer:
                     "ContextureServer. Independent applications cannot share a "
                     "server container."
                 )
-            if prompts or resources:
+            if prompts or resources or prompt_roots:
                 raise ServeError(
                     "A prepared surface already owns its prompts and resources; "
-                    "do not pass them to ContextureServer again."
+                    "do not pass them or Prompt-only roots to ContextureServer again."
                 )
             self._surface = surface
         else:
-            disclosure = Disclosure(index)
+            disclosure = Disclosure(index, frozenset(prompt_roots))
             self._surface = Surface.of(
                 disclosure,
                 prompts=prompts,

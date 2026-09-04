@@ -132,6 +132,8 @@ def _sibling_groups(tree: Disclosure) -> Iterator[list[tuple[str, ContextNode]]]
     group: list[tuple[str, ContextNode]] = []
     parent: str | None = None
     for ref, role in tree.index.roles_by_level():
+        if not tree.model_can_see(ref):
+            continue
         if SEPARATOR not in ref:
             continue                      # a root; already yielded above
         owner = ref.rsplit(SEPARATOR, 1)[0] if SEPARATOR in ref else ""

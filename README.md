@@ -457,6 +457,26 @@ The fixed gateway remains framework-owned. `prompts=` and `resources=` belong
 on `Contexture(...)`, where they point to existing nodes without duplicating
 their business definitions.
 
+When an entire command tree exists only behind user-selected MCP Prompts, put
+that tree in `prompt_roots=` instead of `roots=`:
+
+```python
+app = Contexture(
+    name="operations",
+    roots=(Operations,),
+    prompt_roots=(Commands,),
+    prompts=(RollbackRelease,),
+)
+```
+
+Prompt roots are compiled into the same canonical Index, so Prompt rendering
+and `goto` still resolve their real nodes. They are deliberately absent from
+server routing instructions and from `contexture_discover`, and a model cannot
+open or invoke them even if it guesses a ref. This keeps MCP's user-controlled
+Prompt plane distinct from its model-controlled Tool plane. Host-specific
+command adapters should call Prompts; they should not republish the command
+tree as model-discoverable Roles.
+
 Each Tool's card schema and invocation validation come from the same compiled
 binding. The application author declares the Tool once; neither CLI nor custom
 hosting derives a second version of its contract.

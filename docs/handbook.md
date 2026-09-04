@@ -202,6 +202,12 @@ app = Contexture(
 )
 ```
 
+If a complete tree is meaningful only after a person chooses a Prompt, declare
+it with `prompt_roots=(Commands,)`. It remains available to Prompts but is not
+listed or callable through the model-controlled discovery gateway. This is the
+right representation for command menus; do not duplicate those commands as
+ordinary model-visible Roles for hosts with a different command UI.
+
 ## 9. Connect an MCP host
 
 After the local loop succeeds, configure the host to run the same command:
