@@ -4,28 +4,58 @@ build-backend = "uv_build"
 
 [project]
 name = "contexture-mcp"
-version = "0.11.0"
+version = "0.12.0rc1"
 description = "A Controller framework for agent and human Views: declare once, then publish through MCP and explicit REST routes"
 readme = "README.md"
-requires-python = ">=3.10"
-license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
   { name = "Contexture" }
 ]
+maintainers = [
+  { name = "CarterShi01" }
+]
 keywords = ["agent", "context", "controller", "mcp", "rest", "asgi", "llm", "claude-code", "codex"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Typing :: Typed",
+]
 dependencies = [
-  "mcp>=2.0.0",
-  "tomli>=2.0; python_version < '3.11'",
+  "anyio>=4.5,<5",
+  "mcp>=2.1.1,<3",
+  "mcp-types>=2.1.1,<3",
 ]
 
 [project.optional-dependencies]
-dev = ["mcp[cli]>=2.0.0"]
+dev = [
+  "build>=1.3,<2",
+  "mcp[cli]>=2.1.1,<3",
+  "pyright>=1.1.405,<2",
+  "pytest>=8,<10",
+  "pytest-asyncio>=1,<2",
+  "ruff>=0.12,<1",
+  "twine>=6,<7",
+  "validate-pyproject[all]>=0.24,<1",
+]
 
 [project.scripts]
 contexture = "contexture.cli:main"
 
 [project.urls]
-Repository = "https://github.com/CarterShi01/Contexture"
+Homepage = "https://github.com/CarterShi01/contexture-mcp"
+Documentation = "https://github.com/CarterShi01/contexture-mcp/blob/master/docs/handbook.md"
+Repository = "https://github.com/CarterShi01/contexture-mcp"
+Issues = "https://github.com/CarterShi01/contexture-mcp/issues"
+Changelog = "https://github.com/CarterShi01/contexture-mcp/blob/master/CHANGELOG.md"
 
 # The source tree deliberately stays flat: Contexture is the one module under
 # this repository root. `uv_build` includes exactly that module — including
@@ -33,3 +63,13 @@ Repository = "https://github.com/CarterShi01/Contexture"
 [tool.uv.build-backend]
 module-name = "contexture"
 module-root = ""
+
+[tool.pyright]
+include = ["contexture", "examples", "tests/typing"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"
+
+[tool.ruff.lint]
+# Release-blocking correctness checks. Broader style cleanup is intentionally
+# incremental so a release does not disguise semantic edits in formatting noise.
+select = ["E9", "F63", "F7", "F82"]

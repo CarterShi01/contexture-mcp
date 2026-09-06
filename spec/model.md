@@ -1,75 +1,121 @@
 # Contexture public model
 
-This is the language-neutral contract for a Contexture application. Python,
-TypeScript, Go, and PHP bindings may use different declaration syntax; they
-must preserve these meanings.
+This is the language-neutral contract for Contexture. A binding may use
+classes, structs, interfaces, DTOs, or schema objects, but must preserve these
+meanings and lifecycle boundaries.
 
-## Application
+## Application declarations
 
-An Application has a non-empty name, at least one root, optionally one shared
-Channels handle, and optional Prompt and Resource declarations. It is a lazy
-specification: importing or constructing it creates no node, connection,
-Index, Disclosure, or server.
+An Application is a lazy composition root with:
 
-Each build creates a fresh forest, registers roots, derives bindings, validates
-the complete forest, and produces an immutable Index.
+- a non-empty `name`;
+- one or more model-visible `roots`;
+- zero or more user-controlled `prompt_roots`;
+- optional shared Channels;
+- optional Prompt and Resource publications.
+
+Constructing or importing an Application creates no node instance, connection,
+Index, Disclosure, or server. Each compilation builds fresh node instances,
+registers both root sets into one canonical forest, validates all refs, and
+freezes the resulting Index.
+
+`roots` and `prompt_roots` differ by audience, not structure. Model discovery
+can enter only `roots`. The user-controlled Prompt plane can enter either set.
+A Prompt root cannot be reached by guessing its ref through a model-controlled
+open or invoke call.
 
 ## Nodes
 
+Role, Skill, and Tool are the closed node set.
+
 | Node | Required facts | Meaning |
 | --- | --- | --- |
-| Role | name, description, instructions, optional uses refs | A stable responsibility boundary an agent can recognize, enter, and choose. It may hold child Roles, Skills, and Tools. |
-| Skill | name, description, instructions, optional uses refs | Stable procedural knowledge the model follows; the framework does not execute it. |
-| Tool | name, description, read_only, optional uses refs, typed input and invoke body | A deterministic capability the framework executes. |
+| Role | name, description, instructions, members, optional uses refs | A stable responsibility and containment boundary an agent can enter. |
+| Skill | name, description, instructions, optional uses refs | Procedural knowledge followed by the model and not executed by Contexture. |
+| Tool | name, description, read-only classification, input contract, invoke body, optional uses refs | A deterministic capability executed by Contexture. |
 
-Containment is a forest. Every node has one address. Any node may reference an
-existing address through `uses`; references do not create containment or depth.
-Roles describe responsibility, not data instances: a scheduler can be a Role,
-but each scheduled job remains data returned by a Tool.
+Names and descriptions are explicit and never inferred from identifiers or
+comments. Containment is a forest and gives every node one slash-separated
+address. A Role may contain child Roles, Skills, and Tools. `uses` points to an
+existing address but creates neither containment nor depth.
 
-`Application` is a technical composition root. It is not a fourth semantic node
-and does not appear in the object graph.
+A Role exposes complete immediate sibling groups when opened. Reverse
+dependencies and whole-graph facts are available only through an explicitly
+declared introspection Tool; ordinary disclosure does not reveal unentered
+branches.
 
-## One disclosure and one telemetry side channel
+## Bindings and execution
 
-The compiled forest has one progressive Disclosure. Discover returns root
-cards; opening one node returns its kind-specific definition, one level of
-contained members, and any explicitly declared `uses` cards. Business and
-system Roles use this identical path. Parent, members, uses, and reverse
-dependents are compiled Index facts available to an explicit architecture Tool;
-reverse edges are not injected into ordinary disclosure because doing so could
-reveal sibling branches the caller has not entered.
+Every runtime Tool has exactly one Binding derived during compilation. The
+Binding owns both the input schema shown to a model and validation/invocation of
+the business handler. An implementation may derive it from a Python signature,
+an explicit TypeScript schema, a tagged Go struct, or a PHP DTO.
 
-Live health, connection, queue, version, instance, and business state are not
-universal Node fields. The responsibility that owns such state exposes it
-through an ordinary read-only Tool with its own domain semantics.
+Read-only and writing Tools use distinct gateway doors. Calling through the
+wrong door is refused. Business handlers are shared across requests and must be
+re-entrant; per-call state belongs in arguments and locals.
 
-The runtime automatically records minimal usage telemetry beside disclosure:
-`ref`, `call_count`, `error_count`, and `last_used_at`. Entering a Role or Skill
-and invoking a Tool are calls; merely discovering cards is not. Telemetry never
-changes disclosure output, and exporter failure must never change the observed
-business call. An authorized Tool may query the current collector through
-`current_telemetry()`.
-
-During Tool invocation, `current_graph()` refers to the exact serving Index and
-`current_telemetry()` refers to its runtime collector. This lets architecture
-and telemetry Tools query their own application without maintaining a second
-registry. Both bindings are local to the concurrent call and access outside a
-Tool invocation is an error.
+During an allowed Tool call, task-local `current_graph`, `current_telemetry`,
+and `current_principal` equivalents refer to that exact call. Identity is
+framework context, not a model-supplied Tool argument. The application owns all
+permission decisions.
 
 ## Integration declarations
 
-Channels owns application-wide external dependencies and an optional open/close
-lifecycle. Prompt and Resource are not nodes: each names an existing node by
-ref and creates a second entry point on its respective MCP primitive.
+Channels owns application-wide external dependencies and an optional
+open/close lifecycle. Successful open is paired with close; a partially failed
+open unwinds resources already acquired. Declaration-only validation does not
+open Channels.
 
-## Required behavior
+Prompt and Resource are publications, not nodes. Each points to a node already
+held by the canonical Index. A Prompt is user-controlled. A Resource is
+host-controlled, has a stable URI, and may be backed only by an argument-free
+read-only Tool.
 
-- Node identity is explicit; names and descriptions are never inferred from
-  class names or docstrings.
-- Tool input schemas and Tool invocation validation come from one binding.
-- A read-only Tool and a writing Tool use distinct gateway doors.
-- The served surface cannot change after Index compilation.
-- A Skill is opened; a Tool is invoked.
-- Disclosure is progressive: opening a Role exposes one containment level.
-- Every Host discloses the same immutable Index through the one Disclosure.
+## Compilation kinds
+
+Runtime compilation produces a bound Index, ApplicationRuntime, DisclosureAPI,
+ExecutionAPI, four-tool MCP surface, optional Prompts and Resources, and the
+Channels lifecycle.
+
+Disclosure-only compilation produces an independent unbound Index and only
+DisclosureAPI. It accepts no Channels or Resources, derives no Tool schemas,
+and exposes only discover/open plus optional Prompts. Tool nodes in this graph
+are structural cards, not callable capabilities. Runtime and disclosure-only
+applications never share node instances, Indexes, telemetry, or lifecycle.
+
+## Root-selected views
+
+A RootSelection is an immutable set of exact top-level root names, or the
+compatibility value “all.” A resolved selection must be non-empty and contain
+only registered roots. Intersection is monotonic: a derived view can never
+restore a removed root.
+
+Selecting a root selects its complete containment subtree. Descendants cannot
+be selected independently. A cross-root `uses` card is visible only if its
+target root is also selected. The same effective selection governs
+instructions, discover, open, invoke, Prompts, Resources, completion, errors,
+and the graph visible during invocation.
+
+Transport adapters may obtain a requested selection from trusted configuration
+or request metadata. Caller input only attenuates. An implementation may
+intersect it with an application-owned ceiling derived from verified identity;
+selection itself is not authorization.
+
+## Host surfaces
+
+The MCP model-controlled surface is a fixed gateway. Business Tools appear in
+payload cards, never in the top-level MCP tool list. Prompt and Resource use
+their native MCP primitives according to who chooses the entry.
+
+A REST adapter may publish an explicit allowlist of `(method, path, Tool ref)`
+routes over the same ApplicationRuntime and Binding. It must not expose an
+arbitrary-ref endpoint. GET/HEAD target only read-only Tools; writing methods
+target only writing Tools. Route is a publication pointer, not a fourth node.
+
+## Telemetry
+
+The runtime may record `ref`, call count, error count, and last-use time for
+entered Roles/Skills and invoked Tools. Merely discovering cards is not a call.
+Telemetry never changes disclosure, and exporter failure must not change the
+business result or exception.

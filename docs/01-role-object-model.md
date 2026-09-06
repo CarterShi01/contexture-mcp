@@ -346,37 +346,44 @@ Tool describes and performs one operation.
 The server layer derives its schema and carries the call.
 ```
 
-## 11.1 Resource as a ContextNode
+## 11.1 Content as a Tool, Resource as a publication
 
-A `Resource` is content this application produces:
+Content the application already holds is an argument-free, read-only Tool:
 
 ```python
-class CrashLoopRunbook(Resource):
-    """How to diagnose a container that keeps restarting."""
+class CrashLoopRunbook(Tool):
+    def __init__(self) -> None:
+        super().__init__(name="crash_loop_runbook", description="...", read_only=True)
 
-    uri = "contexture://runbooks/crash-loop-backoff"
-    mime_type = "text/markdown"
+    async def invoke(self) -> str: ...
 
-    async def read(self) -> str:
-        ...
+
+class CrashLoopRunbookDocument(Resource):
+    def __init__(self) -> None:
+        super().__init__(
+            opens="incident-response/crash_loop_runbook",
+            uri="contexture://runbooks/crash-loop-backoff",
+            mime_type="text/markdown",
+        )
 ```
 
-The disclosure boundary that matters for a Resource is not route versus active
-but **descriptor versus content**. Its route card carries the routing name and
-description; its active surface adds the URI and media type. Neither level ever
-carries bytes: `read()` runs only when something calls `contexture_read`.
+The Tool is the node a model discovers and invokes. `Resource` is not a
+ContextNode: it publishes that same Tool to MCP's host-controlled Resource
+primitive under a stable URI. It creates a second address, not a second copy of
+the content or business logic.
 
 ```text
-Compiling a Resource yields metadata.
-Reading a Resource yields content.
+Opening a Role yields the Tool card, not the bytes.
+Invoking the Tool or reading its published URI yields the same content.
 ```
 
 This is the whole reason a resource is a resource rather than a paragraph
 pasted into a Skill. Discovering a hundred runbooks costs a hundred
 descriptions, not a hundred documents.
 
-Resources need no read-only classification. MCP defines no write operation on a
-Resource, so there is nothing to classify.
+Publication requires an argument-free read-only Tool. The MCP Resource itself
+has no write operation, while model-controlled access still travels through
+`contexture_invoke_read_only`.
 
 ## 12. Why there is no provider object
 
@@ -500,30 +507,24 @@ classDiagram
     ContextNode <|-- Role
     ContextNode <|-- Skill
     ContextNode <|-- Tool
-    ContextNode <|-- Resource
     Role *-- Role : children
     Role *-- Skill : skills
     Role *-- Tool : tools
-    Role *-- Resource : resources
 ```
 
-Four types, one base class, and a role that holds only what it declares. Every
-one of them is subclassed by the business layer, and none of them knows that
-MCP exists.
+Three node types, one base class, and a role that holds only what it declares.
+Prompt and Resource are protocol publications outside this graph.
 
 ## 17. Terminal-state additions
 
 The project includes the natural next layers so the current model does not need
 to be redesigned later.
 
-### 17.1 Resources are declared, not granted
+### 17.1 Content is declared once and may be published twice
 
-A Role that should read a runbook declares it; a Role that should not simply
-omits it and never sees the route card. There is no allowlist, because there is
-nothing to subset — see §12.
-
-The tree is not involved in loading content at any point. It produces the
-descriptor; `contexture_read` produces the bytes.
+A Role holds an argument-free read-only content Tool. A model reaches it from
+the Role's ordinary Tool card. An optional Resource declaration publishes the
+same ref to hosts at a URI. The tree never owns a second Resource node.
 
 ### 17.2 Disclosure
 
@@ -563,9 +564,9 @@ Role tree                        MCP
 ------------------------------   -------------------------------------
 Disclosure.skeleton             the tool `contexture_discover`
 Disclosure.open                 the tool `contexture_open`
-Resource.read                    the tool `contexture_read`
 Tool.invoke, read-only           the tool `contexture_invoke_read_only`
 Tool.invoke, writing             the tool `contexture_invoke`
+Resource publication             MCP's native resource primitive
 the skeleton                     server instructions
 ```
 
@@ -589,16 +590,16 @@ agent's position between steps is the ref it carries, not state the server keeps
 
 ```text
 0. The session opens.
-   - Five tools, and the role skeleton in the server's instructions.
+   - Four fixed tools, and a bounded breadth-first Role roster in instructions.
    - No procedure, no schema, no content.
 
 1. contexture_discover()
-   - Every role in the forest, one card each. The same roster, for a host that
-     truncated the instructions or a forest too large to fit them.
+   - The model-visible roots, one card each. Descendants arrive one level at a
+     time after a Role is opened.
 
 2. contexture_open("kubernetes-platform/incident-response")
-   - That role's instructions, and a card for each skill, tool and resource it
-     holds — tools with the schema needed to call them.
+   - That role's instructions, and a card for each child Role, Skill, and Tool
+     it holds — Tools with the schema needed to call them.
    - Sibling specialisms are not opened, and cost nothing.
 
 3. contexture_open(".../diagnose-crash-loop-backoff")
@@ -608,10 +609,10 @@ agent's position between steps is the ref it carries, not state the server keeps
    - Arguments are validated against the schema step 2 delivered.
    - The host decided whether to ask a human from the door's readOnlyHint.
 
-5. contexture_read("contexture://runbooks/crash-loop-backoff")
-   - `Resource.read` runs now, and only now. The card cost a line; the document
-     costs the document. The URI spelling is accepted because that is how the
-     procedure in step 3 names it.
+5. contexture_invoke_read_only(ref=".../crash_loop_runbook")
+   - The content Tool runs now, and only now. Its card cost a line; the document
+     costs the document. A host may independently read the same content at its
+     published Resource URI.
 
 6. The result returns to the agent runtime, which decides what to do next.
    That decision is out of scope here.

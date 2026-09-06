@@ -314,9 +314,9 @@ class ContextureServer:
             )
         if options is not None:
             return options
-        return ContextureOptions(
-            **({"transport": transport} if transport is not None else {})
-        )
+        if transport is None:
+            return ContextureOptions()
+        return ContextureOptions(transport=transport)
 
 
 __all__ = ["ContextureServer"]

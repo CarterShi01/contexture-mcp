@@ -18,8 +18,9 @@ from __future__ import annotations
 import asyncio
 import unittest
 
-from contexture import Principal, bound, current_principal
+from contexture import Principal, current_principal
 from contexture.core.errors import ModelValidationError
+from contexture.core.principal import bound
 from contexture.server.identity import Auth, principal_of
 
 

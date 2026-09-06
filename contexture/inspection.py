@@ -49,7 +49,7 @@ import asyncio
 import inspect
 import json
 from dataclasses import dataclass, field
-from typing import Iterable, Iterator, Sequence
+from typing import Any, Iterable, Iterator, Sequence, cast
 
 from .core.errors import ContextureError, NodeNotFoundError
 from .core.constants import (
@@ -238,10 +238,14 @@ def connect_step(tree: Disclosure, instructions: str) -> Step:
         ),
     ]
 
+    payload: JsonObject = {
+        "instructions": instructions,
+        "gateway": cast(Any, _gateway()),
+    }
     return Step(
         call=CONNECT,
         body=instructions,
-        payload={"instructions": instructions, "gateway": _gateway()},
+        payload=payload,
         checks=tuple(checks),
         aside=(
             f"the {len(GATEWAY)} gateway tool descriptions arrive "
@@ -389,7 +393,7 @@ def _is_content(node: object) -> bool:
     return (
         isinstance(node, Tool)
         and node.read_only
-        and not inspect.signature(node.invoke).parameters
+        and not inspect.signature(getattr(node, "invoke")).parameters
     )
 
 
@@ -398,7 +402,7 @@ def read_step(tree: Disclosure, ref: str) -> Step:
 
     try:
         tool = tree.tool(ref)
-        content = asyncio.run(tool.invoke())
+        content = asyncio.run(getattr(tool, "invoke")())
     except NodeNotFoundError as failure:
         return Step(
             call=INVOKE_READ_ONLY_TOOL,

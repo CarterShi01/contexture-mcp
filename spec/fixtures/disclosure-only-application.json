@@ -1,0 +1,31 @@
+{
+  "mode": "disclosure-only",
+  "application": {
+    "name": "architecture-view",
+    "roots": ["architecture"],
+    "prompt_roots": [],
+    "channels": null,
+    "resources": []
+  },
+  "roles": [
+    {
+      "ref": "architecture",
+      "name": "architecture",
+      "description": "Describe system ownership and dependencies.",
+      "instructions": "Navigate structural facts only.",
+      "tools": ["architecture/service"]
+    }
+  ],
+  "tools": [
+    {
+      "ref": "architecture/service",
+      "name": "service",
+      "description": "Describe one service as a structural node."
+    }
+  ],
+  "expected": {
+    "gateway": ["contexture_discover", "contexture_open"],
+    "tool_cards_have_input_schema": false,
+    "execution_available": false
+  }
+}

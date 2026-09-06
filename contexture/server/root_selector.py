@@ -193,11 +193,13 @@ class RootSelectionMiddleware:
         if method == "prompts/list" and hasattr(result, "prompts"):
             prompts = [
                 prompt
-                for prompt in result.prompts
-                if prompt.name == GOTO_PROMPT
+                for prompt in _item(result, "prompts")
+                if _item(prompt, "name") == GOTO_PROMPT
                 or (
-                    prompt.name in self.prompt_refs
-                    and selection.contains_ref(self.prompt_refs[prompt.name])
+                    _item(prompt, "name") in self.prompt_refs
+                    and selection.contains_ref(
+                        self.prompt_refs[_item(prompt, "name")]
+                    )
                 )
             ]
             return result.model_copy(update={"prompts": prompts, "cache_scope": "private"})
@@ -205,9 +207,11 @@ class RootSelectionMiddleware:
         if method == "resources/list" and hasattr(result, "resources"):
             resources = [
                 resource
-                for resource in result.resources
-                if str(resource.uri) in self.resource_refs
-                and selection.contains_ref(self.resource_refs[str(resource.uri)])
+                for resource in _item(result, "resources")
+                if str(_item(resource, "uri")) in self.resource_refs
+                and selection.contains_ref(
+                    self.resource_refs[str(_item(resource, "uri"))]
+                )
             ]
             return result.model_copy(
                 update={"resources": resources, "cache_scope": "private"}

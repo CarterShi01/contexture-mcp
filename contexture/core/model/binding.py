@@ -45,6 +45,7 @@ class Binding(Protocol):
     @property
     def schema(self) -> JsonObject:
         """The input schema an agent needs in order to call this tool."""
+        ...
 
     async def call(
         self,
@@ -56,6 +57,7 @@ class Binding(Protocol):
         `context` is whatever per-request handle the layer above needs threaded
         through; nothing in `core` ever looks inside it.
         """
+        ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,7 +85,8 @@ class PlainBinding:
         arguments: dict[str, Any] | None,
         context: Any = None,
     ) -> Any:
-        return await self.tool.invoke(**(arguments or {}))
+        invoke = getattr(self.tool, "invoke")
+        return await invoke(**(arguments or {}))
 
 
 __all__ = ["Binding", "PlainBinding"]

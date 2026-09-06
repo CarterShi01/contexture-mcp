@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import ClassVar, Iterator
+from typing import ClassVar, Iterable, Iterator
 
 from .node import ContextNode, View
 from ..errors import (

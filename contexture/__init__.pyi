@@ -4,28 +4,41 @@ Use this namespace for business declarations.  ``contexture.server`` is the
 advanced hosting namespace; ``contexture.core`` is implementation detail.
 """
 
-from .application import Contexture as Contexture, RootFactory as RootFactory
-from .core import (
-    Channels as Channels,
-    CompileLevel as CompileLevel,
-    ContextNode as ContextNode,
-    ContextureError as ContextureError,
-    ControllerManager as ControllerManager,
-    DeclarationError as DeclarationError,
-    DuplicateNameError as DuplicateNameError,
-    ModelValidationError as ModelValidationError,
-    NodeNotFoundError as NodeNotFoundError,
-    Principal as Principal,
-    Role as Role,
-    Skill as Skill,
-    Tool as Tool,
-    bound as bound,
-    current_graph as current_graph,
-    current_telemetry as current_telemetry,
-    current_principal as current_principal,
-)
-from .core.mcp_interface import Prompt as Prompt, Resource as Resource
+from .application import Contexture as Contexture
+from .core.errors import ContextureError as ContextureError
+from .core.errors import DeclarationError as DeclarationError
+from .core.errors import DuplicateNameError as DuplicateNameError
+from .core.errors import ModelValidationError as ModelValidationError
+from .core.errors import NodeNotFoundError as NodeNotFoundError
+from .core.mcp_interface import Prompt as Prompt
+from .core.mcp_interface import Resource as Resource
+from .core.model.channels import Channels as Channels
+from .core.model.graph_context import current_graph as current_graph
+from .core.model.role import Role as Role
+from .core.model.skill import Skill as Skill
+from .core.model.telemetry import current_telemetry as current_telemetry
+from .core.model.tool import Tool as Tool
+from .core.principal import Principal as Principal
+from .core.principal import current_principal as current_principal
 
 __version__: str
 
-__all__: list[str]
+__all__ = [
+    "Channels",
+    "Contexture",
+    "ContextureError",
+    "DeclarationError",
+    "DuplicateNameError",
+    "ModelValidationError",
+    "NodeNotFoundError",
+    "Principal",
+    "Prompt",
+    "Resource",
+    "Role",
+    "Skill",
+    "Tool",
+    "__version__",
+    "current_graph",
+    "current_principal",
+    "current_telemetry",
+]

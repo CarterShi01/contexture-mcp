@@ -52,24 +52,31 @@ class View(Protocol):
 
     def ref_of(self, node: ContextNode) -> str:
         """The address that opens `node`."""
+        ...
 
     def card_of(self, node: ContextNode) -> CompiledContext:
         """One routing card for a node this view already holds."""
+        ...
 
     def card_for(self, ref: str) -> CompiledContext:
         """One routing card for a node named by address rather than held."""
+        ...
 
     def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
         """One sibling set, grouped by kind."""
+        ...
 
     def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
         """Routing cards for a declared reference overlay."""
+        ...
 
     def execution_of(self, tool: ContextNode) -> CompiledContext:
         """The callable facet this view elects to disclose for a Tool."""
+        ...
 
     def schema_of(self, tool: ContextNode) -> JsonObject:
         """The input schema an agent needs in order to call `tool`."""
+        ...
 
 
 class CompiledGraph(Protocol):

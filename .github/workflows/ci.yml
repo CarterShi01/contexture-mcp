@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+        with:
+          version: "0.12.1"
+          enable-cache: true
+      - name: Run tests
+        run: uv run --python "${{ matrix.python-version }}" --extra dev pytest -q
+
+  quality:
+    name: Types, lint, and metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.14"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+        with:
+          version: "0.12.1"
+          enable-cache: true
+      - run: uv run --extra dev pyright
+      - run: uv run --extra dev ruff check contexture tests examples
+      - run: uv run --extra dev validate-pyproject pyproject.toml
+
+  distribution:
+    name: Build and consume distributions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.14"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+        with:
+          version: "0.12.1"
+          enable-cache: true
+      - name: Build wheel and source distribution
+        run: uv build
+      - name: Check package metadata and README rendering
+        run: uv run --extra dev twine check --strict dist/*
+      - name: Smoke-test both distribution formats
+        shell: bash
+        run: |
+          wheel=$(find "$GITHUB_WORKSPACE/dist" -name '*.whl' -print -quit)
+          sdist=$(find "$GITHUB_WORKSPACE/dist" -name '*.tar.gz' -print -quit)
+          uv run --isolated --no-project --with "$wheel" python -c "import contexture; print(contexture.__version__)"
+          uv run --isolated --no-project --with "$sdist" python -c "import contexture; print(contexture.__version__)"
+      - name: Type-check as an installed-wheel consumer
+        shell: bash
+        run: |
+          consumer_dir="$RUNNER_TEMP/contexture-wheel-consumer"
+          mkdir -p "$consumer_dir"
+          cp tests/typing/consumer.py "$consumer_dir/consumer.py"
+          wheel=$(find "$GITHUB_WORKSPACE/dist" -name '*.whl' -print -quit)
+          cd "$consumer_dir"
+          uv run --isolated --no-project --with "$wheel" --with pyright pyright consumer.py
+          uv run --isolated --no-project --with "$wheel" python consumer.py

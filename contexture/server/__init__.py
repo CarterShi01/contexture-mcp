@@ -35,6 +35,8 @@ the SDK — `messages` and `launch` — stay importable, and testable, without a
 wire in the room.
 """
 
+# pyright: reportUnsupportedDunderAll=false
+
 from __future__ import annotations
 
 import importlib
@@ -65,43 +67,12 @@ _EXPORTS = {
     "configure_logging": ".options",
     "Auth": ".identity",
     "TokenVerifier": ".identity",
-    "principal_of": ".identity",
     "FixedRootSelector": ".root_selector",
     "HeaderRootSelector": ".root_selector",
     "ROOTS_HEADER": ".root_selector",
     "RootCeiling": ".root_selector",
     "RootSelector": ".root_selector",
     "RootSelection": "..core.model.root_selection",
-    # The four entry points are the kernel's since ADR 014: their names sit on
-    # the shared ground, and their descriptions and behaviour in
-    # `core.model.system_api`. They are forwarded here because
-    # `contexture.server` is where a caller looks for what is on the wire — but
-    # they are defined there, and this is a pointer rather than a second copy.
-    "DISCOVER_TOOL": "..core.constants",
-    "GATEWAY": "..core.model.system_api",
-    "DISCLOSURE_GATEWAY": "..core.model.system_api",
-    "EXECUTION_GATEWAY": "..core.model.system_api",
-    "GATEWAY_TOOLS": "..core.model.system_api",
-    "SystemTool": "..core.model.system_api",
-    "DisclosureAPI": "..core.model.system_api",
-    "ExecutionAPI": "..core.model.system_api",
-    "SystemAPI": "..core.model.system_api",
-    "INVOKE_READ_ONLY_TOOL": "..core.constants",
-    "INVOKE_TOOL": "..core.constants",
-    "OPEN_TOOL": "..core.constants",
-    "PREAMBLE": ".messages",
-    "unresolved": "..core.model.system_api",
-    "TypeHintBinding": ".binding",
-    "Surface": ".surface",
-    "RuntimeSurface": ".surface",
-    "DisclosureSurface": ".surface",
-    # A server serves a compiled index, and the tool plane it is handed is
-    # fixed. Both are `core`, and both are forwarded here because building a
-    # server is where a caller reaches for them — the same way the four entry
-    # points are forwarded above.
-    "Index": "..core.model.index",
-    "TOOLS": "..core.mcp_interface",
-    "ToolPlane": "..core.mcp_interface",
     "Launch": ".launch",
     "claude_code_config": ".launch",
     "cli_commands": ".launch",

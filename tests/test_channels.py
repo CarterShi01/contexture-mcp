@@ -22,9 +22,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from contexture import ControllerManager
 from contexture import Channels
 from contexture.core.model.index import Index
+from contexture.core.model.manager import ControllerManager
 
 # The suite is discovered with the project root as its top level, so a test
 # module is imported under its bare name and a sibling fixture is not a

@@ -28,6 +28,8 @@ shared ground is not allowed to have — and would quietly load the forest for a
 project that only wanted to declare a Role.
 """
 
+# pyright: reportUnsupportedDunderAll=false
+
 from __future__ import annotations
 
 import importlib

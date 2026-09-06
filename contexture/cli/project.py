@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import importlib
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
@@ -51,16 +52,6 @@ def find_project(start: Path | None = None) -> Path | None:
 
 
 def _read_toml(path: Path) -> dict:
-    try:
-        import tomllib
-    except ModuleNotFoundError:  # Python 3.10
-        try:
-            import tomli as tomllib  # type: ignore[no-redef]
-        except ModuleNotFoundError:
-            raise UsageError(
-                "Reading pyproject.toml on Python 3.10 needs `tomli`. Install "
-                "it, or pass the root explicitly: contexture serve pkg.mod:Role"
-            ) from None
     with path.open("rb") as handle:
         return tomllib.load(handle)
 

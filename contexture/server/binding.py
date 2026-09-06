@@ -44,7 +44,7 @@ class TypeHintBinding:
 
     def __post_init__(self) -> None:
         self._derived = SDKTool.from_function(
-            self.tool.invoke,
+            getattr(self.tool, "invoke"),
             name=self.tool.name,
             description=self.tool.description,
         )

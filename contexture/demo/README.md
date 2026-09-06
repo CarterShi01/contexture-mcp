@@ -13,12 +13,12 @@ kubernetes-platform                              role   the coordinator
 │   ├── get_pod_status                           tool   read-only
 │   ├── get_pod_logs                             tool   read-only
 │   ├── get_pod_events                           tool   read-only
-│   └── crash-loop-runbook                       resource
+│   └── crash_loop_runbook                       tool   read-only; also a Resource URI
 └── deployment-ops                               role
     ├── roll-back-a-failed-release               skill  procedure, on request
     ├── get_rollout_status                       tool   read-only
     ├── roll_back_deployment                     tool   writes; needs approval
-    └── rollback-policy                          resource
+    └── rollback_policy                          tool   read-only; also a Resource URI
 ```
 
 Three roles rather than one, because one role is the shape at which a gateway
@@ -27,10 +27,10 @@ tree with one branch has nothing to not pay for.
 
 ## What a host actually sees
 
-Five tools, and no Kubernetes anywhere in them:
+Four tools, and no Kubernetes anywhere in them:
 
 ```text
-contexture_discover · contexture_open · contexture_read
+contexture_discover · contexture_open
 contexture_invoke_read_only · contexture_invoke
 ```
 
@@ -99,7 +99,7 @@ contexture_invoke_read_only(…/get_pod_logs)
                                     → ConfigurationError: DB_URL is missing
 contexture_invoke_read_only(…/get_pod_events)
                                     → container exited with code 1
-contexture_read(contexture://runbooks/crash-loop-backoff)
+contexture_invoke_read_only(…/crash_loop_runbook)
                                     → matches row 1 of the cause table
 ```
 
@@ -107,7 +107,7 @@ contexture_read(contexture://runbooks/crash-loop-backoff)
 with the **root roles alone** — here a single `kubernetes-platform` card — and
 the bootstrap roster in the server's instructions already names the branch, so
 the recorded run went straight to it. See
-[`docs/verification/hosts.md`](../../../../docs/verification/hosts.md).
+[`docs/verification/hosts.md`](../../docs/verification/hosts.md).
 
 Every step of that trace, and its cost, can be read without a host:
 

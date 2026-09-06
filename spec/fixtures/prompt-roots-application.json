@@ -1,0 +1,52 @@
+{
+  "application": {
+    "name": "prompt-root-example",
+    "roots": ["operations"],
+    "prompt_roots": ["commands"],
+    "prompts": ["restart-service"]
+  },
+  "roles": [
+    {
+      "ref": "operations",
+      "name": "operations",
+      "description": "Inspect services.",
+      "instructions": "Use read-only evidence.",
+      "tools": ["operations/status"]
+    },
+    {
+      "ref": "commands",
+      "name": "commands",
+      "description": "User-triggered service commands.",
+      "instructions": "Execute only the command selected by the user.",
+      "tools": ["commands/restart"]
+    }
+  ],
+  "tools": [
+    {
+      "ref": "operations/status",
+      "name": "status",
+      "description": "Return service status.",
+      "read_only": true,
+      "input": {"service": "string"}
+    },
+    {
+      "ref": "commands/restart",
+      "name": "restart",
+      "description": "Restart one service.",
+      "read_only": false,
+      "input": {"service": "string"}
+    }
+  ],
+  "prompts": [
+    {
+      "name": "restart-service",
+      "opens": "commands/restart",
+      "model_may_open": false
+    }
+  ],
+  "expected": {
+    "model_roots": ["operations"],
+    "prompt_reachable_roots": ["operations", "commands"],
+    "model_refusals": ["commands", "commands/restart"]
+  }
+}

@@ -430,7 +430,7 @@ class Index:
             ref, role = queue.pop(0)
             yield ref, role
             queue.extend(
-                (f"{ref}{SEPARATOR}{child.name}", child) for child in role.branches()
+                (f"{ref}{SEPARATOR}{child.name}", child) for child in role.children
             )
 
     def matching_refs(self, value: str, *, limit: int) -> tuple[tuple[str, ...], int]:

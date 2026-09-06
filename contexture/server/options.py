@@ -23,11 +23,14 @@ from __future__ import annotations
 import logging
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Literal, Mapping
+from typing import TYPE_CHECKING, Any, Literal, Mapping
 
 from mcp.server.transport_security import TransportSecuritySettings
 
 from ..core.errors import ContextureError
+
+if TYPE_CHECKING:
+    from .identity import Auth
 
 #: The transports this server offers. HTTP+SSE was the 2024-11-05 two-endpoint
 #: transport; it was replaced by Streamable HTTP and is deprecated in the

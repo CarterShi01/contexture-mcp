@@ -15,7 +15,6 @@ from __future__ import annotations
 import sys
 
 from contexture import (
-    ControllerManager,
     Principal,
     Prompt,
     Resource,
@@ -24,13 +23,14 @@ from contexture import (
     current_principal,
 )
 from contexture.core.model.index import Index
+from contexture.core.model.manager import ControllerManager
 from contexture.server import (
     Auth,
     ContextureOptions,
     ContextureServer,
     HeaderRootSelector,
-    TypeHintBinding,
 )
+from contexture.server.binding import TypeHintBinding
 
 #: Two callers who differ in exactly one scope, so a refusal can only be about
 #: that scope and never about which of them was authenticated.

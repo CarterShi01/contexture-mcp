@@ -1,7 +1,9 @@
 # spec
 
+[简体中文概览](README.zh-CN.md) · [Project README](../README.md)
+
 What every implementation of Contexture has to reproduce, stated as files
-rather than as prose.
+rather than Python implementation details.
 
 Prose is not enough to keep three implementations saying the same sentence to
 an agent: a port that quietly drops the recovery half of a failure message
@@ -39,9 +41,14 @@ Regenerate deliberately, and review the diff — these bytes are the contract:
 .venv/bin/python tests/golden.py --update
 ```
 
-`fixtures/reference-application.json` is the smallest language-neutral
-Application declaration. A port maps it to its own classes, structs, or schema
-objects, then checks the resulting behavior against the conformance rules and
-golden surface. The fixture deliberately describes tool inputs but not tool
-bodies: business execution is binding-specific; the public model and protocol
-behavior are not.
+`fixtures/reference-application.json` is the smallest language-neutral runtime
+declaration. The other fixtures pin Prompt-only roots, request-selected root
+views, disclosure-only compilation, and explicit REST publication. A port maps
+them to its own classes, structs, or schema objects, then checks behavior
+against the conformance rules and golden surface. Fixtures describe Tool inputs
+but not Tool bodies: business execution is binding-specific; the public model
+and protocol behavior are not.
+
+The Python package is currently the only shipped binding. TypeScript, Go, and
+PHP rows in `bindings.md` are compatibility guidance, not claims that those
+packages exist.

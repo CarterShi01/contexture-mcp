@@ -6,7 +6,7 @@ import inspect
 import json
 from contextlib import asynccontextmanager
 from dataclasses import asdict, dataclass, is_dataclass
-from typing import Any, AsyncIterator, Awaitable, Callable, Mapping, Sequence
+from typing import Any, AsyncIterator, Awaitable, Callable, Mapping, Sequence, cast
 from urllib.parse import parse_qs
 
 from ..core.errors import ModelValidationError, NodeNotFoundError, WrongDoorError
@@ -223,7 +223,11 @@ class _RequestError(Exception):
 
 
 def _route(entry: Route | type[Route]) -> Route:
-    value = entry() if isinstance(entry, type) and issubclass(entry, Route) else entry
+    value = (
+        cast(Callable[[], Route], entry)()
+        if isinstance(entry, type) and issubclass(entry, Route)
+        else entry
+    )
     if not isinstance(value, Route):
         raise TypeError(f"{entry!r} is not a Route")
     return value

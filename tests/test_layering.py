@@ -483,10 +483,8 @@ class PackagingBoundaryTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        try:
-            import tomllib
-        except ModuleNotFoundError:  # Python 3.10
-            import tomli as tomllib  # type: ignore[no-redef]
+        import tomllib
+
         with (SOURCE_ROOT / "pyproject.toml").open("rb") as handle:
             cls.pyproject = tomllib.load(handle)
         cls.backend = cls.pyproject["tool"]["uv"]["build-backend"]

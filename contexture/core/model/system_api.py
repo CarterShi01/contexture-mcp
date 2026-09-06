@@ -190,13 +190,15 @@ def unresolved(failure: NodeNotFoundError) -> str:
     if reason is LookupFailure.WRONG_KIND:
         # The kind that was actually found decides the recovery, so name the
         # one call that works rather than offering a menu of three.
-        recovery = {
-            "tool": (
-                f"Run it with {INVOKE_READ_ONLY_TOOL} or {INVOKE_TOOL}, "
-                "whichever its card says."
-            ),
-        }.get(failure.kind, f"Open it with {OPEN_TOOL}.")
-        return f"{ref} names a {failure.kind}, not a {failure.wanted}. {recovery}"
+        recovery = (
+            f"Run it with {INVOKE_READ_ONLY_TOOL} or {INVOKE_TOOL}, "
+            "whichever its card says."
+            if failure.kind == "tool"
+            else f"Open it with {OPEN_TOOL}."
+        )
+        found = failure.kind or "node"
+        wanted = failure.wanted or "requested kind"
+        return f"{ref} names a {found}, not a {wanted}. {recovery}"
 
     # Unreachable while `test_every_lookup_failure_has_a_rendering` passes; an
     # agent must never be handed a bare repr, so this stays as the floor.

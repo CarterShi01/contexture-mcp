@@ -20,7 +20,6 @@ from typing import AsyncIterator
 
 from contexture import (
     Channels,
-    ControllerManager,
     Prompt,
     Resource,
     Role,
@@ -28,11 +27,12 @@ from contexture import (
     Tool,
 )
 from contexture.core.model.index import Index
+from contexture.core.model.manager import ControllerManager
 from contexture.server import (
     ContextureOptions,
     ContextureServer,
-    TypeHintBinding,
 )
+from contexture.server.binding import TypeHintBinding
 
 
 @dataclass

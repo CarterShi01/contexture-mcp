@@ -15,6 +15,8 @@ axis, not this project's. See this package's README.
 putting it on a wire are two jobs, and only the second belongs to `server`.
 """
 
+from typing import Callable, cast
+
 from ..errors import DeclarationError
 from .prompt import Prompt
 from .resource import Resource
@@ -34,7 +36,8 @@ def published(entry: object) -> Prompt | Resource:
     if isinstance(entry, (Prompt, Resource)):
         return entry
     if isinstance(entry, type) and issubclass(entry, (Prompt, Resource)):
-        return entry()
+        factory = cast(Callable[[], Prompt | Resource], entry)
+        return factory()
     raise DeclarationError(
         f"{entry!r} is neither a Prompt nor a Resource. A published entry "
         "names a node the tree already holds; it is not a node itself."

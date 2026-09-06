@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {"method": "GET", "path": "/v1/status", "ref": "operations/status", "read_only": true},
+    {"method": "POST", "path": "/v1/restart", "ref": "operations/restart", "read_only": false}
+  ],
+  "rejected": [
+    {"method": "GET", "ref": "operations/restart", "reason": "writing-tool-on-read-method"},
+    {"method": "POST", "ref": "operations/status", "reason": "read-only-tool-on-write-method"},
+    {"method": "GET", "ref": "operations/unknown", "reason": "unknown-tool"}
+  ],
+  "arbitrary_ref_endpoint": false
+}

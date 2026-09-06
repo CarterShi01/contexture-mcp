@@ -22,12 +22,13 @@ nor `contexture.server`, nor the SDK, so a project that only models context
 pays for only that.
 """
 
-from .core.constants import PACKAGE_VERSION as __version__
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .application import Contexture as Contexture
+
 from .core import (
     Channels,
-    CompileLevel,
-    ContextNode,
-    ControllerManager,
     ContextureError,
     DeclarationError,
     DuplicateNameError,
@@ -37,11 +38,11 @@ from .core import (
     Role,
     Skill,
     Tool,
-    bound,
     current_graph,
-    current_telemetry,
     current_principal,
+    current_telemetry,
 )
+from .core.constants import PACKAGE_VERSION as __version__
 
 # The two planes a declaration writes on arrive through one import, because
 # which of them a thing belongs to is a modelling decision and not a question
@@ -57,7 +58,7 @@ from .core.mcp_interface import Prompt, Resource
 
 
 def __getattr__(name: str) -> object:
-    """Resolve the Application facade only when a project asks for it."""
+    """Resolve the application facade without pulling it into ``core`` imports."""
 
     if name != "Contexture":
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
@@ -68,10 +69,7 @@ def __getattr__(name: str) -> object:
 
 __all__ = [
     "Channels",
-    "CompileLevel",
     "Contexture",
-    "ContextNode",
-    "ControllerManager",
     "ContextureError",
     "DeclarationError",
     "DuplicateNameError",
@@ -84,8 +82,7 @@ __all__ = [
     "Skill",
     "Tool",
     "__version__",
-    "bound",
     "current_graph",
-    "current_telemetry",
     "current_principal",
+    "current_telemetry",
 ]

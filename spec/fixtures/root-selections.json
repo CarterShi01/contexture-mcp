@@ -1,0 +1,14 @@
+{
+  "registered_roots": ["team", "work", "account"],
+  "cases": [
+    {"input": null, "ceiling": null, "effective": ["team", "work", "account"]},
+    {"input": ["team", "work"], "ceiling": null, "effective": ["team", "work"]},
+    {"input": ["team", "team"], "ceiling": null, "effective": ["team"]},
+    {"input": ["team", "work"], "ceiling": ["team"], "effective": ["team"]},
+    {"input": [], "error": "empty-selection"},
+    {"input": ["team/member"], "error": "not-a-root"},
+    {"input": ["unknown"], "error": "unknown-root"}
+  ],
+  "containment_rule": "A selected root includes every containment descendant.",
+  "cross_root_uses_rule": "A uses target is visible only when its root is also selected."
+}

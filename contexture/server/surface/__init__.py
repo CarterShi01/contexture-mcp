@@ -29,7 +29,7 @@ protocol, so they live beside the code that speaks it.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any, Literal, Sequence
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
@@ -69,7 +69,7 @@ class translated:
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> bool:
+    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> Literal[False]:
         if exc is None or not isinstance(exc, ContextureError):
             return False
         raise ToolError(str(exc)) from exc
@@ -117,10 +117,6 @@ class Surface:
         answer, and the person who can fix it wrote the declaration.
         """
 
-        from .prompts import Prompts
-        from .resources import Resources
-        from .tools import Tools
-
         prompt_entries = tuple(_as(Prompt, entry) for entry in prompts)
         resource_entries = tuple(_as(Resource, entry) for entry in resources)
         for entry in (*prompt_entries, *resource_entries):
@@ -138,11 +134,7 @@ class Surface:
         # Constructed here, all three, before anything is installed: a door
         # checks its own declarations in its constructor, so a refusal leaves
         # nothing half-registered on an SDK server that does not yet exist.
-        doors = (
-            Tools(api.disclosure, api.execution),
-            Prompts(api.disclosure, prompt_entries),
-            Resources(tree, api.execution, resource_entries),
-        )
+        doors = _runtime_doors(api, tree, prompt_entries, resource_entries)
         return cls(
             tree=tree,
             api=api,
@@ -194,9 +186,6 @@ class DisclosureSurface:
         resources: Sequence[Any] = (),
         telemetry: Telemetry | None = None,
     ) -> "DisclosureSurface":
-        from .navigation import NavigationTools
-        from .prompts import Prompts
-
         if tree.index.is_bound:
             raise ModelValidationError(
                 "DisclosureSurface requires an independent unbound Index. "
@@ -220,7 +209,7 @@ class DisclosureSurface:
             reserved=reserved,
             telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
         )
-        doors = (NavigationTools(api), Prompts(api, prompt_entries))
+        doors = _disclosure_doors(api, prompt_entries)
         return cls(tree=tree, api=api, prompts=prompt_entries, _doors=doors)
 
     @property
@@ -230,6 +219,37 @@ class DisclosureSurface:
     def install(self, wire: MCPServer) -> None:
         for door in self._doors:
             door.install(wire)
+
+
+def _runtime_doors(
+    api: SystemAPI,
+    tree: Disclosure,
+    prompt_entries: tuple[Prompt, ...],
+    resource_entries: tuple[Resource, ...],
+) -> tuple[Any, ...]:
+    """Import protocol doors after this package's shared names exist."""
+
+    from .prompts import Prompts
+    from .resources import Resources
+    from .tools import Tools
+
+    return (
+        Tools(api.disclosure, api.execution),
+        Prompts(api.disclosure, prompt_entries),
+        Resources(tree, api.execution, resource_entries),
+    )
+
+
+def _disclosure_doors(
+    api: DisclosureAPI,
+    prompt_entries: tuple[Prompt, ...],
+) -> tuple[Any, ...]:
+    """Build the two non-executing protocol doors without an import cycle."""
+
+    from .navigation import NavigationTools
+    from .prompts import Prompts
+
+    return (NavigationTools(api), Prompts(api, prompt_entries))
 
 
 def _as(kind: type, entry: Any) -> Any:

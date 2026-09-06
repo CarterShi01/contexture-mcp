@@ -27,7 +27,9 @@ from contexture.core.mcp_interface.resource import Resource
 from contexture.core.model.disclosure import Disclosure
 from contexture.core.model.index import Index
 from contexture.core.model.manager import ControllerManager, register_root
-from contexture.server import ContextureServer, Surface, TypeHintBinding
+from contexture.server import ContextureServer
+from contexture.server.binding import TypeHintBinding
+from contexture.server.surface import Surface
 
 
 @dataclass(frozen=True, slots=True)

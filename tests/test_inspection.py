@@ -18,13 +18,14 @@ import json
 import unittest
 
 from contexture import inspection
+from contexture.core.constants import DISCOVER_TOOL, OPEN_TOOL
 from contexture.core.model.role import Role
 from contexture.core.model.skill import Skill
 from contexture.core.model.tool import Tool
 import sys
 from pathlib import Path
 
-from contexture.server import DISCOVER_TOOL, OPEN_TOOL, ContextureServer, instructions
+from contexture.server import ContextureServer, instructions
 
 # Discovery puts `tests/` on the path, but running one module by name does not.
 sys.path.insert(0, str(Path(__file__).resolve().parent))

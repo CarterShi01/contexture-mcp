@@ -10,11 +10,8 @@ from contexture.core.constants import DISCOVER_TOOL, OPEN_TOOL
 from contexture.core.errors import ModelValidationError
 from contexture.core.model.runtime import ApplicationRuntime
 from contexture.core.model.system_api import DisclosureAPI, ExecutionAPI
-from contexture.server import (
-    DisclosureSurface,
-    compile_application,
-    compile_disclosure_application,
-)
+from contexture.server import compile_application, compile_disclosure_application
+from contexture.server.surface import DisclosureSurface
 
 
 class RuntimeTool(Tool):

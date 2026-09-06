@@ -2,7 +2,7 @@
 name = "oc-goal"
 version = "0.1.0"
 description = "One-creator's Goal domain, served through Contexture."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = ["contexture-mcp", "pydantic>=2.0"]
 
 # This project is served, not distributed: no build system, never installed

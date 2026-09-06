@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from .node import ContextNode, View
 from ..types import CompiledContext
@@ -88,12 +88,19 @@ class Tool(ContextNode):
     #: the same literal a Go or TypeScript implementation would write.
     read_only: bool = False
 
-    async def invoke(self, **arguments: Any) -> Any:
-        """Execute the capability. Business subclasses state real parameters."""
+    # This is a signature hook, not an ordinary overridable method. Each
+    # business Tool deliberately supplies narrower typed parameters; the
+    # server binding turns that exact signature into JSON Schema. It is absent
+    # from the static base class so a checker does not apply normal Liskov
+    # override rules to intentionally different business call signatures.
+    if not TYPE_CHECKING:
 
-        raise NotImplementedError(
-            f"Tool {self.name!r} does not implement invoke()."
-        )
+        async def invoke(self, **arguments: Any) -> Any:
+            """Execute the capability. Business subclasses state real parameters."""
+
+            raise NotImplementedError(
+                f"Tool {self.name!r} does not implement invoke()."
+            )
 
     def parameters(self) -> tuple[str, ...]:
         """Return the parameter names `invoke` accepts, in declaration order.
@@ -106,7 +113,7 @@ class Tool(ContextNode):
         schema rejects.
         """
 
-        signature = inspect.signature(type(self).invoke)
+        signature = inspect.signature(getattr(type(self), "invoke"))
         return tuple(
             name
             for name, parameter in signature.parameters.items()

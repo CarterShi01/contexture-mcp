@@ -1,5 +1,7 @@
 # Contexture Handbook
 
+[简体中文](handbook.zh-CN.md) · [Project README](../README.md)
+
 This is the complete onboarding path for a Contexture application. Follow it
 in order the first time:
 
@@ -39,7 +41,7 @@ and invoked Tool; that Telemetry is runtime evidence, not Agent context.
 
 ## 2. Install and generate a project
 
-Prerequisites: Python 3.10+ and [uv](https://docs.astral.sh/uv/).
+Prerequisites: Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv tool install contexture-mcp
@@ -265,6 +267,11 @@ uv run contexture serve --transport streamable-http --port 8080
 For a public address, explicitly configure host/origin and authentication policy
 with `ContextureOptions`. Those are deployment choices, not Tool fields.
 
+For per-request root attenuation over HTTP, pass a `HeaderRootSelector` when
+building the server. The `Contexture-Roots` header can select only complete
+root trees, and an application-owned ceiling may narrow that selection from a
+verified `Principal`. It never grants permissions and cannot widen the ceiling.
+
 Write a custom `main()` only when embedding in an existing process, using an
 existing event loop, or selecting hosting options in code. It still consumes
 the same app:
@@ -281,6 +288,13 @@ def main() -> None:
 For an existing event loop, use `build_server(app)` and await the server's
 async start method. Ordinary applications should not hand-assemble
 `ControllerManager`, `Index`, or `ContextureServer`.
+
+If the same runtime also backs a human interface, use `RestSurface` with an
+explicit `Route` allowlist. GET and HEAD routes may point only at read-only
+Tools; writing methods may point only at writing Tools. For an independent
+architecture or operational view with no execution, compile a separate
+declaration with `compile_disclosure_application` rather than filtering the
+runtime Index.
 
 ## 12. Completion checklist
 

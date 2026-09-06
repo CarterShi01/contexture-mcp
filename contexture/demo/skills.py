@@ -24,8 +24,9 @@ Establish the cause from evidence, in this order.
    before forming a hypothesis.
 3. Call get_pod_events. Events tell you what the kubelet observed, including
    the exit code, which separates an application failure from a kill.
-4. Read contexture://runbooks/crash-loop-backoff and match the evidence you
-   collected against its table of causes.
+4. Call crash_loop_runbook and match the evidence you collected against its
+   table of causes. The same content is optionally published to hosts at
+   contexture://runbooks/crash-loop-backoff.
 
 Then report the root cause and the single smallest next action.
 
@@ -59,7 +60,8 @@ class RollBackAFailedRelease(Skill):
             instructions="""\
 A rollback destroys the evidence it was called for. Work in this order.
 
-1. Read contexture://runbooks/rollback-policy before doing anything else.
+1. Call rollback_policy before doing anything else. The same content is
+   optionally published to hosts at contexture://runbooks/rollback-policy.
 2. Call get_rollout_status. Compare the current and previous image: if they
    differ only in a tag, the cause may not be in the image at all.
 3. Establish the cause first, by opening the procedure listed under `uses` and

@@ -15,7 +15,7 @@ import os
 import sys
 import unittest
 
-from contexture.server import GATEWAY_TOOLS
+from contexture.core.model.system_api import GATEWAY_TOOLS
 from pathlib import Path
 
 try:

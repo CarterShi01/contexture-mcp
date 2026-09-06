@@ -18,27 +18,29 @@ import unittest
 
 from mcp.server.mcpserver.exceptions import ToolError
 
+from contexture.core.constants import (
+    DISCOVER_TOOL,
+    INVOKE_READ_ONLY_TOOL,
+    INVOKE_TOOL,
+    OPEN_TOOL,
+)
 from contexture.core.errors import ModelValidationError
 from contexture.core.mcp_interface import Prompt, Resource
+from contexture.core.model.disclosure import SEPARATOR, Disclosure
 from contexture.core.model.role import Role
 from contexture.core.model.skill import Skill
+from contexture.core.model.system_api import GATEWAY_TOOLS
 from contexture.core.model.tool import Tool
 from mcp.server.mcpserver import Context, MCPServer
 from contexture.server import instructions
 from contexture.server.binding import TypeHintBinding
-from contexture.core.model.disclosure import SEPARATOR, Disclosure
 from contexture.server import (
-    DISCOVER_TOOL,
     Launch,
-    GATEWAY_TOOLS,
-    INVOKE_READ_ONLY_TOOL,
-    INVOKE_TOOL,
-    OPEN_TOOL,
-    Surface,
     claude_code_config,
     cli_commands,
     codex_config,
 )
+from contexture.server.surface import Surface
 
 import sys
 from pathlib import Path
