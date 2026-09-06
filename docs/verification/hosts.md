@@ -1,19 +1,58 @@
 # Host verification
 
-> **All three records predate v0.4.0 and are kept as recorded, not updated.**
-> They show a surface of five gateway tools in which `contexture_read` returned
-> a document and a resource could be addressed by its own URI through that
-> gateway. Since ADR 009 the gateway is four tools, content is a read-only tool
-> that takes no arguments, and a URI is served on MCP's own resource primitive
-> instead. What these runs verify — that a model navigates a gateway rather
-> than giving up, one `open` per level, no assembled refs — is unaffected by
-> that change, which is why they are kept. A re-run against the four-tool
-> surface has not been recorded.
+# 0.12.0rc1 candidate — current four-tool gateway
 
-Three records, newest first. Each verified a different navigation model, and
-none is an update of the one below it: v0.0.4 had business tools on the wire,
-v0.2.0 put them behind a gateway whose `discover` returned the whole forest,
-and ADR 007 made that first call answer with the roots alone.
+Recorded 2026-09-06 against commit `16dacc9` on branch `release/0.12.0`.
+
+| Client | Version | Result |
+| --- | --- | --- |
+| Codex CLI | 0.153.4 | passed: eight MCP calls, zero errors |
+| Claude Code | 2.1.158 | blocked before inference: OAuth token revoked (401) |
+| Official Python MCP client | 2.1.1 | passed in the automated suite |
+
+The Codex run registered only this server, asked the model not to inspect the
+repository or use shell commands, and used the current Demo Skill instruction
+that calls the content Tool rather than the removed `contexture_read` gateway.
+
+```text
+1. contexture_discover
+2. contexture_open  kubernetes-platform
+3. contexture_open  kubernetes-platform/incident-response
+4. contexture_open  .../diagnose-crash-loop-backoff
+5. contexture_invoke_read_only  .../get_pod_status
+6. contexture_invoke_read_only  .../get_pod_logs
+7. contexture_invoke_read_only  .../get_pod_events
+8. contexture_invoke_read_only  .../crash_loop_runbook
+```
+
+The model followed all four procedure steps in order. It concluded that
+`DB_URL` is missing, cited `CrashLoopBackOff`, 14 restarts, `ready: false`, and
+exit code 1, distinguished that from an OOM/137 failure, and recommended adding
+the key to the projected ConfigMap or Secret before rolling out. It explicitly
+refused a blind Pod restart. The JSONL trace contains only MCP tool calls and
+agent messages; no shell or repository-read call occurred.
+
+The temporary Codex MCP registration was removed immediately after the run.
+Claude Code accepted the isolated MCP configuration but returned `401 OAuth
+access token has been revoked` before any model turn, at zero cost. That row
+must be repeated after the maintainer restores Claude authentication; it is not
+reported as a product failure or a pass.
+
+This run verifies current four-tool discovery, one-level Role navigation,
+Skill disclosure, schema-driven read-only invocation, and content-as-Tool. It
+does not provide model-level evidence for Prompt-only roots or request-selected
+HTTP roots; those remain covered by protocol integration tests and should be
+included in a future suitable Host scenario.
+
+---
+
+# Archived pre-v0.4 records
+
+The records below are preserved as historical evidence. They show a five-tool
+gateway in which `contexture_read` returned Resource content. Since ADR 009 the
+gateway has four tools, content is an argument-free read-only Tool, and a URI
+is served on MCP's native Resource primitive. Their payload shapes are not the
+current contract.
 
 ---
 

@@ -1,7 +1,7 @@
 # Verify with Claude Code
 
 ```bash
-uv sync
+uv sync --extra dev
 ```
 
 ## Register
@@ -29,7 +29,7 @@ Inside `claude`, `/mcp` shows the same.
 
 ## Drive it
 
-Restricting `--allowedTools` to the server's own tools is the point: it proves
+Restricting `--allowed-tools` to the server's own tools is the point: it proves
 the answer came over MCP and not from reading this repository.
 
 ```bash
@@ -37,23 +37,26 @@ claude -p "Use the contexture-demo MCP server to diagnose why pod \
 payments-api-7d9c in namespace prod keeps restarting. Start from Contexture's \
 disclosed role and skill context. Use MCP evidence instead of inspecting this \
 repository's source code. Explain the root cause and the next remediation step." \
-  --allowedTools \
+  --allowed-tools \
     "mcp__contexture-demo__contexture_discover" \
     "mcp__contexture-demo__contexture_open" \
-    "mcp__contexture-demo__contexture_read" \
-    "mcp__contexture-demo__contexture_invoke_read_only" \
-    "ReadMcpResource"
+    "mcp__contexture-demo__contexture_invoke_read_only"
 ```
 
 ## What counts as a pass
 
-- [ ] It names `kubernetes-incident-responder` and `diagnose-crash-loop-backoff`
-      — both reachable only through discovery.
-- [ ] It calls all three tools and reads the runbook.
+- [ ] It opens `kubernetes-platform`, then `incident-response`, then
+      `diagnose-crash-loop-backoff`, taking each ref from a disclosed card.
+- [ ] It calls status, logs, events, and the `crash_loop_runbook` Tool.
 - [ ] Root cause: `DB_URL` missing, container exits 1, not an OOM kill.
 - [ ] It refuses to recommend restarting first — a constraint that exists only
       inside the skill's instructions.
-- [ ] No `CLAUDE.md`, `SKILL.md`, or `.claude/skills/**` was involved.
+- [ ] No repository read, `CLAUDE.md`, `SKILL.md`, or `.claude/skills/**` was
+      involved.
+
+Record authentication failures separately from framework failures. The
+2026-09-06 candidate attempt was blocked before inference by a revoked OAuth
+token; it is not a failed navigation run.
 
 ## Clean up
 

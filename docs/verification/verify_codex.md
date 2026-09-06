@@ -4,7 +4,7 @@ The point of this file is that it differs from `verify_claude_code.md` only in
 the CLI syntax. Same server, same launch command, no Codex-specific artifacts.
 
 ```bash
-uv sync
+uv sync --extra dev
 codex mcp add contexture-demo -- uv run contexture demo
 codex mcp list          # expect: contexture-demo … enabled
 ```
@@ -14,10 +14,12 @@ Inside `codex`, `/mcp` shows the same.
 ## Drive it
 
 ```bash
-codex exec "Use the contexture-demo MCP server to diagnose why pod \
+codex exec --ephemeral -s read-only "Use only the contexture-demo MCP server \
+to diagnose why pod \
 payments-api-7d9c in namespace prod keeps restarting. Start from Contexture's \
-disclosed role and skill context. Use MCP evidence instead of inspecting this \
-repository's source code. Explain the root cause and the next remediation step."
+disclosed Role and Skill context. Do not inspect repository files or use shell \
+commands. Call the disclosed evidence tools and the crash_loop_runbook Tool. \
+Explain the root cause, cite the exit code, and give the smallest safe next action."
 ```
 
 ## What counts as a pass
@@ -25,12 +27,12 @@ repository's source code. Explain the root cause and the next remediation step."
 Identical to the Claude Code checklist, plus the thing this row exists to show:
 
 - [ ] The launch command is the same string used for Claude Code.
-- [ ] No `AGENTS.md` and no `~/.codex/config.toml` context entry was needed —
-      only the server registration.
+- [ ] The call trace contains only Contexture MCP calls and agent messages, not
+      shell or repository-read calls.
+- [ ] It follows status → logs → events → runbook and cites exit code 1.
 
-Codex reads the server's `instructions` field and asks that the first 512
-characters be self-contained. `tests/test_projection.py` asserts that limit, so
-a regression there fails before it reaches a host.
+The automated instruction-budget tests remain the source of truth for bootstrap
+length; this manual run verifies whether the current client actually navigates.
 
 ## Clean up
 
@@ -40,5 +42,6 @@ codex mcp remove contexture-demo
 
 ## Status
 
-Not yet completed on this machine — the account hit its usage limit during
-v0.0.4 verification. See `docs/verification/hosts.md`.
+Completed on 2026-09-06 with Codex CLI 0.153.4 against candidate commit
+`16dacc9`: eight MCP calls, zero errors, correct diagnosis. See
+`docs/verification/hosts.md`.
