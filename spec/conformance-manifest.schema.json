@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CarterShi01/contexture-mcp/blob/master/spec/conformance-manifest.schema.json",
+  "title": "Contexture language binding conformance manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "repository",
+    "revision",
+    "specificationVersion",
+    "status",
+    "implementedRules",
+    "rules",
+    "fixtures",
+    "golden"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "repository": { "type": "string", "format": "uri" },
+    "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "specificationVersion": { "const": "0.12" },
+    "status": { "enum": ["scaffold", "partial", "conformant"] },
+    "implementedRules": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1, "maximum": 16 },
+      "uniqueItems": true
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
+      "patternProperties": {
+        "^(?:[1-9]|1[0-6])$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "evidence"],
+          "properties": {
+            "status": { "enum": ["not-started", "in-progress", "implemented"] },
+            "evidence": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.json$" },
+      "uniqueItems": true
+    },
+    "golden": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.(?:json|txt)$" },
+      "uniqueItems": true
+    },
+    "notes": { "type": "string" }
+  }
+}

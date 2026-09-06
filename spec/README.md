@@ -54,3 +54,9 @@ The Python package is currently the only shipped binding. The
 [Go](https://github.com/CarterShi01/contexture-mcp-go) repositories are guarded
 scaffolds, not installable implementations. The PHP row in `bindings.md`
 remains compatibility guidance only.
+
+Cross-language implementation work starts at
+[`porting/TERRA_GOAL.md`](porting/TERRA_GOAL.md). The adjacent porting brief,
+conformance ledger, asset inventory, and manifest schema turn the 16 rules into
+reviewable tasks and deterministic metadata checks. They do not replace
+implementation-produced conformance tests.

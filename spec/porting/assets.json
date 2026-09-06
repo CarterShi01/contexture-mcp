@@ -1,0 +1,23 @@
+{
+  "specificationVersion": "0.12",
+  "revision": "e107a81a933c5eb5b4530e762311619be3a7a80f",
+  "fixtures": [
+    "disclosure-only-application.json",
+    "prompt-roots-application.json",
+    "reference-application.json",
+    "rest-routes.json",
+    "root-selections.json"
+  ],
+  "golden": [
+    "commands.json",
+    "completions.json",
+    "discover.json",
+    "instructions.txt",
+    "open.json",
+    "prompts.json",
+    "reads.json",
+    "refusals.json",
+    "resources.json",
+    "tools.json"
+  ]
+}

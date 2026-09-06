@@ -48,8 +48,9 @@ jobs:
           version: "0.12.1"
           enable-cache: true
       - run: uv run --extra dev pyright
-      - run: uv run --extra dev ruff check contexture tests
+      - run: uv run --extra dev ruff check contexture tests scripts
       - run: uv run --extra dev validate-pyproject pyproject.toml
+      - run: uv run python scripts/verify_porting_contract.py
 
   distribution:
     name: Build and consume distributions
