@@ -1,11 +1,18 @@
 # Contexture TypeScript and Go porting brief
 
-## Outcome
+## Status
+
+**Superseded for new implementation by
+[the full product parity plan](FULL_PRODUCT_PARITY_PLAN.md).** This document
+records the 0.12 kernel-port decisions that guided the initial prototypes. Its
+language-native mappings remain useful, but its narrower completion criterion
+does not authorize a full-product or release claim.
+
+## Historical outcome
 
 Port the language-neutral Contexture 0.12 contract, not the Python syntax. No
-normative behavior is inexpressible in TypeScript or Go. The work is still more
-than a line-by-line translation because reflection, task-local state, lifecycle,
-immutability, errors, and Host SDKs have language-native implementations.
+normative behavior is inexpressible in TypeScript or Go. This was intentionally
+only a kernel milestone, not a complete Python-product translation.
 
 The source of truth is, in descending order:
 

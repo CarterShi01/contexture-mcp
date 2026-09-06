@@ -1,4 +1,10 @@
-# Terra high goal: complete the Contexture 0.12 language ports
+# Historical Terra goal: Contexture 0.12 kernel ports
+
+> **Superseded for new work.** Follow
+> [FULL_PRODUCT_PARITY_PLAN.md](FULL_PRODUCT_PARITY_PLAN.md) for the approved
+> objective: complete TypeScript and Go products equivalent to Python, not only
+> the 0.12 kernel contract. This file is retained to explain the scope of the
+> existing prototype work.
 
 ## Operating objective
 

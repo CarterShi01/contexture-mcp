@@ -28,20 +28,24 @@ uv run --extra dev pyright
 uv run --extra dev ruff check contexture tests scripts
 uv run --extra dev validate-pyproject pyproject.toml
 uv run python scripts/verify_porting_contract.py
+uv run python scripts/product_manifest.py --check
 ```
 
 ## Porting work
 
-- Start with `spec/porting/TERRA_GOAL.md`, then use
-  `spec/porting/CONFORMANCE_MATRIX.md` as the task ledger.
+- Start with `spec/porting/FULL_PRODUCT_PARITY_PLAN.md`. It defines the
+  required full-product equivalence target, architecture, phases, and gates.
+  The older `TERRA_GOAL.md`, `PORTING_BRIEF.md`, and
+  `CONFORMANCE_MATRIX.md` record the narrower 0.12 kernel-prototype work;
+  use their language-native mappings and conformance evidence, but do not use
+  them as a completion criterion.
 - Keep changes reviewable: one kernel concept or one Host adapter per change.
   Do not mix public-API design, SDK integration, generated golden updates, and
   unrelated cleanup.
-- GPT-5.6 Terra high owns the continuous implementation goal. Decisions already
-  recorded in `spec/porting/PORTING_BRIEF.md` are approved defaults, including
-  schema, context, lifecycle, sequencing, and SDK boundaries; execute them
-  without pausing for another review. GPT-5.6 Luna is limited to mechanical
-  work with an existing test oracle.
+- GPT-5.6 Terra high owns bounded implementation slices from the product
+  manifest. GPT-5.6 Sol owns baseline changes, architecture, differential-test
+  design, and final acceptance. GPT-5.6 Luna is limited to mechanical work
+  with an existing test oracle.
 - Run the porting Goal without intermediate handoffs. Stage reports, green
   commits, local blockers, and test failures are not stopping conditions;
   diagnose, reduce or reorder the slice, and continue every independent task.
@@ -56,8 +60,9 @@ uv run python scripts/verify_porting_contract.py
 - A rule is implemented only when repository tests contain the evidence named
   in the porting ledger. Copied fixtures, copied golden bytes, or prose do not
   count as execution evidence.
-- TypeScript and Go are currently scaffolds implementing rule 1 only. Do not
-  mark another rule implemented until its focused tests and prerequisite rules
+- TypeScript and Go are incomplete kernel prototypes. Do not claim product
+  equivalence until the product manifest is fully verified. Do not mark a
+  conformance rule implemented until its focused tests and prerequisite rules
   pass.
 - Do not design a supposedly shared executable runner until the neutral fixture
   format specifies handler behavior and observations. Each binding must produce

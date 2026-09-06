@@ -1,4 +1,9 @@
-# Contexture 0.12 porting ledger
+# Historical Contexture 0.12 kernel conformance ledger
+
+> **Superseded as a completion ledger.** The 16 rules remain mandatory kernel
+> evidence, but they cover only a subset of full product parity. New work is
+> governed by [FULL_PRODUCT_PARITY_PLAN.md](FULL_PRODUCT_PARITY_PLAN.md) and
+> its required Python product manifest.
 
 Status at initialization: Python is the reference implementation. TypeScript
 and Go are guarded scaffolds and truthfully implement rule 1 only. `R#` refers

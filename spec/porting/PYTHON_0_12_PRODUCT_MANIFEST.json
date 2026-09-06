@@ -1,0 +1,4801 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "repository": "CarterShi01/contexture-mcp",
+    "revision": "3b274421360d5569a23922bfc72b71d5828cf995",
+    "package": "contexture-mcp",
+    "version": "0.12.0rc1"
+  },
+  "languages": [
+    "typescript",
+    "go"
+  ],
+  "sourceModules": [
+    {
+      "path": "contexture/__init__.py",
+      "kind": "source",
+      "sha256": "2a53a5598483823df8fed87e218d79ef400a080cb21440f6d0614ea0b8df8738",
+      "pythonImport": "contexture",
+      "publicSymbols": [
+        "Channels",
+        "Contexture",
+        "ContextureError",
+        "DeclarationError",
+        "DuplicateNameError",
+        "ModelValidationError",
+        "NodeNotFoundError",
+        "Principal",
+        "Prompt",
+        "Resource",
+        "Role",
+        "Skill",
+        "Tool",
+        "__version__",
+        "current_graph",
+        "current_principal",
+        "current_telemetry"
+      ],
+      "responsibility": "Public declaration-facing package facade.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "facade.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/application.py",
+      "kind": "source",
+      "sha256": "5b837dc140966fabef61a7e2ae521d09aed7b38987fff2ed437834155a52b9fc",
+      "pythonImport": "contexture.application",
+      "publicSymbols": [
+        "Contexture",
+        "RootFactory"
+      ],
+      "responsibility": "Lazy application declaration facade.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/application.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/application.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/__init__.py",
+      "kind": "source",
+      "sha256": "52e49c6d3d08a7d8d955099051cd14e050431ded9540a65595f8f6f725f1715e",
+      "pythonImport": "contexture.cli",
+      "publicSymbols": [
+        "CONFIG_TABLE",
+        "DEMO_APP",
+        "DEMO_PUBLISH",
+        "DEMO_TARGET",
+        "Names",
+        "ProjectConfig",
+        "TEMPLATES",
+        "UsageError",
+        "available_templates",
+        "build_parser",
+        "find_project",
+        "load_application",
+        "load_published",
+        "load_roots",
+        "main",
+        "new_project",
+        "render_file",
+        "resolve_target"
+      ],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/__main__.py",
+      "kind": "source",
+      "sha256": "5324775f30999b3a530e1f7c6c2ffbabd417bc5e7322b8b5453f5d5f5f2d2738",
+      "pythonImport": "contexture.cli.__main__",
+      "publicSymbols": [],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/main.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/main.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/main.py",
+      "kind": "source",
+      "sha256": "c17200e46a758040d47c3b2697173503936fc671dcc7244a33f91899a2f2265a",
+      "pythonImport": "contexture.cli.main",
+      "publicSymbols": [
+        "build_parser",
+        "main"
+      ],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/main.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/main.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/project.py",
+      "kind": "source",
+      "sha256": "f8ad9dc7867b1eda2eb6c4860742a33c083cd50e1a1c113340f0d890d3686fed",
+      "pythonImport": "contexture.cli.project",
+      "publicSymbols": [
+        "CONFIG_TABLE",
+        "DEMO_APP",
+        "DEMO_PUBLISH",
+        "DEMO_TARGET",
+        "ProjectConfig",
+        "Serving",
+        "find_project",
+        "load_application",
+        "load_channels",
+        "load_published",
+        "load_roots",
+        "resolve_target"
+      ],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/project.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/project.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/scaffold.py",
+      "kind": "source",
+      "sha256": "cde60f38e028e5ae8cd7b733bbc26ccae79d7b51a312cd4242c6382809c69ba5",
+      "pythonImport": "contexture.cli.scaffold",
+      "publicSymbols": [
+        "Names",
+        "TEMPLATES",
+        "available_templates",
+        "new_project",
+        "render_file"
+      ],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/scaffold.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/scaffold.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/usage.py",
+      "kind": "source",
+      "sha256": "17a54a578dc385544ee813cc69b1218bf74664fbcf6b8fb0a0dc82373cdbdb25",
+      "pythonImport": "contexture.cli.usage",
+      "publicSymbols": [
+        "UsageError"
+      ],
+      "responsibility": "Developer CLI, project loading, and scaffolding.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/usage.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/usage.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/__init__.py",
+      "kind": "source",
+      "sha256": "b9f586f0d545498650d74f08d61e9660128ad24b417079e601e41249e955a931",
+      "pythonImport": "contexture.core",
+      "publicSymbols": [],
+      "responsibility": "Shared Contexture core foundation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/doc.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/constants.py",
+      "kind": "source",
+      "sha256": "6daecc3deb1addb41e034b9b5a5540fcb44b2372b61c3e5e74e1a6e849876646",
+      "pythonImport": "contexture.core.constants",
+      "publicSymbols": [],
+      "responsibility": "Shared Contexture core foundation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/foundation/constants.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/foundation/constants.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/errors.py",
+      "kind": "source",
+      "sha256": "58bc5579663ec6289db7a72073df8cdb8b465681fffe427a038670585a0a3ea0",
+      "pythonImport": "contexture.core.errors",
+      "publicSymbols": [
+        "ContextureError",
+        "DeclarationError",
+        "DuplicateNameError",
+        "LookupFailure",
+        "ModelValidationError",
+        "NodeNotFoundError",
+        "WrongDoorError"
+      ],
+      "responsibility": "Shared Contexture core foundation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/foundation/errors.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/foundation/errors.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/mcp_interface/__init__.py",
+      "kind": "source",
+      "sha256": "e5e73d638325fb551b229e045ea7d1bcb5ebcfad13a65ac96f432ec14ce11f61",
+      "pythonImport": "contexture.core.mcp_interface",
+      "publicSymbols": [
+        "Prompt",
+        "Resource",
+        "TOOLS",
+        "ToolPlane",
+        "published"
+      ],
+      "responsibility": "SDK-free MCP primitive declaration surface.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/mcp-interface/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/mcpinterface/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/mcp_interface/prompt.py",
+      "kind": "source",
+      "sha256": "4e6ffb51f2dfbd6dd3096fecf79f0433fc11a4bd5aae9c3c2b2b7712ff7cceeb",
+      "pythonImport": "contexture.core.mcp_interface.prompt",
+      "publicSymbols": [
+        "Prompt"
+      ],
+      "responsibility": "SDK-free MCP primitive declaration surface.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/mcp-interface/prompt.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/mcpinterface/prompt.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/mcp_interface/resource.py",
+      "kind": "source",
+      "sha256": "22eb1bace400cd7ef1a76462144a380cf036023a31ef36912f46e4ccfc733905",
+      "pythonImport": "contexture.core.mcp_interface.resource",
+      "publicSymbols": [
+        "Resource"
+      ],
+      "responsibility": "SDK-free MCP primitive declaration surface.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/mcp-interface/resource.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/mcpinterface/resource.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/mcp_interface/tool.py",
+      "kind": "source",
+      "sha256": "71f3b6a6c659028eb381ed8c19f3fd80c44b91ef467ade487736cfea5480e07a",
+      "pythonImport": "contexture.core.mcp_interface.tool",
+      "publicSymbols": [
+        "DISCOVER_TOOL",
+        "INVOKE_READ_ONLY_TOOL",
+        "INVOKE_TOOL",
+        "OPEN_TOOL",
+        "TOOLS",
+        "ToolPlane"
+      ],
+      "responsibility": "SDK-free MCP primitive declaration surface.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/mcp-interface/tool.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/mcpinterface/tool.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/__init__.py",
+      "kind": "source",
+      "sha256": "526cb3de562279a73726108bcd97b79c4a4434826c61d7d0275895da43c4a1f1",
+      "pythonImport": "contexture.core.model",
+      "publicSymbols": [
+        "Channels",
+        "CompileLevel",
+        "CompiledGraph",
+        "ContextNode",
+        "ControllerManager",
+        "InMemoryTelemetry",
+        "NodeUsage",
+        "Role",
+        "RootSelection",
+        "Skill",
+        "Telemetry",
+        "Tool",
+        "View",
+        "current_graph",
+        "current_telemetry",
+        "register_root"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/doc.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/doc.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/binding.py",
+      "kind": "source",
+      "sha256": "fb6cac4fa86634b5d182009fce7f65959495a9db154154e6b0d0bac3da24ce9d",
+      "pythonImport": "contexture.core.model.binding",
+      "publicSymbols": [
+        "Binding",
+        "PlainBinding"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/binding.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/binding.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/channels.py",
+      "kind": "source",
+      "sha256": "5d9939ac79c4af2da383800caf5f214c48a4d5a2d876e1dfd0263403d18fba14",
+      "pythonImport": "contexture.core.model.channels",
+      "publicSymbols": [
+        "Channels",
+        "provisioned"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/channels.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/channels.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/disclosure.py",
+      "kind": "source",
+      "sha256": "8cbe6c5fa0aee815ca9a2fde66b6296efa74492e5a98550fd02850d07c8bc653",
+      "pythonImport": "contexture.core.model.disclosure",
+      "publicSymbols": [
+        "Disclosure",
+        "RootSelection",
+        "SEPARATOR",
+        "register_root"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/disclosure.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/disclosure.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/disclosure_api.py",
+      "kind": "source",
+      "sha256": "1edc1c52c6b917c9eefdd0640f6d276f6b5579d6ab901af13ec73a5b30d422bb",
+      "pythonImport": "contexture.core.model.disclosure_api",
+      "publicSymbols": [
+        "DISCLOSURE_GATEWAY",
+        "DisclosureAPI"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/system-api.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/system_api.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/execution_api.py",
+      "kind": "source",
+      "sha256": "8d3076975efae489c2121eb2e02d57fe6eca6e95347c207f1ec1c11d6ab85a33",
+      "pythonImport": "contexture.core.model.execution_api",
+      "publicSymbols": [
+        "EXECUTION_GATEWAY",
+        "ExecutionAPI"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/system-api.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/system_api.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/graph_context.py",
+      "kind": "source",
+      "sha256": "afc7f5e868941214d62536033b2b54c009c2289456ef1674dbc5db0960b3299c",
+      "pythonImport": "contexture.core.model.graph_context",
+      "publicSymbols": [
+        "bound_graph",
+        "current_graph"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/runtime.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/runtime.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/index.py",
+      "kind": "source",
+      "sha256": "bb30bf8f1a2582ce2c26e2dfdc997dada7df2f0cbf1d3e6adb5b53db261ab1b9",
+      "pythonImport": "contexture.core.model.index",
+      "publicSymbols": [
+        "Index"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/manager.py",
+      "kind": "source",
+      "sha256": "7ececd39c1f13afc1a39658c918c0005b10b440fff7988c1b7bbd18be9cc2ba6",
+      "pythonImport": "contexture.core.model.manager",
+      "publicSymbols": [
+        "ControllerManager",
+        "register_root"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/manager.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/manager.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/node.py",
+      "kind": "source",
+      "sha256": "0e8f10d9a958de6260819e43f8fc3eaa6b1dab522faa86ed20cde6612f5099b8",
+      "pythonImport": "contexture.core.model.node",
+      "publicSymbols": [
+        "CompileLevel",
+        "ContextNode",
+        "View",
+        "group_cards"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/node.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/node.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/role.py",
+      "kind": "source",
+      "sha256": "5269b18ba1a77aaff219f860005ac020befba461d10f4da2b2be270a26b09398",
+      "pythonImport": "contexture.core.model.role",
+      "publicSymbols": [
+        "Role"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/role.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/role.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/root_selection.py",
+      "kind": "source",
+      "sha256": "086bbc5e6d207597fe2b910c4532e8be96b63da8e982a7f96a8a49a5810eb710",
+      "pythonImport": "contexture.core.model.root_selection",
+      "publicSymbols": [
+        "RootOutsideSelectionError",
+        "RootSelection",
+        "RootSelectionError",
+        "SelectedGraph",
+        "bound_root_selection",
+        "current_root_selection"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/root-selection.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/root_selection.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/runtime.py",
+      "kind": "source",
+      "sha256": "8a84070fab6d36e523e58af0308bd9d313cec41eb5cb8739b008f3914b710571",
+      "pythonImport": "contexture.core.model.runtime",
+      "publicSymbols": [
+        "ApplicationRuntime"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/runtime.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/runtime.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/skill.py",
+      "kind": "source",
+      "sha256": "fc8ea5d327e4dbc53691f41be9075bf29b2b6c86a923b73e027aacb51e447eb0",
+      "pythonImport": "contexture.core.model.skill",
+      "publicSymbols": [
+        "Skill"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/skill.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/skill.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/system_api.py",
+      "kind": "source",
+      "sha256": "8e55daa94db58b932e7bd248a9e156da2265db0ce3e1f0ec025c9af4ade56558",
+      "pythonImport": "contexture.core.model.system_api",
+      "publicSymbols": [
+        "DISCLOSURE_GATEWAY",
+        "DisclosureAPI",
+        "EXECUTION_GATEWAY",
+        "ExecutionAPI",
+        "GATEWAY",
+        "GATEWAY_TOOLS",
+        "Refused",
+        "SystemAPI",
+        "SystemTool",
+        "taken_by_a_person",
+        "unresolved",
+        "wrong_door"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/system_api.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/system_api.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/telemetry.py",
+      "kind": "source",
+      "sha256": "0f2046daf7b3d77608618141a85b92886333a0842a7f009a5ae6a6f94914ad98",
+      "pythonImport": "contexture.core.model.telemetry",
+      "publicSymbols": [
+        "InMemoryTelemetry",
+        "NodeUsage",
+        "Telemetry",
+        "bound_telemetry",
+        "current_telemetry",
+        "report"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/telemetry.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/telemetry.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/model/tool.py",
+      "kind": "source",
+      "sha256": "1108151cfdf902a04be134fc637623eeac3b348845c8ac994f8f363e41fac2ae",
+      "pythonImport": "contexture.core.model.tool",
+      "publicSymbols": [
+        "Tool"
+      ],
+      "responsibility": "Contexture kernel object model and runtime behaviour.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/model/tool.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/model/tool.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/principal.py",
+      "kind": "source",
+      "sha256": "20376366b0e26f2aca8875d52faaede1c6acb93cc248e5d020786bea91589604",
+      "pythonImport": "contexture.core.principal",
+      "publicSymbols": [
+        "Principal",
+        "bound",
+        "current_principal"
+      ],
+      "responsibility": "Shared Contexture core foundation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/foundation/principal.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/foundation/principal.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/core/types.py",
+      "kind": "source",
+      "sha256": "5a6837e0e29d3c20e641720df3645880e5c3bd0a58a0e7655ae0897a7dc725d5",
+      "pythonImport": "contexture.core.types",
+      "publicSymbols": [],
+      "responsibility": "Shared Contexture core foundation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/core/foundation/types.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "core/foundation/types.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/__init__.py",
+      "kind": "source",
+      "sha256": "3af023fc4d993b33ef315534394382f4271769e247bf9e79a4442b5f806dbbde",
+      "pythonImport": "contexture.demo",
+      "publicSymbols": [
+        "DeploymentOps",
+        "IncidentResponse",
+        "KubernetesPlatform"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/documents.py",
+      "kind": "source",
+      "sha256": "925f2cd6bd851c47299384e6e4a966bc4f4f2849b569eeae67113ce1c147d6a5",
+      "pythonImport": "contexture.demo.documents",
+      "publicSymbols": [
+        "CrashLoopRunbook",
+        "RollbackPolicy"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/documents.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/documents.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/fixtures.py",
+      "kind": "source",
+      "sha256": "a7e35e9b92827a42b12291c739d8ce4e8ed0f2f532bee566c55841f35ab83bc6",
+      "pythonImport": "contexture.demo.fixtures",
+      "publicSymbols": [],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/fixtures.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/fixtures.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/role.py",
+      "kind": "source",
+      "sha256": "c428ab25cd92a75eac3806c717b4187cff920621851d4b052ad0d43bac1d8dcc",
+      "pythonImport": "contexture.demo.role",
+      "publicSymbols": [
+        "DeploymentOps",
+        "IncidentResponse",
+        "KubernetesPlatform"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/role.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/role.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/server.py",
+      "kind": "source",
+      "sha256": "65a54732c6885c9f2f1ddd2803d7ebcba826014da430056dd6bd71f6eb97efba",
+      "pythonImport": "contexture.demo.server",
+      "publicSymbols": [
+        "CrashLoopRunbookDocument",
+        "RollBackARelease",
+        "RollbackPolicyDocument",
+        "build",
+        "main"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/server.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/server.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/skills.py",
+      "kind": "source",
+      "sha256": "204c744ff04836abfbeab3765903995ffb11481c704e8ea8f2adcf2af1ea27bd",
+      "pythonImport": "contexture.demo.skills",
+      "publicSymbols": [
+        "DIAGNOSIS",
+        "DiagnoseCrashLoopBackOff",
+        "RollBackAFailedRelease"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/skills.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/skills.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/demo/tools.py",
+      "kind": "source",
+      "sha256": "a7b35d1c560562ebd73a52468d0aaa1dcd47c2e3cf18717c20ac39947e62a7d3",
+      "pythonImport": "contexture.demo.tools",
+      "publicSymbols": [
+        "GetPodEvents",
+        "GetPodLogs",
+        "GetPodStatus",
+        "GetRolloutStatus",
+        "PodEvent",
+        "PodStatus",
+        "RollBackDeployment",
+        "RolloutStatus"
+      ],
+      "responsibility": "Maintained reference application.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/demo/tools.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "demo/tools.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/inspection.py",
+      "kind": "source",
+      "sha256": "d050745013b1765598acdce2062766dd291e39fda575e957d752d9d5286ca74a",
+      "pythonImport": "contexture.inspection",
+      "publicSymbols": [
+        "CONNECT",
+        "Check",
+        "Cost",
+        "Step",
+        "Trace",
+        "as_json",
+        "connect_step",
+        "discover_step",
+        "every_ref",
+        "open_step",
+        "read_step",
+        "render",
+        "trace"
+      ],
+      "responsibility": "Transport-free disclosure inspection API.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/inspection.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "inspection/inspection.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/__init__.py",
+      "kind": "source",
+      "sha256": "99d92952d09fe06a0754f7e30ea132e6eb27d7ab339f10254f7af6722815cc13",
+      "pythonImport": "contexture.server",
+      "publicSymbols": [],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/application.py",
+      "kind": "source",
+      "sha256": "7ce2e09fdacd9658258c746f7a78a8b91446fb025268ffe8ec6350fcc3ab88b2",
+      "pythonImport": "contexture.server.application",
+      "publicSymbols": [
+        "CompiledApplication",
+        "CompiledDisclosureApplication",
+        "build_server",
+        "compile_application",
+        "compile_disclosure_application",
+        "compile_disclosure_parts",
+        "compile_parts",
+        "serve"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/application.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/application.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/binding.py",
+      "kind": "source",
+      "sha256": "634fed9dc5eaa069df98c07dc5da46dddb5824fbed66b407f64dc95b69c54cb0",
+      "pythonImport": "contexture.server.binding",
+      "publicSymbols": [
+        "TypeHintBinding"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/binding.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/binding.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/identity.py",
+      "kind": "source",
+      "sha256": "d2eb2df31794b0e1c0e97d9bb51d80a596b1c7e39b1db6781fee6c569070b523",
+      "pythonImport": "contexture.server.identity",
+      "publicSymbols": [
+        "Auth",
+        "TokenVerifier",
+        "principal_of"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/identity.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/identity.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/instructions.py",
+      "kind": "source",
+      "sha256": "509b1a534f9cb2831b3b25c2f7b693e9a4bac24f65006085f37b368cb9b9d706",
+      "pythonImport": "contexture.server.instructions",
+      "publicSymbols": [
+        "INSTRUCTIONS_LIMIT",
+        "ROSTER_BUDGET",
+        "SELF_CONTAINED_PREFIX",
+        "build",
+        "neutral"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/instructions.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/instructions.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/launch.py",
+      "kind": "source",
+      "sha256": "98cdf1613abdf7bde40f4a9ecb75c2a442debe179b3dec915d8d9e0d3ee2535f",
+      "pythonImport": "contexture.server.launch",
+      "publicSymbols": [
+        "Launch",
+        "claude_code_config",
+        "cli_commands",
+        "codex_config",
+        "cursor_config"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/launch.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/launch.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/messages.py",
+      "kind": "source",
+      "sha256": "ea1cc44ce2020d1ab3fbffea06eaa2a5fb9f938a722abc49ab4569b32a73cafb",
+      "pythonImport": "contexture.server.messages",
+      "publicSymbols": [
+        "COMMAND_CLOSING",
+        "COMMAND_PREAMBLE",
+        "COMPLETION_LIMIT",
+        "GOTO_ARGUMENT",
+        "GOTO_ARGUMENT_DESCRIPTION",
+        "GOTO_DESCRIPTION",
+        "GOTO_PROMPT",
+        "PREAMBLE",
+        "REF_RULE",
+        "SIGNPOST_PREAMBLE",
+        "command_description",
+        "signpost",
+        "truncated_completion"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/messages.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/messages.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/options.py",
+      "kind": "source",
+      "sha256": "476e223c091f5e3f04802bfd5aef98dcbec6bd99d36c77a8ca5bba7a757829f3",
+      "pythonImport": "contexture.server.options",
+      "publicSymbols": [
+        "ContextureOptions",
+        "DEFAULT_HOST",
+        "DEFAULT_PATH",
+        "DEFAULT_PORT",
+        "LOOPBACK",
+        "ServeError",
+        "Transport",
+        "configure_logging"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/options.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/options.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/root_selector.py",
+      "kind": "source",
+      "sha256": "5ecfe2dfd8ab151e0df595472389e00e8f1461c249445cfad9f4f12b19dce3eb",
+      "pythonImport": "contexture.server.root_selector",
+      "publicSymbols": [
+        "FixedRootSelector",
+        "HeaderRootSelector",
+        "ROOTS_HEADER",
+        "RootCeiling",
+        "RootSelectionMiddleware",
+        "RootSelector"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/root_selector.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/root_selector.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/server.py",
+      "kind": "source",
+      "sha256": "a11db9cf215e2b9054bb5c6ce8d210c0e651dfe5659f51eace51e98fe309fa7b",
+      "pythonImport": "contexture.server.server",
+      "publicSymbols": [
+        "ContextureServer"
+      ],
+      "responsibility": "MCP server compilation, identity, launch, and transport integration.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/server.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/server.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/surface/__init__.py",
+      "kind": "source",
+      "sha256": "8e443b42984ff4bf2066c3c22fb1f2e497c44275ffb8f5ad2c47597590f9cfea",
+      "pythonImport": "contexture.server.surface",
+      "publicSymbols": [
+        "DisclosureSurface",
+        "RuntimeSurface",
+        "Surface",
+        "published_name",
+        "translated"
+      ],
+      "responsibility": "MCP server surface implementation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/surface/surface.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/surface/surface.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/surface/navigation.py",
+      "kind": "source",
+      "sha256": "3c4fabc0f7105a52920a4660bd3db69f96c3bc8805510a1bec5110767318e818",
+      "pythonImport": "contexture.server.surface.navigation",
+      "publicSymbols": [
+        "NavigationTools"
+      ],
+      "responsibility": "MCP server surface implementation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/surface/navigation.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/surface/navigation.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/surface/prompts.py",
+      "kind": "source",
+      "sha256": "0b0d71712357d2063d1dd4d3968bfb4ac7de33db43b0afdac0748c89adbc928a",
+      "pythonImport": "contexture.server.surface.prompts",
+      "publicSymbols": [
+        "Prompts",
+        "open_by_name"
+      ],
+      "responsibility": "MCP server surface implementation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/surface/prompts.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/surface/prompts.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/surface/resources.py",
+      "kind": "source",
+      "sha256": "6e2593257e0428df90a72209290446e0a042bdb8a9dedc550e93642ab0d7485a",
+      "pythonImport": "contexture.server.surface.resources",
+      "publicSymbols": [
+        "Resources"
+      ],
+      "responsibility": "MCP server surface implementation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/surface/resources.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/surface/resources.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/server/surface/tools.py",
+      "kind": "source",
+      "sha256": "89671fed683d7e2bc7cac2a4f5fbe6a37a303c4059ed5fdb37d5cc976eb0a1b8",
+      "pythonImport": "contexture.server.surface.tools",
+      "publicSymbols": [
+        "Tools"
+      ],
+      "responsibility": "MCP server surface implementation.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/server/surface/tools.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server/surface/tools.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/web/__init__.py",
+      "kind": "source",
+      "sha256": "5112a51c5a9c0f9072859819d72e9b314a63828d68c2427e79b8891b101ecc91",
+      "pythonImport": "contexture.web",
+      "publicSymbols": [
+        "Authenticator",
+        "RestSurface",
+        "Route",
+        "WebRequest"
+      ],
+      "responsibility": "Explicit REST/ASGI adapter.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/web/index.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "web/index.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/web/route.py",
+      "kind": "source",
+      "sha256": "6eeeaa7164469ac531bbf357439339ce194c14ba2892c4f9ed080146a57560d4",
+      "pythonImport": "contexture.web.route",
+      "publicSymbols": [
+        "Route"
+      ],
+      "responsibility": "Explicit REST/ASGI adapter.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/web/route.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "web/route.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/web/surface.py",
+      "kind": "source",
+      "sha256": "1654bdd33bd5e639d581c7d18bd99389753b76a676c94f274f5e248d4c2236ad",
+      "pythonImport": "contexture.web.surface",
+      "publicSymbols": [
+        "Authenticator",
+        "RestSurface",
+        "WebRequest"
+      ],
+      "responsibility": "Explicit REST/ASGI adapter.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/web/surface.ts"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "web/surface.go"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    }
+  ],
+  "testModules": [
+    {
+      "path": "tests/__init__.py",
+      "kind": "test",
+      "sha256": "10e36518deee6688b8a0a38de2118d9a60b059260f0723c2ca0ef059a8d5e6e4",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/support/__init__.ts"
+          ],
+          "tests": [
+            "test/support/__init__.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/testsupport/__init__.go"
+          ],
+          "tests": [
+            "internal/testsupport/__init__.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/channels_fixture.py",
+      "kind": "test",
+      "sha256": "862fa7254390790235dde2c9dd9fb7fc14d809e0b514fb2592ea4821fb0d9684",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Shared test fixture support.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/support/channels_fixture.ts"
+          ],
+          "tests": [
+            "test/support/channels_fixture.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/testsupport/channels_fixture.go"
+          ],
+          "tests": [
+            "internal/testsupport/channels_fixture.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/golden.py",
+      "kind": "test",
+      "sha256": "d499ebea8dfcca99d05921d5c3b368892768fc8173b2936286ee3ab8f4cef19c",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Shared test fixture support.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/support/golden.ts"
+          ],
+          "tests": [
+            "test/support/golden.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/testsupport/golden.go"
+          ],
+          "tests": [
+            "internal/testsupport/golden.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/http_fixture.py",
+      "kind": "test",
+      "sha256": "c4aa97dd335a4fff4f93b4800d001d7ab17cf8f3374d5c9e79f982f9cad9f04a",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Shared test fixture support.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/support/http_fixture.ts"
+          ],
+          "tests": [
+            "test/support/http_fixture.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/testsupport/http_fixture.go"
+          ],
+          "tests": [
+            "internal/testsupport/http_fixture.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/serving.py",
+      "kind": "test",
+      "sha256": "aff6bf63bce00b7477fc8361b4c627efa46e981d0f41c3e47b3778ccd6cb8d70",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Shared test fixture support.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/support/serving.ts"
+          ],
+          "tests": [
+            "test/support/serving.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/testsupport/serving.go"
+          ],
+          "tests": [
+            "internal/testsupport/serving.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_application.py",
+      "kind": "test",
+      "sha256": "849e3bc34a25f8ab4d8996e37d8422db66db127f005bacc0adc48246dd8b8046",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/application.test.ts"
+          ],
+          "tests": [
+            "test/application.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "application_test.go"
+          ],
+          "tests": [
+            "application_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "kind": "test",
+      "sha256": "6dc9a9944e7a08afc02f7a5b82c7bd603727b218bebd99b7059ac1618085b884",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/capabilities.test.ts"
+          ],
+          "tests": [
+            "test/capabilities.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "capabilities_test.go"
+          ],
+          "tests": [
+            "capabilities_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_channels.py",
+      "kind": "test",
+      "sha256": "3b33b035069495924d370df123537d8f6807d52450027d3fd3eaa617195e1317",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/channels.test.ts"
+          ],
+          "tests": [
+            "test/channels.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "channels_test.go"
+          ],
+          "tests": [
+            "channels_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_disclosure.py",
+      "kind": "test",
+      "sha256": "b89b8219567da507663c8198d8a88ac2090fb610b819ca0fc0dc433ab3b0f219",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/disclosure.test.ts"
+          ],
+          "tests": [
+            "test/disclosure.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "disclosure_test.go"
+          ],
+          "tests": [
+            "disclosure_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_disclosure_application.py",
+      "kind": "test",
+      "sha256": "377387478d8a2a8e8bbaad063e50965a5e4438b102313eca6c4cf079985b7a92",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/disclosure_application.test.ts"
+          ],
+          "tests": [
+            "test/disclosure_application.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "disclosure_application_test.go"
+          ],
+          "tests": [
+            "disclosure_application_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_golden.py",
+      "kind": "test",
+      "sha256": "1e5607335dd6c751e801b4954456c7ee6d3c9345793f7e189cb2f9ab4558ce1f",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/golden.test.ts"
+          ],
+          "tests": [
+            "test/golden.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "golden_test.go"
+          ],
+          "tests": [
+            "golden_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_http_server.py",
+      "kind": "test",
+      "sha256": "701a3562aefbb27e07a72bd9eb7d1d8212bf36ac73fb652e14dc2aa4b4059cd4",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/http_server.test.ts"
+          ],
+          "tests": [
+            "test/http_server.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "http_server_test.go"
+          ],
+          "tests": [
+            "http_server_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_identity.py",
+      "kind": "test",
+      "sha256": "c152d9e2f0cc4bcc6455bb3688d53b8edfa29b3adccc3a51bc2288fea31107f6",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/identity.test.ts"
+          ],
+          "tests": [
+            "test/identity.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "identity_test.go"
+          ],
+          "tests": [
+            "identity_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_index.py",
+      "kind": "test",
+      "sha256": "8a5148b821bfefb9cfb05458d8a35958da8f4bb1d88569a1b4ff4b7024f63d3e",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/index.test.ts"
+          ],
+          "tests": [
+            "test/index.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "index_test.go"
+          ],
+          "tests": [
+            "index_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_inspection.py",
+      "kind": "test",
+      "sha256": "2495b2f3339867df7e676205c8dc337752af9696c87cf6d62868c86ef71856a9",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/inspection.test.ts"
+          ],
+          "tests": [
+            "test/inspection.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "inspection_test.go"
+          ],
+          "tests": [
+            "inspection_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_layering.py",
+      "kind": "test",
+      "sha256": "81d5e41ce21806bfad79313ccc0ed5c42f82f4cfc8f582873e6cf8fc982424b7",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/layering.test.ts"
+          ],
+          "tests": [
+            "test/layering.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "layering_test.go"
+          ],
+          "tests": [
+            "layering_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_manager.py",
+      "kind": "test",
+      "sha256": "d9e31002dc4abd5b44c177bfadabc7f065b543705a759e3ada67e7b2834105d1",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/manager.test.ts"
+          ],
+          "tests": [
+            "test/manager.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "manager_test.go"
+          ],
+          "tests": [
+            "manager_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_messages.py",
+      "kind": "test",
+      "sha256": "af8e569134b113506e7e7757de0160c96be487042414f6eb52972ba1bfc5409f",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/messages.test.ts"
+          ],
+          "tests": [
+            "test/messages.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "messages_test.go"
+          ],
+          "tests": [
+            "messages_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_oc_goal_case_study.py",
+      "kind": "test",
+      "sha256": "f6e1c145eb376c1ab9b77418acc8aed8978673d9133cfa412e99609b34618f05",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/oc_goal_case_study.test.ts"
+          ],
+          "tests": [
+            "test/oc_goal_case_study.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "oc_goal_case_study_test.go"
+          ],
+          "tests": [
+            "oc_goal_case_study_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_project_channels.py",
+      "kind": "test",
+      "sha256": "c6b2f0e42a3de1d928f9c9d45deea15bd532806ea11a6095b8b1890253544e8e",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/project_channels.test.ts"
+          ],
+          "tests": [
+            "test/project_channels.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "project_channels_test.go"
+          ],
+          "tests": [
+            "project_channels_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_public_api.py",
+      "kind": "test",
+      "sha256": "c1a367061982d328ded3ba9afccc2287f3168aff71320e2c66c5e57755fa1682",
+      "pythonImport": null,
+      "publicSymbols": [
+        "test_authoring_api_is_deliberate",
+        "test_every_promised_name_resolves",
+        "test_server_api_is_deliberate"
+      ],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/public_api.test.ts"
+          ],
+          "tests": [
+            "test/public_api.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "public_api_test.go"
+          ],
+          "tests": [
+            "public_api_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_root_selection.py",
+      "kind": "test",
+      "sha256": "7c7540548eb145ea3dced42e4595faf1fa31c125fd9bf3459b3446eb74e75383",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/root_selection.test.ts"
+          ],
+          "tests": [
+            "test/root_selection.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "root_selection_test.go"
+          ],
+          "tests": [
+            "root_selection_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_runtime.py",
+      "kind": "test",
+      "sha256": "a1f8a692c219bb682f4c6d7179b6afb5c85e75efdd44f8ccefd5bc979abc347d",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/runtime.test.ts"
+          ],
+          "tests": [
+            "test/runtime.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "runtime_test.go"
+          ],
+          "tests": [
+            "runtime_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_scaffold.py",
+      "kind": "test",
+      "sha256": "b90b20d0261e1cca692de38e648ee59daae4fad54c20525fd2a92828c7c868b1",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/scaffold.test.ts"
+          ],
+          "tests": [
+            "test/scaffold.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "scaffold_test.go"
+          ],
+          "tests": [
+            "scaffold_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_server.py",
+      "kind": "test",
+      "sha256": "5e4994bb4ef4477d407671a12daaa44d90473aed69d9afa79dd01303737e7a37",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/server.test.ts"
+          ],
+          "tests": [
+            "test/server.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "server_test.go"
+          ],
+          "tests": [
+            "server_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_spec_fixtures.py",
+      "kind": "test",
+      "sha256": "2a19885b67a57149f20c032a5137a223437778d6407bcfcce74153cdc1a154dd",
+      "pythonImport": null,
+      "publicSymbols": [
+        "test_every_language_neutral_fixture_is_valid_json",
+        "test_latest_surface_boundaries_have_fixtures"
+      ],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/spec_fixtures.test.ts"
+          ],
+          "tests": [
+            "test/spec_fixtures.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "spec_fixtures_test.go"
+          ],
+          "tests": [
+            "spec_fixtures_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_stdio_server.py",
+      "kind": "test",
+      "sha256": "f5d2035168866fb5f2aa6e8644b49df3a1ad94a7c9ce6316e9cca518993a9930",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/stdio_server.test.ts"
+          ],
+          "tests": [
+            "test/stdio_server.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "stdio_server_test.go"
+          ],
+          "tests": [
+            "stdio_server_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_surface.py",
+      "kind": "test",
+      "sha256": "03f1a83ddaa710b9187945a18718ef633609efc6ef9d45ce511ec47dafe88c24",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/surface.test.ts"
+          ],
+          "tests": [
+            "test/surface.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "surface_test.go"
+          ],
+          "tests": [
+            "surface_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_system_api.py",
+      "kind": "test",
+      "sha256": "6d345eedf5e1b5d2e632ab190d4d062764555a6e4fb80bf9f2837368d01d1555",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/system_api.test.ts"
+          ],
+          "tests": [
+            "test/system_api.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "system_api_test.go"
+          ],
+          "tests": [
+            "system_api_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_telemetry.py",
+      "kind": "test",
+      "sha256": "9da0654da7509801a1cc52c351b58a72d4c9fda3df6cdf1cc323759860f829b7",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/telemetry.test.ts"
+          ],
+          "tests": [
+            "test/telemetry.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "telemetry_test.go"
+          ],
+          "tests": [
+            "telemetry_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/test_web.py",
+      "kind": "test",
+      "sha256": "8569f9efbe68f38e4849c4de5aa2218e85623e2f8942576afb227808347a965b",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "Focused behavioural or integration test for the Python reference product.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "test/web.test.ts"
+          ],
+          "tests": [
+            "test/web.test.ts"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "web_test.go"
+          ],
+          "tests": [
+            "web_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "tests/typing/consumer.py",
+      "kind": "test",
+      "sha256": "3c7f3d9bb2a4f1ad40bcd0db8ccf1e1a2997a7a5716ff6ff9c81c274a78fbf09",
+      "pythonImport": null,
+      "publicSymbols": [],
+      "responsibility": "External installed-package type and runtime consumer contract.",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "tests": [
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "tests": [
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    }
+  ],
+  "productAssets": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "ed105c1a49ea54b6401265f1edc246b54789619ff1dae11a301a0fb4ccb8982b",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "CHANGELOG.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "CHANGELOG.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "bbc8164dc2dba4bd47fd291bae13b1d5b83caea2f5d1ed544a6547fb82339650",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "CONTRIBUTING.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "CONTRIBUTING.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "LICENSE"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "LICENSE"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "README.md",
+      "sha256": "a01562b9912fe5c8c02844136953bf9b040cca87b0add7fcc35d37b4718c0966",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "README.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "README.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "README.zh-CN.md",
+      "sha256": "a99e0b6bc98dae8a2ea57c66167a7acbbcdfeb12f05298868f8eeefbf05dfe89",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "README.zh-CN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "README.zh-CN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "RELEASING.md",
+      "sha256": "9f90f131ae203f9181975706458e05fbb696cde06b729a311b951ee56fdc182b",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "RELEASING.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "RELEASING.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "0af6d5099f3bf0372b3264a374d65fd3bfdc157c8f37dca140c56793f859ec29",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "SECURITY.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "SECURITY.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/.gitignore",
+      "sha256": "f88478187cb5c54ae55059302a4d43c74099c7e15c0c255b4e4cea2389aebf06",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/.gitignore"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/.gitignore"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/README.md.tmpl",
+      "sha256": "288af77c6decd2d892728d253e221f2cb49f5d3810b407bc66dfbb3a5dd8e2f7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/README.md.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/README.md.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/assistant/__init__.py.tmpl",
+      "sha256": "a962b40c3a53b31897471a6d11480434e036e7e390884ea7a49a78edad427cbe",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/assistant/__init__.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/assistant/__init__.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/assistant/role.py.tmpl",
+      "sha256": "f16585152f7a33bc0fccd321dfea9ddb866492fe46fc9af23dd848a69d7c0ab7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/assistant/role.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/assistant/role.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/assistant/skills.py.tmpl",
+      "sha256": "2a0f0593ab8dbde07579d3fb778523ad5063f5bd581496f9a8f9b7c7165be8c1",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/assistant/skills.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/assistant/skills.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/assistant/tools.py.tmpl",
+      "sha256": "4e2a8c042d840f82934f71289eb64c144d0086537261c131565d642e8059265b",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/assistant/tools.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/assistant/tools.py.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "contexture/cli/templates/project/pyproject.toml.tmpl",
+      "sha256": "9d4d56b48e973879379cd50baf12063b0997094c3df26e967bd2328b40d88160",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "src/cli/templates/project/pyproject.toml.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "cmd/contexture/templates/project/pyproject.toml.tmpl"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/01-role-object-model.md",
+      "sha256": "6aeb6d2892176f2a583ca367cbee6bb6311c8910425be36a08b6dfefdda35edd",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/01-role-object-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/01-role-object-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/02-framework-layers.md",
+      "sha256": "cacb5865ba004ec6e50cab3ea3199f455f81c0525d813a06cb09606a5feb59ba",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/02-framework-layers.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/02-framework-layers.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/03-application-user-model.md",
+      "sha256": "0085704ad585294172733f75e04cbeb13111aa8d257681aeb8ba1637d560f8e7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/03-application-user-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/03-application-user-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/04-application-user-model-execution-plan.md",
+      "sha256": "855c8232b87d0cf3e26a49159efc7189d48680adf971e3a89b68f7a71edf64e2",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/04-application-user-model-execution-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/04-application-user-model-execution-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/05-controller-framework-and-mvc.md",
+      "sha256": "9a73227fe34251b409c2b0c32d6e70daf34b7c974b703f2e400c60400d1daaa9",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/05-controller-framework-and-mvc.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/05-controller-framework-and-mvc.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/06-multiple-host-surfaces-plan.md",
+      "sha256": "8047247d3db2900f90a25d3329196bffc04b045456424ab5067d20684b7b8269",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/06-multiple-host-surfaces-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/06-multiple-host-surfaces-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/07-independent-disclosure-application-plan.md",
+      "sha256": "791d909264167ef7c2e6f24c2e38e5dd724eddc57690f1f9dd4b5ac22051f30b",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/07-independent-disclosure-application-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/07-independent-disclosure-application-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/08-request-selected-root-surfaces-plan.md",
+      "sha256": "de093be4ba66c6fc1b36c49f56789d798168a488711d316fc9b0794c23dc1b7d",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/08-request-selected-root-surfaces-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/08-request-selected-root-surfaces-plan.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/001-native-mcp-server.md",
+      "sha256": "c752c42ce32b7fedef0aca1c96e646923f3fce0be501ec94bdcaf44a3dc1bf88",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/001-native-mcp-server.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/001-native-mcp-server.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/002-per-call-context-and-options.md",
+      "sha256": "996b0dcd05e9a54e4c8b596a1bbe29f8897d5548fc6f4f3296a89eef7fc52ab7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/002-per-call-context-and-options.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/002-per-call-context-and-options.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/003-remove-the-outbound-half.md",
+      "sha256": "2ad4cd4a20d72f4d4828dac997ff67e2b700cfe732cc527b054e3470b2ccf8ed",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/003-remove-the-outbound-half.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/003-remove-the-outbound-half.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md",
+      "sha256": "35294bb8168a7a3d9a0417347a09e399d102d6edcefbcb7353818455e5e686c4",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/005-remove-the-target-adapters.md",
+      "sha256": "54f6c152a5e0db05878ff1da904ce4f69525915ae7a66b623c2658369a3765c3",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/005-remove-the-target-adapters.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/005-remove-the-target-adapters.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md",
+      "sha256": "ff20fe1a9ba6477797f293ddf7b02899a74546f554687da46fb9726f904a76ae",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/007-the-role-axis-is-lazy-too.md",
+      "sha256": "24812a58de296011dfc7a5c5c1810dd2f60a586cbe184e228ce43cfeec23de30",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/007-the-role-axis-is-lazy-too.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/007-the-role-axis-is-lazy-too.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/008-who-may-open-a-node.md",
+      "sha256": "7f6a4b0ad26d4ef6041ab6b548d926eb1f42143cad224e2226014ec7b571c235",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/008-who-may-open-a-node.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/008-who-may-open-a-node.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/009-the-protocol-plane-is-not-the-object-model.md",
+      "sha256": "03f9de5c56202c5688b75e1791779d0e8d446fc5303a1285646880e208df3e11",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/009-the-protocol-plane-is-not-the-object-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/009-the-protocol-plane-is-not-the-object-model.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/010-the-directories-are-the-architecture.md",
+      "sha256": "398398904a6a30e6cb1df13321d11a6da7be6caa709db8c9e1938fcdad3118e3",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/010-the-directories-are-the-architecture.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/010-the-directories-are-the-architecture.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/011-identity-is-the-frameworks-permission-is-not.md",
+      "sha256": "81c917f0540f3be371e5c9e02a429d150d4545fdcae1e598d2e4443bf09445e6",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/011-identity-is-the-frameworks-permission-is-not.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/011-identity-is-the-frameworks-permission-is-not.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md",
+      "sha256": "6040f6ece3afbde8de782583627d503aa8a190a884935e74ebb51b73b989de30",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/013-a-constructor-is-the-declaration.md",
+      "sha256": "e500964de7c6eddb16d0a184be12adfc35532615bded0eeebb5399e6cf52ca3f",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/013-a-constructor-is-the-declaration.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/013-a-constructor-is-the-declaration.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/014-navigation-is-part-of-the-kernel.md",
+      "sha256": "7ace1adfff39ed6ec9278010f48340a2836524435775f9b1f6c84abb96fdf483",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/014-navigation-is-part-of-the-kernel.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/014-navigation-is-part-of-the-kernel.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/015-the-server-is-an-object.md",
+      "sha256": "979a80c48c5023a83c1dad6809c6176054933fadbab8d04029af4a3440093a5a",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/015-the-server-is-an-object.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/015-the-server-is-an-object.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/016-register-compile-disclose.md",
+      "sha256": "9a9baa07948f2d991a79e4dc477d0143bffd6eb6b464d27508d1e1f22542e558",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/016-register-compile-disclose.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/016-register-compile-disclose.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/017-application-is-a-lazy-declaration.md",
+      "sha256": "7df067fe11aec709a2e751eab4e2920a476aae5d7342dc4dc66c56f65cc690bd",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/017-application-is-a-lazy-declaration.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/017-application-is-a-lazy-declaration.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/018-prompt-roots-separate-user-and-model-planes.md",
+      "sha256": "770b6721371d6f0cb2bc3a2e0ad613083ed5432c9b6496228ab3e110e92725f7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/018-prompt-roots-separate-user-and-model-planes.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/018-prompt-roots-separate-user-and-model-planes.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/018-separate-disclosure-from-execution.md",
+      "sha256": "ccc72a0b9323f1b84d27e09a6379a492bbe29ebe98056709d4470576dc6f0e99",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/018-separate-disclosure-from-execution.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/018-separate-disclosure-from-execution.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/adr/019-request-selects-complete-root-surfaces.md",
+      "sha256": "d7c80d54c48f622181bb644bf41419958e54acfd7c4bfee74cb31da33a587708",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/019-request-selects-complete-root-surfaces.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/adr/019-request-selects-complete-root-surfaces.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/atlas/check.mjs",
+      "sha256": "7ff2ed5cdd2ce6fc5ebc235fe9214a557ced6607a165e23774ce29cf20e8aef2",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/check.mjs"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/check.mjs"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/atlas/index.html",
+      "sha256": "ef263763afecf50d8cdd4f39e748c30a3f796c2896a987b11a8c4d543c80f012",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/index.html"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/index.html"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/atlas/vendor/mermaid.min.js",
+      "sha256": "18327bef70d96fb505fe7287d9f6a7362ebf07ff6576ddfaffb1a06f3e1a2954",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/vendor/mermaid.min.js"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/atlas/vendor/mermaid.min.js"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/.gitignore",
+      "sha256": "4cad133d4f0a6cf4bba15f1b8bbae48d6a55f20b94f75487c51a93cc6a5af59f",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/.gitignore"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/.gitignore"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/DESIGN.md",
+      "sha256": "669f5aa7007a13822f72f9cb279f7e4626b74da40b3c151d6075464f14cd3730",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/DESIGN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/DESIGN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/PLAN.md",
+      "sha256": "d0dbcadbc05ce7b626d17a5c580c3667718d5c1c1c610b84f794d7db8f2e7a84",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/PLAN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/PLAN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/README.md",
+      "sha256": "38ea65406666d224a3d7866665403365883b9b3cd05ee6a4828afbbfca1a153e",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/README.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/README.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/check.py",
+      "sha256": "15395564f7e0cfb1b331018f1063e55b2d9e45689d2b688dd0d3f3ce921bc1e9",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/check.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/check.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/__init__.py",
+      "sha256": "ab5231ba389761215450e030ba508e40f971678a58a9236f41acf337cec0aa90",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/__init__.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/__init__.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/db/__init__.py",
+      "sha256": "37d0f1acbb47b9445c779f93952d6b1735e956e357525ce13940786c66bd4dd8",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/db/__init__.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/db/__init__.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/db/schema.py",
+      "sha256": "70906e952c491a08382d340042329e43df3d6da841defcf3ef31e0a779d6e3b9",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/db/schema.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/db/schema.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/models.py",
+      "sha256": "1343692679011dd7ae8047f9fb63f766974996eb25894edfc32bf2bfe5e406b6",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/models.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/models.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/repository.py",
+      "sha256": "1e5e9c20147062ad7732b18246e471ae8cc1e836b3bd90242e5ae33cdac86e65",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/repository.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/repository.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/role.py",
+      "sha256": "24a255025587a0d7a42c1f1891f4e8d544869a3170e0ea85feab64eca5495f60",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/role.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/role.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/seed.py",
+      "sha256": "67d94677990ad0522b0e5fbc7b08589e5c337a2b7a01712a54a3e35b7e92cb50",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/seed.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/seed.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/skills.py",
+      "sha256": "bbd35cf70a12d9f6f73ca993356f6cc142d578ba8d92e5bb201a144931cfa5e2",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/skills.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/skills.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/oc_goal/tools.py",
+      "sha256": "89c566ba6b89934d947edc7570f8a31110278f8ea65aad895983a67f4bfdd14f",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/tools.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/oc_goal/tools.py"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/case-studies/oc-goal/pyproject.toml",
+      "sha256": "8396834189ede03e979717b867843150c57efd7682fc2bfb799c69e50234d407",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/pyproject.toml"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/case-studies/oc-goal/pyproject.toml"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/handbook.md",
+      "sha256": "3a6e3085e67f18b44a6af912d54eb6fd0c752ee85589b9919c9824cbeac7cef9",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/handbook.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/handbook.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/handbook.zh-CN.md",
+      "sha256": "c5d274dff6238b232421bae5f28049115d55403421049750b5105bb56e251206",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/handbook.zh-CN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/handbook.zh-CN.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "f713c057c481e1f4e1b46938f1307af9a0a73d306f1c30923e12fa836e05fae7",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/project-status.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/project-status.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/verification/hosts.md",
+      "sha256": "b673b1fb694ca34d26374af62fa29dbea3043b1c394dc9ff5837203c6709c663",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/hosts.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/hosts.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/verification/verify_claude_code.md",
+      "sha256": "faaaf93885b6e0e75c67b149c7c745a0f342512382409344ac3cfd05985857c6",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/verify_claude_code.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/verify_claude_code.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "docs/verification/verify_codex.md",
+      "sha256": "d9aa38b70b9b507092985c02c7546f7b1ec96f4625c331697a94601e682dbff1",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/verify_codex.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "docs/verification/verify_codex.md"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "83522a1e205ea7fa983e07bea617a890c4628fa37fed208f829f6bfc8c0f572d",
+      "status": "missing",
+      "targets": {
+        "typescript": {
+          "status": "designed",
+          "paths": [
+            "package.json"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        },
+        "go": {
+          "status": "designed",
+          "paths": [
+            "go.mod"
+          ],
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+        }
+      }
+    }
+  ]
+}
