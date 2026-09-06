@@ -55,6 +55,7 @@ from ..principal import Principal
 from ..types import CompiledContext
 from .disclosure import Disclosure
 from .runtime import ApplicationRuntime
+from .root_selection import RootSelection
 from .telemetry import InMemoryTelemetry, Telemetry, report
 from .tool import Tool
 
@@ -274,6 +275,10 @@ class DisclosureAPI:
         second kind of node.
         """
 
+        if not self.tree.surface_can_reach(ref):
+            # Resolve the refusal without touching the global Index, whose
+            # lookup diagnostics name roots outside this request surface.
+            self.tree.effective_selection.require_ref(ref)
         if not self.tree.model_can_see(ref) or ref in self.reserved:
             raise Refused(taken_by_a_person(ref))
         return await self.open_for_a_person(ref)
@@ -320,6 +325,7 @@ class ExecutionAPI:
     index: Any
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
     prompt_roots: frozenset[str] = field(default=frozenset())
+    selection: RootSelection = RootSelection.all()
 
     def __post_init__(self) -> None:
         if not self.index.is_bound:
@@ -345,9 +351,9 @@ class ExecutionAPI:
         """
 
         try:
-            return await ApplicationRuntime(self.index, self.telemetry).invoke_read_only(
-                ref, principal=principal
-            )
+            return await ApplicationRuntime(
+                self.index, self.telemetry, self.selection
+            ).invoke_read_only(ref, principal=principal)
         except NodeNotFoundError as failure:
             raise Refused(unresolved(failure)) from failure
 
@@ -408,7 +414,7 @@ class ExecutionAPI:
         if root in self.prompt_roots:
             raise Refused(taken_by_a_person(ref))
 
-        runtime = ApplicationRuntime(self.index, self.telemetry)
+        runtime = ApplicationRuntime(self.index, self.telemetry, self.selection)
         try:
             if read_only:
                 return await runtime.invoke_read_only(
@@ -451,6 +457,7 @@ class SystemAPI:
                 self.tree.index,
                 self.telemetry,
                 self.tree.prompt_roots,
+                self.tree.selection,
             ),
         )
 

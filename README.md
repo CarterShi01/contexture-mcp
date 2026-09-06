@@ -515,6 +515,45 @@ server keeps no per-connection state, and a ref resolves the same way for
 everyone — so any replica can answer any request, and nothing behind a load
 balancer needs to be sticky.
 
+### One endpoint, request-selected roots
+
+An HTTP server can let each caller request an exact subset of complete root
+trees while sharing the same compiled Index and process:
+
+```python
+from contexture.server import HeaderRootSelector, compile_application
+
+server = compile_application(app).server(
+    root_selector=HeaderRootSelector(),
+)
+```
+
+Configure the MCP client with a static request header:
+
+```yaml
+headers:
+  Contexture-Roots: "team,work"
+```
+
+The selector applies to instructions, discovery, direct open and invoke,
+Prompts, Resources, completion, and `current_graph()`. Selecting `team` exposes
+the complete `team` subtree; selectors never target descendants. Omitting the
+header keeps the all-roots compatibility surface.
+
+The header is not authentication. If a credential must never reach roots beyond
+its authority, provide an authenticated ceiling; the request can only narrow
+it:
+
+```python
+from contexture.server import HeaderRootSelector, RootSelection
+
+selector = HeaderRootSelector(
+    ceiling=lambda principal: RootSelection.only(
+        principal.claims["contexture_roots"]
+    )
+)
+```
+
 ## Layers
 
 ```text

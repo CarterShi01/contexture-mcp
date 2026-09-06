@@ -59,7 +59,8 @@ from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from . import instructions as instructions_module
 from .identity import Auth
 from .options import ContextureOptions, ServeError, Transport, configure_logging
-from .surface import DisclosureSurface, Surface
+from .root_selector import RootSelectionMiddleware, RootSelector
+from .surface import DisclosureSurface, Surface, published_name
 
 LOG = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class ContextureServer:
 
     __slots__ = (
         "_index", "_surface", "_telemetry", "name", "version",
-        "instructions", "_built", "_auth",
+        "instructions", "_root_selector", "_built", "_auth",
     )
 
     def __init__(
@@ -85,6 +86,7 @@ class ContextureServer:
         prompt_roots: Any = (),
         telemetry: Telemetry | None = None,
         surface: Surface | DisclosureSurface | None = None,
+        root_selector: RootSelector | None = None,
     ) -> None:
         """Serve one compiled index, with what a person and a host may reach it by.
 
@@ -133,6 +135,11 @@ class ContextureServer:
         #: when nothing is stated, which is the ordinary case — see
         #: `server.instructions` for how it is fitted to a host's budget.
         self.instructions = instructions
+        if root_selector is not None and not isinstance(root_selector, RootSelector):
+            raise ServeError(
+                "root_selector must implement select(index, headers, principal)."
+            )
+        self._root_selector = root_selector
         self._built: MCPServer | None = None
         self._auth: Auth | None = None
 
@@ -194,11 +201,34 @@ class ContextureServer:
     def _wire(self, auth: Auth | None) -> MCPServer:
         """The SDK object, told this server's identity and its lifecycle."""
 
+        middleware = ()
+        if self._root_selector is not None:
+            prompt_refs = {
+                published_name(entry): entry.opens for entry in self._surface.prompts
+            }
+            resource_refs = {
+                str(entry.uri): entry.opens for entry in self._surface.resources
+            }
+            middleware = (
+                RootSelectionMiddleware(
+                    selector=self._root_selector,
+                    index=self._index,
+                    tree=self._surface.tree,
+                    prompt_refs=prompt_refs,
+                    resource_refs=resource_refs,
+                    dynamic_instructions=self.instructions is None,
+                ),
+            )
         return MCPServer(
             name=self.name,
             version=self.version,
             instructions=self.instructions
-            or instructions_module.build(self._surface.tree),
+            or (
+                instructions_module.neutral()
+                if self._root_selector is not None
+                else instructions_module.build(self._surface.tree)
+            ),
+            middleware=middleware,
             **({"lifespan": self._lifespan} if self._opens_channels else {}),
             **(
                 {"auth": auth.settings(), "token_verifier": auth.sdk_verifier()}

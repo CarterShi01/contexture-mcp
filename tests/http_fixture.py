@@ -14,12 +14,21 @@ from __future__ import annotations
 
 import sys
 
-from contexture import ControllerManager, Principal, Role, Tool, current_principal
+from contexture import (
+    ControllerManager,
+    Principal,
+    Prompt,
+    Resource,
+    Role,
+    Tool,
+    current_principal,
+)
 from contexture.core.model.index import Index
 from contexture.server import (
     Auth,
     ContextureOptions,
     ContextureServer,
+    HeaderRootSelector,
     TypeHintBinding,
 )
 
@@ -95,11 +104,50 @@ class Ops(Role):
         )
 
 
+class AuditRead(Tool):
+    def __init__(self) -> None:
+        super().__init__(name="read", description="Read audit.", read_only=True)
+
+    async def invoke(self) -> str:
+        return "audit"
+
+
+class Audit(Role):
+    def __init__(self) -> None:
+        super().__init__(
+            name="audit",
+            description="Inspect global audit records.",
+            instructions="Review audit records without changing them.",
+            tools=[AuditRead()],
+        )
+
+
 def build(port: int, *, secured: bool) -> tuple[ContextureServer, ContextureOptions]:
     manager = ControllerManager()
     manager.register_role(Ops)
+    manager.register_role(Audit)
     index = Index.of(manager, bind=TypeHintBinding)
-    server = ContextureServer(index, name="http-fixture")
+    server = ContextureServer(
+        index,
+        name="http-fixture",
+        root_selector=HeaderRootSelector(),
+        prompts=(
+            Prompt(opens="ops", name="open-ops", description="Open operations."),
+            Prompt(opens="audit", name="open-audit", description="Open audit."),
+        ),
+        resources=(
+            Resource(
+                opens="ops/whoami",
+                uri="contexture://ops/whoami",
+                description="Current request identity.",
+            ),
+            Resource(
+                opens="audit/read",
+                uri="contexture://audit/read",
+                description="Audit records.",
+            ),
+        ),
+    )
     options = ContextureOptions(
         transport="streamable-http",
         host="127.0.0.1",

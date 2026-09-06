@@ -94,8 +94,6 @@ class Prompts:
             )
         )
 
-        index = api.tree.index
-
         @wire.completion()
         async def complete(ref: Any, argument: Any, context: Any) -> Completion | None:
             """Offer the tree's addresses while a person types one.
@@ -111,7 +109,7 @@ class Prompts:
             if argument.name != messages.GOTO_ARGUMENT:
                 return None
 
-            matches, total = index.matching_refs(
+            matches, total = api.tree.selected_graph().matching_refs(
                 argument.value, limit=messages.COMPLETION_LIMIT
             )
             values = list(matches)

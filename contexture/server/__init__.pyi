@@ -28,5 +28,13 @@ from .surface import (
 )
 from .options import ContextureOptions as ContextureOptions, Transport as Transport
 from .server import ContextureServer as ContextureServer
+from .root_selector import (
+    FixedRootSelector as FixedRootSelector,
+    HeaderRootSelector as HeaderRootSelector,
+    ROOTS_HEADER as ROOTS_HEADER,
+    RootCeiling as RootCeiling,
+    RootSelector as RootSelector,
+)
+from ..core.model.root_selection import RootSelection as RootSelection
 
 __all__: list[str]

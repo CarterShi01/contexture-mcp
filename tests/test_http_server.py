@@ -33,8 +33,9 @@ from pathlib import Path
 
 try:
     import httpx2
-    from mcp import ClientSession
+    from mcp import ClientSession, types
     from mcp.client.streamable_http import streamable_http_client
+    from mcp.shared.exceptions import MCPError
 except ImportError:  # pragma: no cover - the SDK is a hard dependency
     ClientSession = None  # type: ignore[assignment]
 
@@ -115,11 +116,21 @@ class _Server:
             self.process.stderr.close()
 
 
-def _run(server: _Server, work, *, token: str | None = None, modern: bool = True):
+def _run(
+    server: _Server,
+    work,
+    *,
+    token: str | None = None,
+    modern: bool = True,
+    roots: str | None = None,
+):
     """Open one session against `server` and run `work` in it."""
 
     async def session():
-        headers = {"Authorization": f"Bearer {token}"} if token else {}
+        headers = {
+            **({"Authorization": f"Bearer {token}"} if token else {}),
+            **({"Contexture-Roots": roots} if roots is not None else {}),
+        }
         async with httpx2.AsyncClient(headers=headers) as client:
             async with streamable_http_client(
                 server.url, http_client=client
@@ -186,6 +197,63 @@ class TransportTests(unittest.TestCase):
         self.assertIn("whoami", opened)
         # Nobody authenticated this server, so nobody is who it reports.
         self.assertIn("anonymous", ran)
+
+    def test_one_header_filters_discovery_instructions_and_direct_access(self) -> None:
+        async def work(session):
+            discovered = await session.call_tool("contexture_discover", {})
+            refused = await session.call_tool("contexture_open", {"ref": "audit"})
+            prompts = await session.list_prompts()
+            resources = await session.list_resources()
+            completion = await session.complete(
+                types.PromptReference(name="goto"),
+                {"name": "ref", "value": ""},
+            )
+            prompt_refused = resource_refused = False
+            try:
+                await session.get_prompt("open-audit")
+            except MCPError:
+                prompt_refused = True
+            try:
+                await session.read_resource("contexture://audit/read")
+            except MCPError:
+                resource_refused = True
+            return (
+                session.discover_result.instructions,
+                _text(discovered),
+                refused,
+                {prompt.name for prompt in prompts.prompts},
+                {str(resource.uri) for resource in resources.resources},
+                completion.completion.values,
+                prompt_refused,
+                resource_refused,
+            )
+
+        (
+            instructions,
+            discovered,
+            refused,
+            prompts,
+            resources,
+            completions,
+            prompt_refused,
+            resource_refused,
+        ) = _run(self._server, work, roots="ops")
+
+        self.assertIn("ops", instructions)
+        self.assertNotIn("audit", instructions)
+        self.assertIn("ops", discovered)
+        self.assertNotIn("audit", discovered)
+        self.assertTrue(refused.is_error)
+        self.assertIn("outside this request's root surface", _text(refused))
+        self.assertIn("open-ops", prompts)
+        self.assertNotIn("open-audit", prompts)
+        self.assertIn("contexture://ops/whoami", resources)
+        self.assertNotIn("contexture://audit/read", resources)
+        self.assertTrue(
+            all(value == "ops" or value.startswith("ops/") for value in completions)
+        )
+        self.assertTrue(prompt_refused)
+        self.assertTrue(resource_refused)
 
     def test_every_request_is_answered_without_a_session(self) -> None:
         """What lets two replicas sit behind one address.

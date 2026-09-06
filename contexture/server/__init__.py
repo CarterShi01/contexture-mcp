@@ -66,6 +66,12 @@ _EXPORTS = {
     "Auth": ".identity",
     "TokenVerifier": ".identity",
     "principal_of": ".identity",
+    "FixedRootSelector": ".root_selector",
+    "HeaderRootSelector": ".root_selector",
+    "ROOTS_HEADER": ".root_selector",
+    "RootCeiling": ".root_selector",
+    "RootSelector": ".root_selector",
+    "RootSelection": "..core.model.root_selection",
     # The four entry points are the kernel's since ADR 014: their names sit on
     # the shared ground, and their descriptions and behaviour in
     # `core.model.system_api`. They are forwarded here because

@@ -53,9 +53,15 @@ from .binding import Binding, PlainBinding
 from .index import Index
 from .manager import register_root
 from .node import CompileLevel, ContextNode, group_cards
+from .root_selection import (
+    RootOutsideSelectionError,
+    RootSelection,
+    SelectedGraph,
+    current_root_selection,
+)
 from .tool import Tool
 
-__all__ = ["Disclosure", "SEPARATOR", "register_root"]
+__all__ = ["Disclosure", "RootSelection", "SEPARATOR", "register_root"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,7 +101,13 @@ class Disclosure:
     #: than a projected copy.
     prompt_roots: frozenset[str] = frozenset()
 
+    #: Complete root trees reachable through this view.  Request adapters may
+    #: attenuate it further through ``current_root_selection``; neither path
+    #: can restore a root removed by the other.
+    selection: RootSelection = RootSelection.all()
+
     def __post_init__(self) -> None:
+        object.__setattr__(self, "selection", self.selection.resolve(self.index))
         for ref in self.prompt_roots:
             node = self.index.find(ref)
             if self.index.parent_of(node) is not None:
@@ -107,13 +119,42 @@ class Disclosure:
     def unrestricted(self) -> "Disclosure":
         """Return the same compiled forest without model-plane exclusions."""
 
-        return self if not self.prompt_roots else Disclosure(self.index)
+        return (
+            self
+            if not self.prompt_roots
+            else Disclosure(self.index, selection=self.selection)
+        )
+
+    def select(self, selection: RootSelection) -> "Disclosure":
+        """Return a monotonically narrower root-level view of this Index."""
+
+        return Disclosure(
+            self.index,
+            self.prompt_roots,
+            self.selection.intersect(selection).resolve(self.index),
+        )
+
+    @property
+    def effective_selection(self) -> RootSelection:
+        """The declared view intersected with this request's selection."""
+
+        return self.selection.intersect(current_root_selection()).resolve(self.index)
+
+    def surface_can_reach(self, ref: str) -> bool:
+        """Whether the current surface contains the complete root for ``ref``."""
+
+        return self.effective_selection.contains_ref(ref)
 
     def model_can_see(self, ref: str) -> bool:
         """Whether ``ref`` belongs to the model-controlled root forest."""
 
         root = ref.split(SEPARATOR, 1)[0]
-        return root not in self.prompt_roots
+        return self.surface_can_reach(ref) and root not in self.prompt_roots
+
+    def selected_graph(self) -> SelectedGraph:
+        """Read-only graph facts projected to the current root surface."""
+
+        return SelectedGraph(self.index, self.effective_selection)
 
     @classmethod
     def of(
@@ -171,6 +212,8 @@ class Disclosure:
         to traverse.
         """
 
+        if not self.surface_can_reach(ref):
+            raise RootOutsideSelectionError(ref)
         if not self.model_can_see(ref):
             raise ModelValidationError(
                 f"{ref!r} belongs to a Prompt-only root and has no model routing card."
@@ -229,6 +272,7 @@ class Disclosure:
         caller has not entered. Usage telemetry likewise never enters payloads.
         """
 
+        self.effective_selection.require_ref(ref)
         return self.index.find(ref).compile(CompileLevel.ACTIVE, view=self)
 
     # ---- resolution the kernel drives ------------------------------------
@@ -236,9 +280,11 @@ class Disclosure:
     def find(self, ref: str) -> ContextNode:
         """Resolve a reference to the one node it addresses."""
 
+        self.effective_selection.require_ref(ref)
         return self.index.find(ref)
 
     def tool(self, ref: str) -> Tool:
         """Resolve a reference that must name a tool."""
 
+        self.effective_selection.require_ref(ref)
         return self.index.tool(ref)

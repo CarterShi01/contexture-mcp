@@ -54,6 +54,7 @@ _EXPORTS = {
     "Telemetry": ".model",
     "current_telemetry": ".model",
     "Role": ".model",
+    "RootSelection": ".model",
     "Skill": ".model",
     "Tool": ".model",
 }

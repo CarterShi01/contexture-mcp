@@ -63,6 +63,18 @@ INSTRUCTIONS_LIMIT = 2048
 SELF_CONTAINED_PREFIX = 512
 
 
+def neutral() -> str:
+    """Bootstrap text for a request-selected server, without a global roster."""
+
+    return (
+        "This Contexture server exposes a request-specific set of complete "
+        f"root capabilities. Call {DISCOVER_TOOL} for the roots available to "
+        "this request, open the one that fits the task, and continue one level "
+        "at a time using refs exactly as returned. Run a disclosed tool through "
+        "the read-only or writing Contexture invoke door named on its card."
+    )
+
+
 def build(
     tree: Disclosure,
     *,
@@ -151,4 +163,5 @@ __all__ = [
     "ROSTER_BUDGET",
     "SELF_CONTAINED_PREFIX",
     "build",
+    "neutral",
 ]

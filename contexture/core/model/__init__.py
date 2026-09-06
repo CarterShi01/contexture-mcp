@@ -28,6 +28,7 @@ from .graph_context import current_graph
 from .manager import ControllerManager, register_root
 from .node import CompiledGraph, CompileLevel, ContextNode, View
 from .role import Role
+from .root_selection import RootSelection
 from .skill import Skill
 from .telemetry import InMemoryTelemetry, NodeUsage, Telemetry, current_telemetry
 from .tool import Tool
@@ -45,6 +46,7 @@ __all__ = [
     "current_telemetry",
     "View",
     "Role",
+    "RootSelection",
     "Skill",
     "Tool",
     "register_root",

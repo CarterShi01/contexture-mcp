@@ -9,6 +9,7 @@ from ..errors import ModelValidationError, WrongDoorError
 from ..principal import Principal, bound
 from .graph_context import bound_graph
 from .index import Index
+from .root_selection import RootSelection, SelectedGraph, current_root_selection
 from .telemetry import InMemoryTelemetry, Telemetry, bound_telemetry, report
 
 
@@ -18,6 +19,7 @@ class ApplicationRuntime:
 
     index: Index
     telemetry: Telemetry = field(default_factory=InMemoryTelemetry, repr=False)
+    selection: RootSelection = RootSelection.all()
 
     def __post_init__(self) -> None:
         if not self.index.is_bound:
@@ -25,6 +27,7 @@ class ApplicationRuntime:
                 "ApplicationRuntime requires a bound Index. A disclosure-only "
                 "Index cannot be upgraded into an execution surface."
             )
+        object.__setattr__(self, "selection", self.selection.resolve(self.index))
 
     async def invoke_read_only(
         self, ref: str, arguments: dict[str, Any] | None = None, *,
@@ -44,13 +47,17 @@ class ApplicationRuntime:
         self, ref: str, arguments: dict[str, Any] | None, *, read_only: bool,
         principal: Principal | None, context: Any,
     ) -> Any:
+        selection = self.selection.intersect(current_root_selection()).resolve(
+            self.index
+        )
+        selection.require_ref(ref)
         tool = self.index.tool(ref)
         if tool.read_only is not read_only:
             raise WrongDoorError(ref=ref, read_only=tool.read_only)
         try:
             with (
                 bound(principal),
-                bound_graph(self.index),
+                bound_graph(SelectedGraph(self.index, selection)),
                 bound_telemetry(self.telemetry),
             ):
                 result = await self.index.binding_of(ref).call(arguments, context)
