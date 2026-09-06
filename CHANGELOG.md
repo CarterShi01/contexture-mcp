@@ -6,6 +6,26 @@ may contain documented breaking changes.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-09-07
+
+### Added
+
+- Added segment-aware path selection through `SurfaceSelection`,
+  `HeaderSurfaceSelector`, the `surface_selector=` server argument, and
+  `Contexture-Select`. Exact deep refs select a complete subtree, while a
+  terminal `/*` expands only direct members.
+- Selected descendants are promoted to surface roots without disclosing their
+  ancestors or siblings. Path-aware ceilings and intersections keep the
+  narrower overlapping subtree.
+
+### Changed
+
+- Instructions, discovery, navigation, invocation, MCP publications,
+  completion, errors, dependency cards, and invocation graph introspection now
+  share the generalized path-selected surface.
+- `RootSelection`, the Root-prefixed selector classes, and
+  `Contexture-Roots` remain compatibility aliases for 0.11/0.12 applications.
+
 ### Documentation
 
 - Link the guarded TypeScript and Go binding scaffolds from the English,
@@ -61,7 +81,8 @@ may contain documented breaking changes.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.12.0rc1...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.12.0rc1...v0.13.0
 [0.12.0rc1]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v0.12.0rc1
 [0.11.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.9.0...v0.10.0

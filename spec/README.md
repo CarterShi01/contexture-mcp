@@ -42,8 +42,8 @@ Regenerate deliberately, and review the diff — these bytes are the contract:
 ```
 
 `fixtures/reference-application.json` is the smallest language-neutral runtime
-declaration. The other fixtures pin Prompt-only roots, request-selected root
-views, disclosure-only compilation, and explicit REST publication. A port maps
+declaration. The other fixtures pin Prompt-only roots, request-selected path
+surfaces, disclosure-only compilation, and explicit REST publication. A port maps
 them to its own classes, structs, or schema objects, then checks behavior
 against the conformance rules and golden surface. Fixtures describe Tool inputs
 but not Tool bodies: business execution is binding-specific; the public model

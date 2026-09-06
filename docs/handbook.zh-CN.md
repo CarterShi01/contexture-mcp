@@ -226,9 +226,19 @@ uv run contexture serve --transport streamable-http --port 8080
 ```
 
 公开地址必须通过 `ContextureOptions` 显式配置 Host/Origin 及认证或匿名策略。
-HTTP 请求可通过 `HeaderRootSelector` 和 `Contexture-Roots` 缩小到完整根树；
-应用可根据已验证 `Principal` 提供更严格的 ceiling。它只会缩小表面，不授予
-权限。
+HTTP 请求可通过 `HeaderSurfaceSelector` 和 `Contexture-Select` 缩小到完整
+子树。它支持精确 ref（如 `team/notebook-editor`）和末段直接子级模式（如
+`team/*`）；每个匹配项都会成为 surface root，且 `*` 不跨越 `/`。旧的
+`HeaderRootSelector` 与 `Contexture-Roots` 继续兼容。应用可根据已验证的
+`Principal` 提供 ceiling 进一步收窄，但选择本身不授予权限。
+
+```python
+from contexture.server import HeaderSurfaceSelector, compile_application
+
+server = compile_application(app).server(
+    surface_selector=HeaderSurfaceSelector(),
+)
+```
 
 只有嵌入已有进程、已有事件循环或需要代码化托管选项时才写 `main()`：
 

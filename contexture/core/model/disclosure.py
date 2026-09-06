@@ -57,11 +57,18 @@ from .root_selection import (
     RootOutsideSelectionError,
     RootSelection,
     SelectedGraph,
+    SurfaceSelection,
     current_root_selection,
 )
 from .tool import Tool
 
-__all__ = ["Disclosure", "RootSelection", "SEPARATOR", "register_root"]
+__all__ = [
+    "Disclosure",
+    "RootSelection",
+    "SEPARATOR",
+    "SurfaceSelection",
+    "register_root",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,10 +108,10 @@ class Disclosure:
     #: than a projected copy.
     prompt_roots: frozenset[str] = frozenset()
 
-    #: Complete root trees reachable through this view.  Request adapters may
-    #: attenuate it further through ``current_root_selection``; neither path
-    #: can restore a root removed by the other.
-    selection: RootSelection = RootSelection.all()
+    #: Complete subtrees reachable through this view. Request adapters may
+    #: attenuate it further through the task-local selection; neither path can
+    #: restore a subtree removed by the other.
+    selection: SurfaceSelection = SurfaceSelection.all()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "selection", self.selection.resolve(self.index))
@@ -125,23 +132,25 @@ class Disclosure:
             else Disclosure(self.index, selection=self.selection)
         )
 
-    def select(self, selection: RootSelection) -> "Disclosure":
-        """Return a monotonically narrower root-level view of this Index."""
+    def select(self, selection: SurfaceSelection) -> "Disclosure":
+        """Return a monotonically narrower path-selected view of this Index."""
 
+        resolved = selection.resolve(self.index)
         return Disclosure(
             self.index,
             self.prompt_roots,
-            self.selection.intersect(selection).resolve(self.index),
+            self.selection.intersect(resolved).resolve(self.index),
         )
 
     @property
-    def effective_selection(self) -> RootSelection:
+    def effective_selection(self) -> SurfaceSelection:
         """The declared view intersected with this request's selection."""
 
-        return self.selection.intersect(current_root_selection()).resolve(self.index)
+        requested = current_root_selection().resolve(self.index)
+        return self.selection.intersect(requested).resolve(self.index)
 
     def surface_can_reach(self, ref: str) -> bool:
-        """Whether the current surface contains the complete root for ``ref``."""
+        """Whether the current surface contains the complete subtree for ``ref``."""
 
         return self.effective_selection.contains_ref(ref)
 
@@ -152,7 +161,7 @@ class Disclosure:
         return self.surface_can_reach(ref) and root not in self.prompt_roots
 
     def selected_graph(self) -> SelectedGraph:
-        """Read-only graph facts projected to the current root surface."""
+        """Read-only graph facts projected to the current selected surface."""
 
         return SelectedGraph(self.index, self.effective_selection)
 
@@ -169,10 +178,11 @@ class Disclosure:
 
     @property
     def roots(self) -> tuple[ContextNode, ...]:
-        """Roots visible to model navigation, in registration order."""
+        """Selected surface roots visible to model navigation, in index order."""
 
         return tuple(
-            root for root in self.index.roots
+            root
+            for root in self.effective_selection.roots_in(self.index)
             if self.model_can_see(self.index.ref_of(root))
         )
 

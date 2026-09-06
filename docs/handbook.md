@@ -267,10 +267,22 @@ uv run contexture serve --transport streamable-http --port 8080
 For a public address, explicitly configure host/origin and authentication policy
 with `ContextureOptions`. Those are deployment choices, not Tool fields.
 
-For per-request root attenuation over HTTP, pass a `HeaderRootSelector` when
-building the server. The `Contexture-Roots` header can select only complete
-root trees, and an application-owned ceiling may narrow that selection from a
-verified `Principal`. It never grants permissions and cannot widen the ceiling.
+For per-request capability attenuation over HTTP, pass a
+`HeaderSurfaceSelector` when building the server. `Contexture-Select` accepts
+an exact canonical ref (`team/notebook-editor`) or a terminal direct-child
+pattern (`team/*`). Every match becomes a surface root with its complete
+subtree; `*` matches one segment and never `/`. `Contexture-Roots` and
+`HeaderRootSelector` remain compatibility spellings. An application-owned
+ceiling may narrow that selection from a verified `Principal`; selection never
+grants permissions and cannot widen the ceiling.
+
+```python
+from contexture.server import HeaderSurfaceSelector, compile_application
+
+server = compile_application(app).server(
+    surface_selector=HeaderSurfaceSelector(),
+)
+```
 
 Write a custom `main()` only when embedding in an existing process, using an
 existing event loop, or selecting hosting options in code. It still consumes

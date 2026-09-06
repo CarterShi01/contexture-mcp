@@ -47,9 +47,8 @@ class ApplicationRuntime:
         self, ref: str, arguments: dict[str, Any] | None, *, read_only: bool,
         principal: Principal | None, context: Any,
     ) -> Any:
-        selection = self.selection.intersect(current_root_selection()).resolve(
-            self.index
-        )
+        requested = current_root_selection().resolve(self.index)
+        selection = self.selection.intersect(requested).resolve(self.index)
         selection.require_ref(ref)
         tool = self.index.tool(ref)
         if tool.read_only is not read_only:

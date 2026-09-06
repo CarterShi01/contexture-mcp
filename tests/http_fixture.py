@@ -28,7 +28,7 @@ from contexture.server import (
     Auth,
     ContextureOptions,
     ContextureServer,
-    HeaderRootSelector,
+    HeaderSurfaceSelector,
 )
 from contexture.server.binding import TypeHintBinding
 
@@ -130,7 +130,7 @@ def build(port: int, *, secured: bool) -> tuple[ContextureServer, ContextureOpti
     server = ContextureServer(
         index,
         name="http-fixture",
-        root_selector=HeaderRootSelector(),
+        surface_selector=HeaderSurfaceSelector(),
         prompts=(
             Prompt(opens="ops", name="open-ops", description="Open operations."),
             Prompt(opens="audit", name="open-audit", description="Open audit."),

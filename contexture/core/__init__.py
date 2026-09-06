@@ -57,6 +57,7 @@ _EXPORTS = {
     "current_telemetry": ".model",
     "Role": ".model",
     "RootSelection": ".model",
+    "SurfaceSelection": ".model",
     "Skill": ".model",
     "Tool": ".model",
 }

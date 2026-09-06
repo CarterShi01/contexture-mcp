@@ -48,7 +48,7 @@ from __future__ import annotations
 from typing import Iterator
 
 from ..core.model.node import ContextNode
-from ..core.model.disclosure import SEPARATOR, Disclosure
+from ..core.model.disclosure import Disclosure
 from ..core.constants import DISCOVER_TOOL
 from .messages import PREAMBLE, REF_RULE
 
@@ -68,10 +68,11 @@ def neutral() -> str:
 
     return (
         "This Contexture server exposes a request-specific set of complete "
-        f"root capabilities. Call {DISCOVER_TOOL} for the roots available to "
-        "this request, open the one that fits the task, and continue one level "
-        "at a time using refs exactly as returned. Run a disclosed tool through "
-        "the read-only or writing Contexture invoke door named on its card."
+        f"capability subtrees. Call {DISCOVER_TOOL} for the surface roots "
+        "available to this request, open the one that fits the task, and "
+        "continue one level at a time using refs exactly as returned. Run a "
+        "disclosed tool through the read-only or writing Contexture invoke "
+        "door named on its card."
     )
 
 
@@ -134,28 +135,28 @@ def _sibling_groups(tree: Disclosure) -> Iterator[list[tuple[str, ContextNode]]]
     that only roles can hold anything, so the rest of the walk is the role
     axis.
 
-    `roles_by_level` queues each role's children together, so one parent's
-    children arrive as a contiguous run and grouping is a matter of watching
-    the ref's prefix change rather than of walking the tree a second time.
+    The traversal starts at the selected surface roots rather than the Index's
+    application roots. Each queued role contributes one whole child group, so
+    the output remains breadth-first without crossing an excluded ancestor.
     """
 
-    yield [(root.name, root) for root in tree.roots]
+    roots = [(tree.index.ref_of(root), root) for root in tree.roots]
+    yield roots
 
-    group: list[tuple[str, ContextNode]] = []
-    parent: str | None = None
-    for ref, role in tree.index.roles_by_level():
-        if not tree.model_can_see(ref):
-            continue
-        if SEPARATOR not in ref:
-            continue                      # a root; already yielded above
-        owner = ref.rsplit(SEPARATOR, 1)[0] if SEPARATOR in ref else ""
-        if group and owner != parent:
-            yield group
-            group = []
-        parent = owner
-        group.append((ref, role))
-    if group:
-        yield group
+    # A deep selection promotes its anchors to surface roots without changing
+    # their canonical refs. Walk downward from those roots so an unselected
+    # ancestor can never re-enter the bootstrap roster.
+    queue = list(roots)
+    while queue:
+        _, parent = queue.pop(0)
+        children = [
+            (tree.index.ref_of(child), child)
+            for child in parent.branches()
+            if tree.model_can_see(tree.index.ref_of(child))
+        ]
+        if children:
+            yield children
+            queue.extend(children)
 
 
 __all__ = [

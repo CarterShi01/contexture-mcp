@@ -38,8 +38,8 @@ uv add contexture-mcp
 # or: python -m pip install contexture-mcp
 ```
 
-For a release candidate, request the exact version, such as
-`contexture-mcp==0.12.0rc1`.
+To pin this source release after publication, request
+`contexture-mcp==0.13.0`.
 
 ## Five-minute application
 
@@ -166,10 +166,21 @@ Non-loopback HTTP requires an explicit authentication or anonymous-access
 decision plus allowed hosts/origins. Configure these with `ContextureOptions`.
 See the [handbook](docs/handbook.md).
 
-An HTTP deployment can attenuate a request to complete root trees with the
-`Contexture-Roots` header and `HeaderRootSelector`. An application-owned
-ceiling derived from the verified `Principal` can restrict it further. Root
-selection is a surface boundary, not permission policy.
+An HTTP deployment can attenuate a request to complete subtrees with the
+`Contexture-Select` header and `HeaderSurfaceSelector`. Exact refs such as
+`team/notebook-editor` select that complete subtree; `team/*` selects each
+direct member subtree, and `*` never crosses `/`. The legacy
+`Contexture-Roots` and `HeaderRootSelector` names remain compatible. An
+application-owned ceiling derived from the verified `Principal` can restrict
+the selection further. Selection is a surface boundary, not permission policy.
+
+```python
+from contexture.server import HeaderSurfaceSelector, compile_application
+
+server = compile_application(app).server(
+    surface_selector=HeaderSurfaceSelector(),
+)
+```
 
 ## Human-facing REST routes
 

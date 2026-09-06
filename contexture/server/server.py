@@ -59,7 +59,11 @@ from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from . import instructions as instructions_module
 from .identity import Auth
 from .options import ContextureOptions, ServeError, Transport, configure_logging
-from .root_selector import RootSelectionMiddleware, RootSelector
+from .root_selector import (
+    RootSelector,
+    SurfaceSelectionMiddleware,
+    SurfaceSelector,
+)
 from .surface import DisclosureSurface, Surface, published_name
 
 LOG = logging.getLogger(__name__)
@@ -70,7 +74,7 @@ class ContextureServer:
 
     __slots__ = (
         "_index", "_surface", "_telemetry", "name", "version",
-        "instructions", "_root_selector", "_built", "_auth",
+        "instructions", "_surface_selector", "_built", "_auth",
     )
 
     def __init__(
@@ -86,6 +90,7 @@ class ContextureServer:
         prompt_roots: Any = (),
         telemetry: Telemetry | None = None,
         surface: Surface | DisclosureSurface | None = None,
+        surface_selector: SurfaceSelector | None = None,
         root_selector: RootSelector | None = None,
     ) -> None:
         """Serve one compiled index, with what a person and a host may reach it by.
@@ -135,11 +140,16 @@ class ContextureServer:
         #: when nothing is stated, which is the ordinary case — see
         #: `server.instructions` for how it is fitted to a host's budget.
         self.instructions = instructions
-        if root_selector is not None and not isinstance(root_selector, RootSelector):
+        if surface_selector is not None and root_selector is not None:
             raise ServeError(
-                "root_selector must implement select(index, headers, principal)."
+                "Pass surface_selector or the legacy root_selector, not both."
             )
-        self._root_selector = root_selector
+        selected_by = surface_selector if surface_selector is not None else root_selector
+        if selected_by is not None and not isinstance(selected_by, SurfaceSelector):
+            raise ServeError(
+                "surface_selector must implement select(index, headers, principal)."
+            )
+        self._surface_selector = selected_by
         self._built: MCPServer | None = None
         self._auth: Auth | None = None
 
@@ -202,7 +212,7 @@ class ContextureServer:
         """The SDK object, told this server's identity and its lifecycle."""
 
         middleware = ()
-        if self._root_selector is not None:
+        if self._surface_selector is not None:
             prompt_refs = {
                 published_name(entry): entry.opens for entry in self._surface.prompts
             }
@@ -210,8 +220,8 @@ class ContextureServer:
                 str(entry.uri): entry.opens for entry in self._surface.resources
             }
             middleware = (
-                RootSelectionMiddleware(
-                    selector=self._root_selector,
+                SurfaceSelectionMiddleware(
+                    selector=self._surface_selector,
                     index=self._index,
                     tree=self._surface.tree,
                     prompt_refs=prompt_refs,
@@ -225,7 +235,7 @@ class ContextureServer:
             instructions=self.instructions
             or (
                 instructions_module.neutral()
-                if self._root_selector is not None
+                if self._surface_selector is not None
                 else instructions_module.build(self._surface.tree)
             ),
             middleware=middleware,

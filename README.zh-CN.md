@@ -37,7 +37,7 @@ uv add contexture-mcp
 # 或：python -m pip install contexture-mcp
 ```
 
-安装候选版本时请指定完整版本，例如 `contexture-mcp==0.12.0rc1`。
+本源码版本发布后，可通过 `contexture-mcp==0.13.0` 固定安装。
 
 ## 五分钟创建应用
 
@@ -161,9 +161,20 @@ uv run contexture serve --transport streamable-http --port 8080
 绑定非回环地址时，必须显式选择认证或匿名访问策略，并设置允许的 Host 与
 Origin。代码中通过 `ContextureOptions` 配置，详见[中文手册](docs/handbook.zh-CN.md)。
 
-HTTP 部署可以用 `Contexture-Roots` 请求头与 `HeaderRootSelector` 把一次
-请求限制到若干完整根树；应用还可根据已验证的 `Principal` 设置更严格的
-上限。根选择是能力表面边界，不替代业务权限判断。
+HTTP 部署可以用 `Contexture-Select` 请求头与 `HeaderSurfaceSelector` 把一次
+请求缩小到若干完整子树。`team/notebook-editor` 精确选择该子树，`team/*`
+选择 `team` 的各个直接成员子树，且 `*` 永远不会跨越 `/`。旧的
+`Contexture-Roots` 与 `HeaderRootSelector` 名称继续兼容。应用还可以根据已
+验证的 `Principal` 设置更严格的上限。选择是能力表面边界，不替代业务权限
+判断。
+
+```python
+from contexture.server import HeaderSurfaceSelector, compile_application
+
+server = compile_application(app).server(
+    surface_selector=HeaderSurfaceSelector(),
+)
+```
 
 ## 面向人的 REST 路由
 

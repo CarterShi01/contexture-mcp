@@ -21,7 +21,7 @@ from ..core.model.runtime import ApplicationRuntime
 from ..core.model.telemetry import InMemoryTelemetry, Telemetry
 from .binding import TypeHintBinding
 from .options import ContextureOptions
-from .root_selector import RootSelector
+from .root_selector import RootSelector, SurfaceSelector
 from .server import ContextureServer
 from .surface import DisclosureSurface
 
@@ -43,7 +43,12 @@ class CompiledApplication:
 
         return Disclosure(self.index, frozenset(self.prompt_root_refs))
 
-    def server(self, *, root_selector: RootSelector | None = None) -> ContextureServer:
+    def server(
+        self,
+        *,
+        surface_selector: SurfaceSelector | None = None,
+        root_selector: RootSelector | None = None,
+    ) -> ContextureServer:
         """Create the immutable MCP server for this compiled declaration."""
 
         return ContextureServer(
@@ -53,6 +58,7 @@ class CompiledApplication:
             resources=self.resources,
             prompt_roots=self.prompt_root_refs,
             telemetry=self.telemetry,
+            surface_selector=surface_selector,
             root_selector=root_selector,
         )
 
@@ -76,7 +82,12 @@ class CompiledDisclosureApplication:
     def disclosure(self) -> Disclosure:
         return Disclosure(self.index, frozenset(self.prompt_root_refs))
 
-    def server(self, *, root_selector: RootSelector | None = None) -> ContextureServer:
+    def server(
+        self,
+        *,
+        surface_selector: SurfaceSelector | None = None,
+        root_selector: RootSelector | None = None,
+    ) -> ContextureServer:
         surface = DisclosureSurface.of(
             self.disclosure,
             prompts=self.prompts,
@@ -87,6 +98,7 @@ class CompiledDisclosureApplication:
             name=self.name,
             telemetry=self.telemetry,
             surface=surface,
+            surface_selector=surface_selector,
             root_selector=root_selector,
         )
 

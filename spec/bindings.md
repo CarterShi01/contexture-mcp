@@ -17,7 +17,7 @@ the produced Tool schema. No binding is required to reproduce Python class
 inheritance or reflection.
 
 Bindings must also preserve ordinary versus Prompt-only roots, bound runtime
-versus unbound disclosure-only compilation, monotonic complete-root selection,
+versus unbound disclosure-only compilation, monotonic path-selected surfaces,
 and explicit REST publication when they offer that Host adapter. A binding may
 omit REST and still conform to the MCP contract; it may not expose a
 caller-supplied arbitrary Tool ref and call that equivalent to `RestSurface`.

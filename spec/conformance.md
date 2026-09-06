@@ -19,11 +19,14 @@ own declaration syntax and satisfies these rules and the exact golden outputs.
 8. Prompt, Resource, completion, instructions, and signposts reproduce the
    corresponding golden files. A Resource targets only an argument-free,
    read-only Tool.
-9. A resolved RootSelection is exact, non-empty, and root-level. Every protocol
-   door and invocation graph observes the same effective selection. Concurrent
+9. A resolved SurfaceSelection is exact, non-empty, and reduced to a minimal
+   antichain. Exact deep refs and terminal direct-child `*` patterns resolve
+   against the canonical Index; `*` never crosses `/`. Every protocol door and
+   invocation graph observes the same effective selection. Concurrent
    selections cannot affect one another.
-10. Selecting one root preserves its complete subtree and immediate sibling
-    groups. A cross-root `uses` edge does not widen the selection.
+10. Every resolved ref becomes a surface root with its complete subtree. Its
+    unselected ancestors and siblings remain hidden, and a `uses` edge does not
+    widen the selection.
 11. A caller-requested selection can only attenuate an identity-derived ceiling.
     The framework does not treat selection as business authorization.
 12. Channels opens before runtime serving and closes afterward. Failed open

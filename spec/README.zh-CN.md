@@ -14,8 +14,8 @@ bindings.md     各语言可采用的编写与 Schema 策略（非规范）
 ```
 
 核心不变量包括：惰性 Application；Role/Skill/Tool 闭合集；Schema 与调用由
-同一 Binding 管理；四工具固定 MCP 网关；Prompt-only roots；完整根树、单调
-收窄的请求选择；运行时与独立 disclosure-only 编译分离；身份与 Telemetry
+同一 Binding 管理；四工具固定 MCP 网关；Prompt-only roots；精确路径与直接
+子级通配符组成的单调收窄 surface 选择；运行时与独立 disclosure-only 编译分离；身份与 Telemetry
 按调用隔离；REST 只能显式发布 Tool 白名单。
 
 `golden/` 是字节级契约。修改它之前必须确认协议行为确实要改变，然后运行：

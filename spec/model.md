@@ -84,23 +84,36 @@ and exposes only discover/open plus optional Prompts. Tool nodes in this graph
 are structural cards, not callable capabilities. Runtime and disclosure-only
 applications never share node instances, Indexes, telemetry, or lifecycle.
 
-## Root-selected views
+## Path-selected views
 
-A RootSelection is an immutable set of exact top-level root names, or the
-compatibility value “all.” A resolved selection must be non-empty and contain
-only registered roots. Intersection is monotonic: a derived view can never
-restore a removed root.
+A SurfaceSelection is an immutable set of exact refs and terminal direct-child
+patterns, or the compatibility value “all.” `RootSelection` is its 0.11/0.12
+compatibility name. A selector is either an exact Contexture ref such as
+`team/notebook-editor`, or a pattern whose only wildcard is the complete final
+segment, such as `team/*`. `*` matches exactly one segment and never crosses
+`/`; recursive wildcards, partial-segment globs, regular expressions, and
+negation are not part of the selector language.
 
-Selecting a root selects its complete containment subtree. Descendants cannot
-be selected independently. A cross-root `uses` card is visible only if its
-target root is also selected. The same effective selection governs
-instructions, discover, open, invoke, Prompts, Resources, completion, errors,
-and the graph visible during invocation.
+Resolution expands every pattern against one compiled Index, rejects selectors
+that match nothing, and reduces overlapping refs to a minimal antichain. Each
+resolved ref becomes a surface root and selects its complete containment
+subtree. A selected descendant is disclosed directly under its canonical ref;
+its ancestors and siblings are not disclosed. Intersection is path-aware and
+monotonic: when one selected subtree contains another, the narrower root is the
+intersection, and a derived view can never restore excluded capabilities.
+
+A `uses` card is visible only if its target ref is also inside the effective
+selection. The same effective selection governs instructions, discover, open,
+invoke, Prompts, Resources, completion, errors, and the graph visible during
+invocation. The parent of a promoted surface root is not visible through that
+graph.
 
 Transport adapters may obtain a requested selection from trusted configuration
-or request metadata. Caller input only attenuates. An implementation may
-intersect it with an application-owned ceiling derived from verified identity;
-selection itself is not authorization.
+or request metadata. The HTTP spelling is `Contexture-Select`; the legacy
+`Contexture-Roots` spelling remains compatible, and a request must not send
+both. Caller input only attenuates. An implementation may intersect it with an
+application-owned ceiling derived from verified identity; selection itself is
+not authorization.
 
 ## Host surfaces
 

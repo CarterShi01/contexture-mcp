@@ -123,6 +123,7 @@ def _run(
     token: str | None = None,
     modern: bool = True,
     roots: str | None = None,
+    select: str | None = None,
 ):
     """Open one session against `server` and run `work` in it."""
 
@@ -130,6 +131,7 @@ def _run(
         headers = {
             **({"Authorization": f"Bearer {token}"} if token else {}),
             **({"Contexture-Roots": roots} if roots is not None else {}),
+            **({"Contexture-Select": select} if select is not None else {}),
         }
         async with httpx2.AsyncClient(headers=headers) as client:
             async with streamable_http_client(
@@ -244,7 +246,7 @@ class TransportTests(unittest.TestCase):
         self.assertIn("ops", discovered)
         self.assertNotIn("audit", discovered)
         self.assertTrue(refused.is_error)
-        self.assertIn("outside this request's root surface", _text(refused))
+        self.assertIn("outside this request's selected surface", _text(refused))
         self.assertIn("open-ops", prompts)
         self.assertNotIn("open-audit", prompts)
         self.assertIn("contexture://ops/whoami", resources)
@@ -254,6 +256,54 @@ class TransportTests(unittest.TestCase):
         )
         self.assertTrue(prompt_refused)
         self.assertTrue(resource_refused)
+
+    def test_deep_selector_projects_one_capability_across_every_protocol_door(self) -> None:
+        async def work(session):
+            discovered = await session.call_tool("contexture_discover", {})
+            opened = await session.call_tool(
+                "contexture_open", {"ref": "ops/whoami"}
+            )
+            ran = await session.call_tool(
+                "contexture_invoke_read_only", {"ref": "ops/whoami"}
+            )
+            parent = await session.call_tool("contexture_open", {"ref": "ops"})
+            prompts = await session.list_prompts()
+            resources = await session.list_resources()
+            completion = await session.complete(
+                types.PromptReference(name="goto"),
+                {"name": "ref", "value": ""},
+            )
+            return (
+                session.discover_result.instructions,
+                _text(discovered),
+                _text(opened),
+                _text(ran),
+                parent,
+                {prompt.name for prompt in prompts.prompts},
+                {str(resource.uri) for resource in resources.resources},
+                completion.completion.values,
+            )
+
+        (
+            instructions,
+            discovered,
+            opened,
+            ran,
+            parent,
+            prompts,
+            resources,
+            completions,
+        ) = _run(self._server, work, select="ops/whoami")
+
+        for payload in (instructions, discovered, opened):
+            self.assertIn("ops/whoami", payload)
+            self.assertNotIn("roll_back", payload)
+            self.assertNotIn("audit", payload)
+        self.assertIn("anonymous", ran)
+        self.assertTrue(parent.is_error)
+        self.assertEqual(prompts, {"goto"})
+        self.assertEqual(resources, {"contexture://ops/whoami"})
+        self.assertEqual(completions, ["ops/whoami"])
 
     def test_every_request_is_answered_without_a_session(self) -> None:
         """What lets two replicas sit behind one address.

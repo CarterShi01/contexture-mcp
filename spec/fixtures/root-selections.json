@@ -1,14 +1,26 @@
 {
-  "registered_roots": ["team", "work", "account"],
+  "registered_refs": [
+    "team",
+    "team/notebook-editor",
+    "team/release-manager",
+    "team/release-manager/deploy",
+    "work",
+    "account"
+  ],
   "cases": [
     {"input": null, "ceiling": null, "effective": ["team", "work", "account"]},
     {"input": ["team", "work"], "ceiling": null, "effective": ["team", "work"]},
     {"input": ["team", "team"], "ceiling": null, "effective": ["team"]},
+    {"input": ["team/notebook-editor"], "ceiling": null, "effective": ["team/notebook-editor"]},
+    {"input": ["team/*"], "ceiling": null, "effective": ["team/notebook-editor", "team/release-manager"]},
+    {"input": ["team", "team/notebook-editor"], "ceiling": null, "effective": ["team"]},
     {"input": ["team", "work"], "ceiling": ["team"], "effective": ["team"]},
+    {"input": ["team"], "ceiling": ["team/notebook-editor"], "effective": ["team/notebook-editor"]},
     {"input": [], "error": "empty-selection"},
-    {"input": ["team/member"], "error": "not-a-root"},
-    {"input": ["unknown"], "error": "unknown-root"}
+    {"input": ["team/**"], "error": "invalid-selector"},
+    {"input": ["team/missing"], "error": "unknown-selector"}
   ],
-  "containment_rule": "A selected root includes every containment descendant.",
-  "cross_root_uses_rule": "A uses target is visible only when its root is also selected."
+  "containment_rule": "Each resolved selector becomes a surface root and includes its complete containment subtree.",
+  "wildcard_rule": "A terminal * matches direct members only and never crosses a separator.",
+  "uses_rule": "A uses target is visible only when the target ref is inside the effective selection."
 }

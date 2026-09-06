@@ -1,4 +1,4 @@
-"""Request adapters for root-level Contexture capability projections."""
+"""Request adapters for path-selected Contexture capability surfaces."""
 
 from __future__ import annotations
 
@@ -14,42 +14,47 @@ from ..core.principal import Principal
 from ..core.model.disclosure import Disclosure
 from ..core.model.index import Index
 from ..core.model.root_selection import (
-    RootSelection,
-    RootSelectionError,
-    bound_root_selection,
+    SurfaceSelection,
+    SurfaceSelectionError,
+    bound_surface_selection,
 )
 from . import instructions as instructions_module
 from .identity import principal_of
 from .messages import GOTO_ARGUMENT, GOTO_PROMPT
 
+SELECT_HEADER = "Contexture-Select"
 ROOTS_HEADER = "Contexture-Roots"
-RootCeiling = Callable[[Principal | None], RootSelection]
+SurfaceCeiling = Callable[[Principal | None], SurfaceSelection]
 
 
 @runtime_checkable
-class RootSelector(Protocol):
-    """Turn request facts into a resolved, immutable root selection."""
+class SurfaceSelector(Protocol):
+    """Turn request facts into a resolved, immutable surface selection."""
 
     def select(
         self,
         index: Index,
         headers: Mapping[str, str] | None,
         principal: Principal | None,
-    ) -> RootSelection: ...
+    ) -> SurfaceSelection: ...
 
 
 @dataclass(frozen=True, slots=True)
-class HeaderRootSelector:
-    """Read an exact comma-separated root allowlist from an HTTP header.
+class HeaderSurfaceSelector:
+    """Read a comma-separated path selector allowlist from HTTP headers.
 
     The header is an attenuation request, never an identity assertion.  An
     optional application-owned ``ceiling`` derives authority from the verified
-    Principal; the effective surface is always their intersection.
+    Principal; the effective surface is always their intersection. The 0.11
+    ``Contexture-Roots`` spelling remains accepted when the new header is
+    absent; sending both is rejected rather than resolved by precedence.
     """
 
-    header: str = ROOTS_HEADER
-    ceiling: RootCeiling | None = None
+    header: str = SELECT_HEADER
+    legacy_header: str | None = ROOTS_HEADER
+    ceiling: SurfaceCeiling | None = None
     max_length: int = 4096
+    # Compatibility spelling retained from HeaderRootSelector.
     max_roots: int = 128
 
     def select(
@@ -57,51 +62,62 @@ class HeaderRootSelector:
         index: Index,
         headers: Mapping[str, str] | None,
         principal: Principal | None,
-    ) -> RootSelection:
+    ) -> SurfaceSelection:
         raw = _header(headers, self.header)
+        legacy = (
+            _header(headers, self.legacy_header)
+            if self.legacy_header is not None and self.legacy_header != self.header
+            else None
+        )
+        if raw is not None and legacy is not None:
+            raise SurfaceSelectionError(
+                f"Send either {self.header} or {self.legacy_header}, not both."
+            )
+        used_header = self.header if raw is not None else self.legacy_header
+        raw = raw if raw is not None else legacy
         if raw is None:
-            requested = RootSelection.all()
+            requested = SurfaceSelection.all()
         else:
             if len(raw) > self.max_length:
-                raise RootSelectionError(
-                    f"{self.header} exceeds the {self.max_length}-character limit."
+                raise SurfaceSelectionError(
+                    f"{used_header} exceeds the {self.max_length}-character limit."
                 )
             parts = tuple(part.strip() for part in raw.split(","))
             if len(parts) > self.max_roots:
-                raise RootSelectionError(
-                    f"{self.header} exceeds the {self.max_roots}-root limit."
+                raise SurfaceSelectionError(
+                    f"{used_header} exceeds the {self.max_roots}-selector limit."
                 )
-            requested = RootSelection.only(parts).resolve(index)
+            requested = SurfaceSelection.only(parts).resolve(index)
 
         if self.ceiling is None:
             return requested.resolve(index)
         ceiling = self.ceiling(principal)
-        if not isinstance(ceiling, RootSelection):
-            raise TypeError("A root ceiling must return RootSelection.")
+        if not isinstance(ceiling, SurfaceSelection):
+            raise TypeError("A surface ceiling must return SurfaceSelection.")
         return requested.intersect(ceiling.resolve(index)).resolve(index)
 
 
 @dataclass(frozen=True, slots=True)
-class FixedRootSelector:
+class FixedSurfaceSelector:
     """A transport-independent fixed surface, useful for stdio hosts."""
 
-    selection: RootSelection
+    selection: SurfaceSelection
 
     def select(
         self,
         index: Index,
         headers: Mapping[str, str] | None,
         principal: Principal | None,
-    ) -> RootSelection:
+    ) -> SurfaceSelection:
         del headers, principal
         return self.selection.resolve(index)
 
 
 @dataclass(frozen=True, slots=True)
-class RootSelectionMiddleware:
+class SurfaceSelectionMiddleware:
     """Bind and consistently enforce one selection across every MCP door."""
 
-    selector: RootSelector
+    selector: SurfaceSelector
     index: Index
     tree: Disclosure
     prompt_refs: Mapping[str, str]
@@ -119,15 +135,17 @@ class RootSelectionMiddleware:
                 _request_headers(ctx.request),
                 principal_of(get_access_token()),
             )
-        except RootSelectionError as exc:
+        except SurfaceSelectionError as exc:
             raise MCPError(code=INVALID_PARAMS, message=str(exc)) from exc
 
-        with bound_root_selection(selection):
+        with bound_surface_selection(selection):
             self._guard(ctx, selection)
             result = await call_next(ctx)
             return self._filter(ctx.method, result, selection)
 
-    def _guard(self, ctx: ServerRequestContext[Any, Any], selection: RootSelection) -> None:
+    def _guard(
+        self, ctx: ServerRequestContext[Any, Any], selection: SurfaceSelection
+    ) -> None:
         params = ctx.params or {}
         ref: str | None = None
         if ctx.method == "prompts/get":
@@ -142,11 +160,11 @@ class RootSelectionMiddleware:
         if ref is not None and not selection.contains_ref(ref):
             raise MCPError(
                 code=INVALID_PARAMS,
-                message="The requested entry is outside this request's root surface.",
+                message="The requested entry is outside this request's selected surface.",
             )
 
     def _filter(
-        self, method: str, result: HandlerResult, selection: RootSelection
+        self, method: str, result: HandlerResult, selection: SurfaceSelection
     ) -> HandlerResult:
         if result is None:
             return result
@@ -241,11 +259,26 @@ def _item(value: Any, name: str) -> Any:
     return value.get(name) if isinstance(value, Mapping) else getattr(value, name, None)
 
 
+# Compatibility names from the root-only 0.11/0.12 API. They are aliases, not
+# parallel implementations, so every adapter observes the same path semantics.
+RootCeiling = SurfaceCeiling
+RootSelector = SurfaceSelector
+HeaderRootSelector = HeaderSurfaceSelector
+FixedRootSelector = FixedSurfaceSelector
+RootSelectionMiddleware = SurfaceSelectionMiddleware
+
+
 __all__ = [
+    "FixedSurfaceSelector",
     "FixedRootSelector",
+    "HeaderSurfaceSelector",
     "HeaderRootSelector",
     "ROOTS_HEADER",
+    "SELECT_HEADER",
     "RootCeiling",
     "RootSelector",
     "RootSelectionMiddleware",
+    "SurfaceCeiling",
+    "SurfaceSelectionMiddleware",
+    "SurfaceSelector",
 ]
