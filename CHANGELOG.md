@@ -6,6 +6,11 @@ may contain documented breaking changes.
 
 ## [Unreleased]
 
+### Documentation
+
+- Link the guarded TypeScript and Go binding scaffolds from the English,
+  Simplified Chinese, and language-neutral entry points.
+
 ## [0.12.0rc1] - 2026-09-06
 
 ### Added

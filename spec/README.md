@@ -49,6 +49,8 @@ against the conformance rules and golden surface. Fixtures describe Tool inputs
 but not Tool bodies: business execution is binding-specific; the public model
 and protocol behavior are not.
 
-The Python package is currently the only shipped binding. TypeScript, Go, and
-PHP rows in `bindings.md` are compatibility guidance, not claims that those
-packages exist.
+The Python package is currently the only shipped binding. The
+[TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript) and
+[Go](https://github.com/CarterShi01/contexture-mcp-go) repositories are guarded
+scaffolds, not installable implementations. The PHP row in `bindings.md`
+remains compatibility guidance only.

@@ -2,6 +2,10 @@
 
 [简体中文](README.zh-CN.md) · [Handbook](docs/handbook.md) · [Specification](spec/README.md) · [Changelog](CHANGELOG.md)
 
+Implementations: Python (this repository) ·
+[TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript) ·
+[Go](https://github.com/CarterShi01/contexture-mcp-go)
+
 Contexture is a Python framework for exposing a large application capability
 graph to agents without placing every tool and instruction in the model's
 context at once. You declare Roles, Skills, and Tools; Contexture compiles an

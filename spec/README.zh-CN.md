@@ -27,5 +27,7 @@ git diff -- spec/golden
 
 逐项审核差异，不能为了让测试变绿而机械更新。
 
-当前仓库只发布 Python Binding。`bindings.md` 中 TypeScript、Go 与 PHP 是兼容
-设计目标，不代表已有可安装实现。
+当前仍然只发布 Python Binding。
+[TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript) 与
+[Go](https://github.com/CarterShi01/contexture-mcp-go) 仓库目前是带发布保护的工程
+骨架，不是可安装实现；`bindings.md` 中的 PHP 仍然只代表兼容设计目标。

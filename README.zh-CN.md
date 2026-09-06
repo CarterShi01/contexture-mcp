@@ -2,6 +2,10 @@
 
 [English](README.md) · [中文手册](docs/handbook.zh-CN.md) · [语言无关规范](spec/README.md) · [变更记录](CHANGELOG.md)
 
+语言实现：Python（当前仓库）·
+[TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript) ·
+[Go](https://github.com/CarterShi01/contexture-mcp-go)
+
 Contexture 是一个 Python 框架，用来把大型应用的能力图暴露给 Agent，
 同时避免一次性把所有工具与指令塞进模型上下文。开发者声明 Role、Skill
 与 Tool；Contexture 将它们编译为不可变图，并通过一个很小、固定的 MCP

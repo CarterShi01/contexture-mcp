@@ -34,8 +34,10 @@ replaced by local unit tests.
 
 ## Deliberately deferred
 
-- TypeScript, Go, and PHP packages. Their compatibility shape is documented,
-  but no unmaintained placeholder package will be published.
+- Publishing TypeScript, Go, and PHP packages. Separate TypeScript and Go
+  repositories now contain guarded, unpublished scaffolds; neither may claim
+  conformance until its shared fixtures and golden outputs pass. PHP remains a
+  documented compatibility target only.
 - A hosted documentation site; repository documentation is the current source.
 - Translation of historical ADRs. ADRs preserve decision history; current user
   paths are bilingual.
