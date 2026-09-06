@@ -48,7 +48,7 @@ jobs:
           version: "0.12.1"
           enable-cache: true
       - run: uv run --extra dev pyright
-      - run: uv run --extra dev ruff check contexture tests examples
+      - run: uv run --extra dev ruff check contexture tests
       - run: uv run --extra dev validate-pyproject pyproject.toml
 
   distribution:

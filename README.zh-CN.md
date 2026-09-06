@@ -196,7 +196,7 @@ cd contexture-mcp
 uv sync --extra dev
 uv run --extra dev pytest -q
 uv run --extra dev pyright
-uv run --extra dev ruff check contexture tests examples
+uv run --extra dev ruff check contexture tests
 uv build
 uv run --extra dev twine check --strict dist/*
 ```

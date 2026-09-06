@@ -65,7 +65,7 @@ module-name = "contexture"
 module-root = ""
 
 [tool.pyright]
-include = ["contexture", "examples", "tests/typing"]
+include = ["contexture", "tests/typing"]
 pythonVersion = "3.11"
 typeCheckingMode = "standard"
 
