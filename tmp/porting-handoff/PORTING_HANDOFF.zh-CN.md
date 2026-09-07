@@ -11,6 +11,19 @@
 - TypeScript 绑定：`master` 已在 `8c82275` 与远端同步，但审计补充的两个证据文件仍未提交：`scripts/verify-package-consumer.mjs` 和 `test/system-api.test.ts`。下一位 agent 必须保留它们，跑完整门禁并审计后再提交推送。
 - 产品账本：60 个源码模块中，33 个 `implemented`、1 个 `verified`、26 个 `missing`。只有两端都有聚焦执行证据、语言门禁、消费者证据和独立审计后才能计入。
 
+## 完成验收定义
+
+只有当 manifest 中全部 60 个模块都不再是 `missing`，且每个公开产品面在 Go 和 TypeScript 中都有可执行等价证据时，整体目标才算完成。每个模块或 Host adapter 必须同时具备：
+
+1. 原生实现和真正执行该行为的聚焦测试；
+2. 所有相关语言门禁，包括 conformance、竞态/类型检查、lint/format、build 以及 package/scaffold consumer；
+3. 对照规范与 Python 参考实现的独立只读审计，并明确记录所有语言原生映射；
+4. 英文第一、简体中文翻译的权威文档；
+5. 不得削弱/删除测试，不得只凭复制 fixture 声称完成；除非 Python producer 重新生成并明确评审协议变更，不得修改 golden；
+6. 两个绑定仓库工作树干净，远端 `master` 与已接受提交同步。
+
+代码行数、仅能编译、复制 fixture、说明文字或单个绿色窄测试都不满足完成条件。最终审计必须运行完整 Python gate，校验 product manifest 和 porting contract，并确认没有未审阅的 `missing` 模块或未解决的规范冲突。
+
 ## 最近已推送工作
 
 Go 已包含并审计通过 foundation、identity、errors、Role、Tool、Node、Disclosure API、Execution API、GraphContext 和 server options。最新 options 修复为 `fd9df4a`，完整 Go 门禁和审计均通过。

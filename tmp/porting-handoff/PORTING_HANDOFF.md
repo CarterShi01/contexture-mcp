@@ -19,6 +19,28 @@ It is not a product-parity claim.
   source modules. Credit requires both bindings, focused execution evidence,
   native gates, consumer evidence, and an independent audit.
 
+## Completion acceptance definition
+
+The full objective is complete only when all 60 manifest modules are no longer
+`missing`, and every public product surface has equivalent executable evidence
+in both bindings. For every module or Host adapter, the evidence must include:
+
+1. native implementation and focused tests that execute the behavior;
+2. all relevant language gates, including conformance, race/type checks,
+   lint/format, build and package/scaffold consumers;
+3. independent read-only audit against the normative specification and Python
+   reference, with any native mapping explicitly documented;
+4. English-first documentation plus the Simplified Chinese translation;
+5. no weakened/deleted tests, no copied-fixture-only claims, and no golden
+   changes unless the Python producer regenerated a deliberate protocol change;
+6. clean binding worktrees and remote `master` synchronized with accepted
+   commits.
+
+Line counts, compilation alone, copied fixtures, prose, or a green narrow test
+do not satisfy completion. The final audit must run the complete Python gate,
+verify the product manifest and porting contract, and confirm there are no
+unreviewed `missing` modules or unresolved specification conflicts.
+
 ## Latest pushed binding work
 
 Go includes the audited foundation, identity, errors, Role, Tool, Node,
