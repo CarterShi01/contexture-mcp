@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-- Python 参考仓库：本地 `release/0.12.0`，比远端分支超前 33 个提交。证据账本只保留在本地，未推送到 Python `master`。
+- Python 参考仓库：本地 `release/0.12.0`，比远端分支超前 34 个提交。证据账本只保留在本地，未推送到 Python `master`。
 - Go 绑定：`master` 干净且与 `origin/master` 同步。
 - TypeScript 绑定：`master` 已在 `8c82275` 与远端同步，但审计补充的两个证据文件仍未提交：`scripts/verify-package-consumer.mjs` 和 `test/system-api.test.ts`。下一位 agent 必须保留它们，跑完整门禁并审计后再提交推送。
 - 产品账本：60 个源码模块中，33 个 `implemented`、1 个 `verified`、26 个 `missing`。只有两端都有聚焦执行证据、语言门禁、消费者证据和独立审计后才能计入。

@@ -7,7 +7,7 @@ It is not a product-parity claim.
 
 ## Current state
 
-- Python reference: local `release/0.12.0`, 33 commits ahead of its remote
+- Python reference: local `release/0.12.0`, 34 commits ahead of its remote
   branch. Its evidence ledger is intentionally local and has not been pushed
   to Python `master`.
 - Go binding: `master` is clean and synchronized with `origin/master`.
