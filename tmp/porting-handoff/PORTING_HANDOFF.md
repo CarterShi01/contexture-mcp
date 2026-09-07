@@ -7,11 +7,14 @@ It is not a product-parity claim.
 
 ## Current state
 
-- Python reference: local `release/0.12.0`, 32 commits ahead of its remote
+- Python reference: local `release/0.12.0`, 33 commits ahead of its remote
   branch. Its evidence ledger is intentionally local and has not been pushed
   to Python `master`.
 - Go binding: `master` is clean and synchronized with `origin/master`.
-- TypeScript binding: `master` is clean and synchronized with `origin/master`.
+- TypeScript binding: `master` is synchronized with `origin/master` at
+  `8c82275`, but two post-audit evidence edits are currently uncommitted:
+  `scripts/verify-package-consumer.mjs` and `test/system-api.test.ts`. Preserve
+  them, run the full gate, then commit/push only after audit.
 - Product ledger: 33 `implemented`, 1 `verified`, 26 `missing` out of 60
   source modules. Credit requires both bindings, focused execution evidence,
   native gates, consumer evidence, and an independent audit.
@@ -20,17 +23,19 @@ It is not a product-parity claim.
 
 Go includes the audited foundation, identity, errors, Role, Tool, Node,
 Disclosure API, Execution API, GraphContext, and server options work. The
-latest options fix is `cde084f`; it has full Go gates and completed audit.
+latest options fix is `fd9df4a`; it has full Go gates and completed audit.
 
 TypeScript includes the audited foundation, identity, errors, Role, and Tool
 work. Tool commit `5cec7be` passed the complete serial `npm run check` and its
-independent audit. An uncommitted Disclosure API slice was present when this
-handoff was prepared; finish and push it only after its complete gate and audit.
+independent audit. Disclosure source commit `8c82275` passed its full gate,
+but its independent audit required additional public-facade and packed-consumer
+evidence; those two evidence edits are the uncommitted files listed above.
 
 ## Immediate continuation order
 
-1. Finish the existing TypeScript Disclosure API slice; run exclusive
-   `npm run check`, push `master`, and independently audit it.
+1. Finish and verify the existing TypeScript Disclosure evidence edits; run
+   exclusive `npm run check`, commit/push them, and independently audit the
+   complete Disclosure API slice.
 2. Implement and audit TypeScript server options. Known gaps are auth ownership
    and stdio conflict handling, body-size/413 enforcement, `?`/`#` path
    rejection, listener safety, packed-consumer evidence, and bilingual docs.
