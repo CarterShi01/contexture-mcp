@@ -14,7 +14,7 @@ the user asked. The only way a capability becomes deferrable is for it not to be
 listed at all: its name, description and schema travel inside a payload and
 arrive when the role holding it is opened.
 
-So what occupies this plane is the framework's own four entry points, and this
+So what occupies this plane is the framework's own five entry points, and this
 module declares **which** they are and nothing else. Their descriptions and
 their behaviour live together in `core.model.system_api`, because since ADR 014
 navigation is part of the kernel. The names arrive from the shared ground, so
@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from ..constants import (
     DISCOVER_TOOL,
+    INSPECT_TOOL,
     INVOKE_READ_ONLY_TOOL,
     INVOKE_TOOL,
     OPEN_TOOL,
@@ -53,10 +54,11 @@ class ToolPlane:
     where before it was a paragraph.
     """
 
-    #: Every name on this plane, in registration order. Four, whatever the
+    #: Every name on this plane, in registration order. Five, whatever the
     #: declaration contains — business capabilities travel inside payloads.
     names: ClassVar[tuple[str, ...]] = (
         DISCOVER_TOOL,
+        INSPECT_TOOL,
         OPEN_TOOL,
         INVOKE_READ_ONLY_TOOL,
         INVOKE_TOOL,
@@ -76,6 +78,7 @@ TOOLS = ToolPlane()
 
 __all__ = [
     "DISCOVER_TOOL",
+    "INSPECT_TOOL",
     "INVOKE_READ_ONLY_TOOL",
     "INVOKE_TOOL",
     "OPEN_TOOL",

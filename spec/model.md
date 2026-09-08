@@ -39,6 +39,20 @@ comments. Containment is a forest and gives every node one slash-separated
 address. A Role may contain child Roles, Skills, and Tools. `uses` points to an
 existing address but creates neither containment nor depth.
 
+Every node has three disclosure levels. ROUTE is its pure routing card:
+`kind`, `name`, `description`, and, when registered, canonical `ref`. INSPECT
+is a framework-generated, non-activating projection consisting of that card,
+one level of pure routing cards for direct members, and pure routing cards for
+declared `uses`. ACTIVE contains the type-specific actionable surface.
+
+INSPECT introduces no authored field. It MUST NOT contain Role or Skill
+instructions, Tool execution facets or schemas, Publication designation or
+finishing contracts, content, invocation results, or recursive expansion.
+Batch inspection MUST preserve request order and declaration order, MUST be
+atomic, and MUST enforce the same selection and model-visibility boundary as
+open. Breadth is multiple requested refs; depth is a later explicit inspection
+of refs returned as cards.
+
 A Role exposes complete immediate sibling groups when opened. Reverse
 dependencies and whole-graph facts are available only through an explicitly
 declared introspection Tool; ordinary disclosure does not reveal unentered
@@ -146,7 +160,7 @@ read-only Tool.
 ## Compilation kinds
 
 Runtime compilation produces a bound Index, ApplicationRuntime, DisclosureAPI,
-ExecutionAPI, four-tool MCP surface, optional Prompts and Resources, and the
+ExecutionAPI, five-tool MCP surface, optional Prompts and Resources, and the
 Channels lifecycle.
 
 Disclosure-only compilation produces an independent unbound Index and only
@@ -188,7 +202,8 @@ not authorization.
 
 ## Host surfaces
 
-The MCP model-controlled surface is a fixed gateway. Business Tools appear in
+The MCP model-controlled surface is a fixed gateway: discover, batch inspect,
+open, read-only invoke, and writing invoke. Business Tools appear in
 payload cards, never in the top-level MCP tool list. Prompt and Resource use
 their native MCP primitives according to who chooses the entry.
 

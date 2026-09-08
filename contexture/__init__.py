@@ -10,14 +10,14 @@ to the runtime that connects.
 The package is layered, and the layering is the architecture:
 
     contexture.core.model          the kernel: what a capability is, where it
-                                   hangs, and the four calls an agent makes
+                                   hangs, and the five calls an agent makes
     contexture.core.mcp_interface  what each MCP primitive carries; still no SDK
     contexture.server              compilation and the native MCP Host adapter
     contexture.web                 the explicit REST/ASGI Host adapter
 
 Each layer may import the ones below it and never the reverse. This facade
 exports what a business developer *declares* with, and nothing the framework
-*runs* with: importing it loads neither the forest, nor the four entry points,
+*runs* with: importing it loads neither the forest, nor the five entry points,
 nor `contexture.server`, nor the SDK, so a project that only models context
 pays for only that.
 """

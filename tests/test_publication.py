@@ -238,6 +238,20 @@ class PublicationModelTests(unittest.TestCase):
 
 
 class PublicationDisclosureTests(unittest.TestCase):
+    def test_inspect_shows_publication_as_a_plain_member_without_contract(self) -> None:
+        inspected = Disclosure.of(Worker).inspect(["worker", PUB_REF])
+
+        owner, publication = inspected["items"]
+        self.assertIn(PUB_REF, [card["ref"] for card in owner["members"]["roles"]])
+        rendered = json.dumps(inspected)
+        self.assertNotIn("publication", owner)
+        self.assertNotIn(CONTRACT, rendered)
+        self.assertNotIn(OWNER_TEXT, rendered)
+        self.assertNotIn(PROCEDURE, rendered)
+        self.assertNotIn(METHOD, rendered)
+        self.assertNotIn("input_schema", rendered)
+        self.assertEqual(publication["node"]["ref"], PUB_REF)
+
     def test_none_preserves_exact_legacy_payload_and_instruction_whitespace(self) -> None:
         expected_route = {
             "kind": "role", "name": "worker", "description": "The worker responsibility."

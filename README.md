@@ -38,8 +38,7 @@ uv add contexture-mcp
 # or: python -m pip install contexture-mcp
 ```
 
-To pin the upcoming Python 0.14.0 release after publication, request
-`contexture-mcp==0.14.0`.
+To pin this release, request `contexture-mcp==0.15.0`.
 
 ## Five-minute application
 
@@ -141,16 +140,19 @@ public visibility or Prompt/Resource exposure pointers. See the
 
 ## Progressive disclosure
 
-MCP hosts always see four fixed model-controlled tools:
+MCP hosts always see five fixed model-controlled tools:
 
 ```text
 contexture_discover
+contexture_inspect
 contexture_open
 contexture_invoke_read_only
 contexture_invoke
 ```
 
-`discover` returns root cards. Opening a Role returns its instructions and one
+`discover` returns root cards. `inspect` compares a shortlist through one level
+of pure routing cards without activating instructions or disclosing Tool
+schemas. Opening a Role returns its instructions and one
 level of child Role, Skill, and Tool cards. A Tool card carries the ref, input
 schema, and read-only classification needed to invoke it. Business Tools never
 inflate MCP's top-level tool list.

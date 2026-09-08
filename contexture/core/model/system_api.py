@@ -40,6 +40,7 @@ from typing import Any
 
 from ..constants import (
     DISCOVER_TOOL,
+    INSPECT_TOOL,
     INVOKE_READ_ONLY_TOOL,
     INVOKE_TOOL,
     OPEN_TOOL,
@@ -56,7 +57,7 @@ from ..types import CompiledContext
 from .disclosure import Disclosure
 from .runtime import ApplicationRuntime
 from .root_selection import RootSelection
-from .telemetry import InMemoryTelemetry, Telemetry, report
+from .telemetry import InMemoryTelemetry, Telemetry, report, report_inspection
 from .tool import Tool
 
 
@@ -101,6 +102,17 @@ GATEWAY = (
         ),
     ),
     SystemTool(
+        name=INSPECT_TOOL,
+        read_only=True,
+        description=(
+            "Inspect one or more refs without activating them. The response contains "
+            "a fixed evaluation notice, each requested node's routing card, and one "
+            "level of routing cards for direct members and declared uses. It never "
+            "returns instructions, Tool execution facets, Publication contracts, or "
+            "invocation results. Pass 1 through 32 unique refs from existing cards."
+        ),
+    ),
+    SystemTool(
         name=OPEN_TOOL,
         read_only=True,
         description=(
@@ -136,8 +148,8 @@ GATEWAY = (
 
 # The two independently installable halves. ``GATEWAY`` and
 # ``GATEWAY_TOOLS`` remain the compatibility contract of the runtime surface.
-DISCLOSURE_GATEWAY = GATEWAY[:2]
-EXECUTION_GATEWAY = GATEWAY[2:]
+DISCLOSURE_GATEWAY = GATEWAY[:3]
+EXECUTION_GATEWAY = GATEWAY[3:]
 
 #: Every entry point this server will ever expose, in the order they are
 #: registered.
@@ -267,6 +279,41 @@ class DisclosureAPI:
         """The roots, as cards. The cost of entering, once, per session."""
 
         return self.tree.skeleton()
+
+    async def inspect(self, refs: list[str]) -> CompiledContext:
+        """Inspect an atomic shortlist without activating any candidate."""
+
+        if not isinstance(refs, list) or not 1 <= len(refs) <= 32:
+            raise Refused(
+                f"{INSPECT_TOOL} requires from 1 through 32 unique non-empty refs."
+            )
+        normalized: list[str] = []
+        for value in refs:
+            if not isinstance(value, str) or not value.strip():
+                raise Refused(
+                    f"{INSPECT_TOOL} requires from 1 through 32 unique non-empty refs."
+                )
+            ref = value.strip()
+            if ref in normalized:
+                raise Refused(f"{INSPECT_TOOL} names a ref more than once: {ref!r}.")
+            normalized.append(ref)
+
+        # Validate the complete batch before rendering any item. This keeps a
+        # failure atomic and applies exactly the same audience boundary as open.
+        for ref in normalized:
+            if not self.tree.surface_can_reach(ref):
+                self.tree.effective_selection.require_ref(ref)
+            if not self.tree.model_can_see(ref) or ref in self.reserved:
+                raise Refused(taken_by_a_person(ref))
+            try:
+                self.tree.find(ref)
+            except NodeNotFoundError as failure:
+                raise Refused(unresolved(failure)) from failure
+
+        payload = self.tree.inspect(normalized)
+        for ref in normalized:
+            report_inspection(self.telemetry, ref)
+        return payload
 
     async def open(self, ref: str) -> CompiledContext:
         """Open one node, as a model.
@@ -468,6 +515,9 @@ class SystemAPI:
 
     async def open(self, ref: str) -> CompiledContext:
         return await self.disclosure.open(ref)
+
+    async def inspect(self, refs: list[str]) -> CompiledContext:
+        return await self.disclosure.inspect(refs)
 
     async def open_for_person(self, ref: str) -> CompiledContext:
         return await self.disclosure.open_for_person(ref)

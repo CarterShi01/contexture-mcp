@@ -2,7 +2,7 @@
 
 No wire protocol, no agent runtime, and no knowledge that MCP exists. It owns
 what a capability is, where it hangs, how much of it arrives at a time, and the
-four calls an agent may make against it. Everything above depends on this
+five calls an agent may make against it. Everything above depends on this
 package, and this package depends on none of them.
 
 It does own a lifecycle: a handle is opened before the first request and closed
@@ -18,7 +18,7 @@ Two directories live here, because they answer two different questions:
 `errors`, `types`, `constants` and `principal` sit directly here as shared
 ground: both directories may stand on them, and they stand on nothing. That is
 what lets the two stay independent of *each other* without each growing its own
-copy of an exception hierarchy — and it is why the separator and the four entry
+copy of an exception hierarchy — and it is why the separator and the five entry
 point names live there too.
 
 This facade re-exports the object model, which is what a business developer

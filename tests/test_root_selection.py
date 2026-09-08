@@ -136,7 +136,21 @@ class DisclosureSelectionTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(RootOutsideSelectionError):
             await api.open("beta")
         with self.assertRaises(RootOutsideSelectionError):
+            await api.inspect(["beta"])
+        with self.assertRaises(RootOutsideSelectionError):
             await api.invoke_read_only("beta/read")
+
+    async def test_inspect_honors_a_promoted_descendant_and_hides_ancestors(self) -> None:
+        api = SystemAPI(tree().select(SurfaceSelection.only("alpha/child")))
+
+        inspected = await api.inspect(["alpha/child"])
+
+        self.assertEqual(inspected["items"][0]["node"]["ref"], "alpha/child")
+        self.assertEqual(
+            [card["ref"] for card in inspected["items"][0]["members"]["tools"]],
+            ["alpha/child/inspect"],
+        )
+        self.assertNotIn('"alpha"', str(inspected))
 
     async def test_unrestricted_removes_prompt_ownership_but_not_root_selection(self) -> None:
         selected = tree(prompt_roots=frozenset({"alpha"})).select(

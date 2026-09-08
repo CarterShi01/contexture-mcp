@@ -10,9 +10,9 @@ own declaration syntax and satisfies these rules and the exact golden outputs.
    ambiguous identities, containment cycles, and unresolved `uses` refs.
 4. One runtime Tool Binding owns both the disclosed input schema and validated
    invocation. Language-specific reflection is not normative.
-5. The MCP model-controlled Tool plane equals the gateway in `golden/tools.json`.
+5. The MCP model-controlled Tool plane equals the five-entry gateway in `golden/tools.json`.
    No business Tool is registered there.
-6. Discover, open, read-only invoke, and writing invoke reproduce the successful
+6. Discover, inspect, open, read-only invoke, and writing invoke reproduce the successful
    payloads and recovery behavior under `golden/`.
 7. Discover returns model roots only. Model-controlled open/invoke cannot enter
    `prompt_roots`; user-controlled Prompt navigation can.
@@ -41,6 +41,11 @@ own declaration syntax and satisfies these rules and the exact golden outputs.
     telemetry failure cannot replace the observed business result or error.
 16. Core declarations do not depend on the MCP or HTTP SDK used by a Host
     adapter.
+17. Inspect accepts an atomic bounded batch of unique refs, preserves request
+   and declaration order, enforces open-equivalent visibility, and returns
+   only pure routing cards for targets, direct members, and declared uses. It
+   discloses no instructions, Tool execution facets, Publication contract,
+   content, result, or recursive expansion, and invokes nothing.
 
 The JSON files under `golden/` are byte-level protocol fixtures, not examples to
 reinterpret. When a binding cannot express an incidental JSON ordering detail,

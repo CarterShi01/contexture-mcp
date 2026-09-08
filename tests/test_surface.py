@@ -20,6 +20,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 
 from contexture.core.constants import (
     DISCOVER_TOOL,
+    INSPECT_TOOL,
     INVOKE_READ_ONLY_TOOL,
     INVOKE_TOOL,
     OPEN_TOOL,
@@ -184,7 +185,7 @@ class SurfaceTests(unittest.TestCase):
         }
 
         self.assertEqual(hints[INVOKE_TOOL], False)
-        for name in (DISCOVER_TOOL, OPEN_TOOL, INVOKE_READ_ONLY_TOOL):
+        for name in (DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL, INVOKE_READ_ONLY_TOOL):
             with self.subTest(tool=name):
                 self.assertTrue(hints[name])
 
@@ -216,6 +217,23 @@ class NavigationTests(unittest.TestCase):
 
         payload = json.loads(_text(_call(server, DISCOVER_TOOL)))
         self.assertEqual([card["ref"] for card in payload["roles"]], ["responder"])
+
+    def test_inspect_returns_member_descriptions_without_execution_facets(self) -> None:
+        server = _server()
+
+        payload = json.loads(_text(_call(
+            server, INSPECT_TOOL, {"refs": ["responder", "responder/diagnose"]}
+        )))
+
+        self.assertEqual(
+            [item["node"]["ref"] for item in payload["items"]],
+            ["responder", "responder/diagnose"],
+        )
+        rendered = json.dumps(payload)
+        self.assertNotIn('"instructions":', rendered)
+        self.assertNotIn("input_schema", rendered)
+        self.assertNotIn("read_only", rendered)
+        self.assertNotIn(PROCEDURE, rendered)
 
     def test_opening_a_role_delivers_the_schemas_the_surface_no_longer_has(
         self,

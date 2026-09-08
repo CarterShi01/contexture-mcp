@@ -3,7 +3,7 @@
 One module per primitive, so that the answer to *what does this server put in
 front of a host?* is a directory listing rather than a search.
 
-    tool.py       which four entry points occupy this plane; a business
+    tool.py       which five entry points occupy this plane; a business
                   adds none, and `core.model.system_api` implements them
     resource.py   content a host may take up on its own
     prompt.py     capabilities a person triggers by name

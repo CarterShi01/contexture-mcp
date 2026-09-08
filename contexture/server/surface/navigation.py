@@ -1,4 +1,4 @@
-"""The two progressive-disclosure tools installed without execution."""
+"""The three progressive-disclosure tools installed without execution."""
 
 from __future__ import annotations
 
@@ -25,11 +25,15 @@ class NavigationTools:
             with translated():
                 return await api.discover()
 
+        async def contexture_inspect(refs: list[str]) -> CompiledContext:
+            with translated():
+                return await api.inspect(refs)
+
         async def contexture_open(ref: str) -> CompiledContext:
             with translated():
                 return await api.open(ref)
 
-        implementations = (contexture_discover, contexture_open)
+        implementations = (contexture_discover, contexture_inspect, contexture_open)
         for entry, implementation in zip(DISCLOSURE_GATEWAY, implementations):
             wire.add_tool(
                 implementation,

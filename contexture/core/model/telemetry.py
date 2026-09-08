@@ -34,6 +34,22 @@ class NodeUsage:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class InspectionUsage:
+    """Aggregate candidate-inspection evidence kept apart from activation."""
+
+    ref: str
+    call_count: int = 0
+    last_inspected_at: str | None = None
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "ref": self.ref,
+            "call_count": self.call_count,
+            "last_inspected_at": self.last_inspected_at,
+        }
+
+
 class Telemetry(Protocol):
     """The replaceable side channel a runtime reports node usage to."""
 
@@ -47,6 +63,7 @@ class InMemoryTelemetry:
 
     def __init__(self) -> None:
         self._records: dict[str, NodeUsage] = {}
+        self._inspections: dict[str, InspectionUsage] = {}
         self._lock = Lock()
 
     def record(self, ref: str, *, failed: bool = False) -> None:
@@ -64,6 +81,20 @@ class InMemoryTelemetry:
         with self._lock:
             return self._records.get(ref, NodeUsage(ref=ref))
 
+    def record_inspection(self, ref: str) -> None:
+        now = datetime.now(timezone.utc).isoformat()
+        with self._lock:
+            previous = self._inspections.get(ref, InspectionUsage(ref=ref))
+            self._inspections[ref] = InspectionUsage(
+                ref=ref,
+                call_count=previous.call_count + 1,
+                last_inspected_at=now,
+            )
+
+    def inspection_usage(self, ref: str) -> InspectionUsage:
+        with self._lock:
+            return self._inspections.get(ref, InspectionUsage(ref=ref))
+
 
 def report(telemetry: Telemetry, ref: str, *, failed: bool = False) -> None:
     """Report without ever changing the outcome of the observed operation."""
@@ -74,6 +105,17 @@ def report(telemetry: Telemetry, ref: str, *, failed: bool = False) -> None:
         # Telemetry is evidence about a call, not a dependency of that call.
         # A failing exporter must never turn successful business work into an
         # error or replace the business exception that was already raised.
+        return
+
+
+def report_inspection(telemetry: Telemetry, ref: str) -> None:
+    """Report INSPECT separately when a collector supports that extension."""
+
+    try:
+        recorder = getattr(telemetry, "record_inspection", None)
+        if callable(recorder):
+            recorder(ref)
+    except Exception:
         return
 
 
@@ -105,9 +147,11 @@ def bound_telemetry(telemetry: Telemetry) -> Iterator[None]:
 
 __all__ = [
     "InMemoryTelemetry",
+    "InspectionUsage",
     "NodeUsage",
     "Telemetry",
     "bound_telemetry",
     "current_telemetry",
     "report",
+    "report_inspection",
 ]

@@ -1,4 +1,4 @@
-"""The four entry points, and the reason a business capability is not among them.
+"""The five entry points, and the reason a business capability is not among them.
 
 MCP tool lists are flat and, since the 2026-07-28 revision, stateless: a server
 may not vary them per connection or as a consequence of an earlier call. So a
@@ -41,7 +41,7 @@ from . import translated
 
 
 class Tools:
-    """The fixed four. Nothing a declaration says changes them."""
+    """The fixed five. Nothing a declaration says changes them."""
 
     __slots__ = ("_disclosure", "_execution")
 
@@ -59,6 +59,10 @@ class Tools:
         async def contexture_discover() -> CompiledContext:
             with translated():
                 return await disclosure.discover()
+
+        async def contexture_inspect(refs: list[str]) -> CompiledContext:
+            with translated():
+                return await disclosure.inspect(refs)
 
         async def contexture_open(ref: str) -> CompiledContext:
             with translated():
@@ -91,6 +95,7 @@ class Tools:
                 (entry.name for entry in GATEWAY),
                 (
                     contexture_discover,
+                    contexture_inspect,
                     contexture_open,
                     contexture_invoke_read_only,
                     contexture_invoke,

@@ -37,7 +37,7 @@ uv add contexture-mcp
 # 或：python -m pip install contexture-mcp
 ```
 
-本源码版本发布后，可通过 `contexture-mcp==0.14.0` 固定安装。
+可通过 `contexture-mcp==0.15.0` 固定安装本版本。
 
 ## 五分钟创建应用
 

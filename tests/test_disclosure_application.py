@@ -3,15 +3,20 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import unittest
 
 from contexture import Channels, Contexture, Prompt, Resource, Role, Tool
-from contexture.core.constants import DISCOVER_TOOL, OPEN_TOOL
+from contexture.core.constants import DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL
 from contexture.core.errors import ModelValidationError
 from contexture.core.model.runtime import ApplicationRuntime
 from contexture.core.model.system_api import DisclosureAPI, ExecutionAPI
 from contexture.server import compile_application, compile_disclosure_application
 from contexture.server.surface import DisclosureSurface
+
+
+def wire_result_text(result) -> str:
+    return result.content[0].text
 
 
 class RuntimeTool(Tool):
@@ -114,8 +119,13 @@ class DisclosureApplicationTests(unittest.TestCase):
         wire = server.build()
         self.assertEqual(
             tuple(tool.name for tool in asyncio.run(wire.list_tools())),
-            (DISCOVER_TOOL, OPEN_TOOL),
+            (DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL),
         )
+        inspected = json.loads(wire_result_text(asyncio.run(
+            wire.call_tool(INSPECT_TOOL, {"refs": ["architecture"]})
+        )))
+        self.assertNotIn("input_schema", str(inspected))
+        self.assertNotIn("read_only", str(inspected))
         self.assertEqual(asyncio.run(wire.list_resources()), [])
         self.assertIn(
             "goto", tuple(prompt.name for prompt in asyncio.run(wire.list_prompts()))

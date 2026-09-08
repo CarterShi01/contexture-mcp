@@ -1,6 +1,6 @@
 """Capture everything this server says, so a refactor cannot change one word.
 
-`spec/golden/` holds the exact bytes the bundled demo produces: the four entry
+`spec/golden/` holds the exact bytes the bundled demo produces: the five entry
 points as a host lists them, the instructions a host reads first, every payload
 `contexture_open` answers with, every sentence a refusal becomes, what a person
 gets from a command, and what a host gets from a resource read.

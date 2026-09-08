@@ -274,6 +274,36 @@ class CardTests(unittest.TestCase):
 
 
 class OpenTests(unittest.TestCase):
+    def test_inspect_reveals_one_layer_of_pure_routing_cards(self) -> None:
+        inspected = _tree().inspect(["team/troubleshooter"])
+
+        self.assertEqual(inspected["items"][0]["node"], {
+            "kind": "role", "name": "troubleshooter",
+            "description": "Diagnose unhealthy Pods.",
+            "ref": "team/troubleshooter",
+        })
+        self.assertEqual(
+            set(inspected["items"][0]["members"]["tools"][0]),
+            {"kind", "name", "description", "ref"},
+        )
+        rendered = json.dumps(inspected)
+        self.assertNotIn('"instructions":', rendered)
+        self.assertNotIn("input_schema", rendered)
+        self.assertNotIn("read_only", rendered)
+        self.assertNotIn(PROCEDURE, rendered)
+
+    def test_inspect_can_follow_a_returned_card_without_recursing(self) -> None:
+        tree = _tree()
+        first = tree.inspect(["team"])
+        candidate = first["items"][0]["members"]["roles"][0]["ref"]
+        second = tree.inspect([candidate])
+
+        self.assertEqual(second["items"][0]["node"]["ref"], candidate)
+        self.assertIn("diagnose", [
+            card["name"] for card in second["items"][0]["members"]["skills"]
+        ])
+        self.assertNotIn(PROCEDURE, json.dumps(second))
+
     def test_opening_a_role_reveals_its_members_with_schemas(self) -> None:
         opened = _tree().open("team/troubleshooter")
 

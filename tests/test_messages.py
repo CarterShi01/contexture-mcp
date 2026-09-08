@@ -25,7 +25,7 @@ SOURCE_ROOT = Path(__file__).resolve().parent.parent
 
 class ToolPrimitiveTests(unittest.TestCase):
     def test_the_business_adds_nothing_to_this_plane(self) -> None:
-        """Four names, whatever the declaration contains.
+        """Five names, whatever the declaration contains.
 
         The other two primitives grow an entry per declared `Prompt` or
         `Resource`. This one cannot: a listed capability is one every session
@@ -34,7 +34,7 @@ class ToolPrimitiveTests(unittest.TestCase):
         `ToolPlane` refuses to be subclassed.
         """
 
-        self.assertEqual(len(primitive.TOOLS.names), 4)
+        self.assertEqual(len(primitive.TOOLS.names), 5)
         self.assertEqual(primitive.TOOLS.names[0], primitive.DISCOVER_TOOL)
 
         with self.assertRaises(TypeError):

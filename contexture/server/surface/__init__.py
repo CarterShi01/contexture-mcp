@@ -4,7 +4,7 @@ MCP splits its primitives by *who decides when one is used*, and this package
 splits the same way — one door per primitive, each owning its own entries, its
 own rules, and its own install:
 
-    tools.py       the four fixed entries a model drives; a business adds none
+    tools.py       the five fixed entries a model drives; a business adds none
     prompts.py     what a person triggers by name, plus `goto`
     resources.py   what a host may take up on its own
 
@@ -88,7 +88,7 @@ class Surface:
     #: The disclosure view every door reads the forest through.
     tree: Disclosure
 
-    #: The four calls, bound to that view, with `reserved` already derived. The
+    #: The five calls, bound to that view, with `reserved` already derived. The
     #: doors close over it; nothing downstream builds a second one.
     api: SystemAPI
 

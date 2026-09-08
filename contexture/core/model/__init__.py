@@ -1,6 +1,6 @@
 """The kernel: what a capability is, where it hangs, and what an agent may do.
 
-Three kinds of node, one disclosure lifecycle, one forest, and the four system
+Three kinds of node, one disclosure lifecycle, one forest, and the five system
 entry points an agent calls against it. Nothing here knows that MCP exists,
 what JSON Schema looks like, or how a request reaches this process.
 
@@ -21,7 +21,7 @@ a declaration is imported: a class is a zero-argument factory, and a
 # What a declaration is written against, and nothing else. `tree` and
 # `system_api` are reached by their own module paths rather than re-exported
 # here: a project that only declares context should not load the forest and the
-# four entry points to do it, and every caller that wants them is a caller that
+# five entry points to do it, and every caller that wants them is a caller that
 # is about to serve something.
 from .channels import Channels
 from .graph_context import current_graph

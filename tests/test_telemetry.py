@@ -138,6 +138,16 @@ class TelemetryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(usage.error_count, 0)
         self.assertIsNotNone(usage.last_used_at)
 
+    async def test_inspection_is_counted_separately_from_activation(self) -> None:
+        telemetry = self.compiled.telemetry
+
+        await self.compiled.server().surface.api.inspect(["hermes/scheduling"])
+
+        self.assertEqual(telemetry.usage("hermes/scheduling").call_count, 0)
+        inspected = telemetry.inspection_usage("hermes/scheduling")
+        self.assertEqual(inspected.call_count, 1)
+        self.assertIsNotNone(inspected.last_inspected_at)
+
     async def test_tool_calls_and_errors_are_recorded_automatically(self) -> None:
         runtime = self.compiled.runtime()
 

@@ -15,11 +15,13 @@ The trace below is the one `docs/verification/hosts.md` records a host taking.
 
 from __future__ import annotations
 
+import json
 import unittest
 from dataclasses import dataclass
 
 from contexture.core.constants import (
     DISCOVER_TOOL,
+    INSPECT_TOOL,
     INVOKE_READ_ONLY_TOOL,
     INVOKE_TOOL,
     OPEN_TOOL,
@@ -113,6 +115,35 @@ class TraceTests(unittest.IsolatedAsyncioTestCase):
         # pays for none of them.
         self.assertEqual(payload["tools"], [])
         self.assertNotIn("get_pod_status", str(payload))
+
+    async def test_inspect_compares_candidates_without_activating_them(self) -> None:
+        api = _api()
+
+        payload = await api.inspect([RESPONSE, f"{ROOT}/deployment-ops"])
+
+        self.assertEqual(
+            [item["node"]["ref"] for item in payload["items"]],
+            [RESPONSE, f"{ROOT}/deployment-ops"],
+        )
+        self.assertIn("candidate evaluation", payload["notice"])
+        self.assertNotIn('"instructions":', json.dumps(payload))
+        self.assertNotIn("input_schema", str(payload))
+        self.assertNotIn("read_only", str(payload))
+        self.assertNotIn(PROCEDURE, str(payload))
+        self.assertEqual(
+            [card["ref"] for card in payload["items"][0]["members"]["skills"]],
+            [DIAGNOSE],
+        )
+        self.assertEqual(
+            set(payload["items"][0]["members"]["tools"][0]),
+            {"kind", "name", "description", "ref"},
+        )
+
+    async def test_inspect_requires_an_atomic_unique_bounded_batch(self) -> None:
+        api = _api()
+        for refs in ([], [RESPONSE, RESPONSE], [RESPONSE] * 33, [" "]):
+            with self.subTest(refs=len(refs)), self.assertRaises(Refused):
+                await api.inspect(refs)
 
     async def test_3_opening_a_specialism_delivers_callable_tool_cards(
         self,
@@ -365,11 +396,14 @@ class StatelessnessTests(unittest.IsolatedAsyncioTestCase):
 
 
 class SurfaceVocabularyTests(unittest.TestCase):
-    def test_the_gateway_is_four_entry_points_stated_once(self) -> None:
-        self.assertEqual(len(GATEWAY), 4)
+    def test_the_gateway_is_five_entry_points_stated_once(self) -> None:
+        self.assertEqual(len(GATEWAY), 5)
         self.assertEqual(
             GATEWAY_TOOLS,
-            (DISCOVER_TOOL, OPEN_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL),
+            (
+                DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL,
+                INVOKE_READ_ONLY_TOOL, INVOKE_TOOL,
+            ),
         )
 
     def test_exactly_one_entry_point_is_not_read_only(self) -> None:
@@ -393,6 +427,7 @@ class SurfaceVocabularyTests(unittest.TestCase):
 
         self.assertIn("schema", described[OPEN_TOOL])
         self.assertNotIn("schema", described[DISCOVER_TOOL])
+        self.assertNotIn("schema", described[INSPECT_TOOL])
 
 
 class UnresolvedTests(unittest.TestCase):

@@ -44,7 +44,7 @@ of an earlier call.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Sequence
 
 from ..constants import SEPARATOR
 from ..errors import ModelValidationError
@@ -52,7 +52,7 @@ from ..types import CompiledContext, JsonObject
 from .binding import Binding, PlainBinding
 from .index import Index
 from .manager import register_root
-from .node import CompileLevel, ContextNode, group_cards
+from .node import CompileLevel, ContextNode, group_cards, group_routing_cards
 from .root_selection import (
     RootOutsideSelectionError,
     RootSelection,
@@ -211,6 +211,11 @@ class Disclosure:
 
         return node.card(self)
 
+    def routing_card_of(self, node: ContextNode) -> CompiledContext:
+        """One openable card containing routing facts only."""
+
+        return node.routing_card(self)
+
     def card_for(self, ref: str) -> CompiledContext:
         """Render one capability a procedure names but does not own.
 
@@ -238,10 +243,27 @@ class Disclosure:
             self,
         )
 
+    def routing_cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        """Render selected siblings without instructions or execution facets."""
+
+        return group_routing_cards(
+            (node for node in nodes if self.model_can_see(self.index.ref_of(node))),
+            self,
+        )
+
     def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
         """Render the structural dependency cards named by ``refs``."""
 
         return [self.card_for(ref) for ref in refs if self.model_can_see(ref)]
+
+    def routing_cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        """Render selected dependency refs as pure routing cards."""
+
+        return [
+            self.routing_card_of(self.index.find(ref))
+            for ref in refs
+            if self.model_can_see(ref)
+        ]
 
     def execution_of(self, tool: ContextNode) -> CompiledContext:
         """Disclose a Tool's callable facet only for a bound Index."""
@@ -270,6 +292,21 @@ class Disclosure:
         """
 
         return self.cards_of(self.roots)
+
+    def inspect(self, refs: Sequence[str]) -> CompiledContext:
+        """Compare known candidates through one non-activating structural level."""
+
+        nodes = [self.find(ref) for ref in refs]
+        return {
+            "notice": (
+                "These are routing cards for candidate evaluation. No Role or Skill "
+                "has been activated, no instructions or execution facets are disclosed, "
+                "and no Tool has been invoked."
+            ),
+            "items": [
+                node.compile(CompileLevel.INSPECT, view=self) for node in nodes
+            ],
+        }
 
     def open(self, ref: str) -> CompiledContext:
         """Return one node's own detail, plus a card for each member it holds.

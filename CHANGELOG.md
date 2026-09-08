@@ -6,6 +6,25 @@ may contain documented breaking changes.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-09-08
+
+### Added
+
+- Added the non-activating `INSPECT` disclosure level and read-only
+  `contexture_inspect(refs)` gateway for comparing one to 32 candidate nodes.
+- INSPECT returns only existing descriptions as pure routing cards for each
+  target, its direct members, and declared uses. It adds no authored details
+  field and discloses no instructions or execution facets.
+- Added separate inspection telemetry so candidate evaluation is not counted
+  as ACTIVE Role or Skill use.
+
+### Changed
+
+- The fixed runtime gateway now contains five Tools; disclosure-only surfaces
+  contain discover, inspect, and open. Existing ROUTE and ACTIVE payloads are
+  unchanged.
+- Accepted [ADR 022](docs/adr/022-inspect-is-a-non-activating-structural-view.md).
+
 ## [0.14.0] - 2026-09-08
 
 ### Added
@@ -113,7 +132,8 @@ may contain documented breaking changes.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.12.0rc1...v0.13.0
 [0.12.0rc1]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v0.12.0rc1

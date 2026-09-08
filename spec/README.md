@@ -25,7 +25,7 @@ two documents and one command. It covers every branch an agent can reach:
 | file | what it pins |
 | --- | --- |
 | `instructions.txt` | what a host reads before it calls anything |
-| `tools.json` | the four entry points, their descriptions and their hints |
+| `tools.json` | the five entry points, their descriptions and their hints |
 | `prompts.json` | the declared commands, plus `goto` |
 | `resources.json` | the published addresses |
 | `discover.json` | the roots, as cards |

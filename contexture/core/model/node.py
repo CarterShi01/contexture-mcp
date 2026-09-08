@@ -13,21 +13,17 @@ from ..types import CompiledContext, JsonObject
 
 
 class CompileLevel(str, Enum):
-    """The two disclosure levels shared by all context nodes.
+    """The three disclosure levels shared by all context nodes.
 
-    Two, and there is no third, because an agent is only ever in one of two
-    states with respect to a node: it has not chosen it yet, or it has. ROUTE
-    serves the first and must stay cheap enough that a whole sibling set can be
-    shown at once — a choice made among a subset of the alternatives is a
-    guess. ACTIVE serves the second and can be as expensive as the work
-    requires, because by then the agent has committed and nothing is being paid
-    for speculatively.
-
-    A middle level would have to answer "what does a node say to an agent that
-    is halfway through choosing it", and there is no such moment.
+    ROUTE supports broad initial selection. INSPECT supports comparing a
+    shortlist by revealing one structural level without adopting any node's
+    instructions. ACTIVE follows only after selection and carries actionable
+    instructions and execution facets. INSPECT is generated entirely from the
+    existing declaration; it adds no second authored description field.
     """
 
     ROUTE = "route"
+    INSPECT = "inspect"
     ACTIVE = "active"
 
 
@@ -58,6 +54,10 @@ class View(Protocol):
         """One routing card for a node this view already holds."""
         ...
 
+    def routing_card_of(self, node: ContextNode) -> CompiledContext:
+        """One pure routing card with no execution facet."""
+        ...
+
     def card_for(self, ref: str) -> CompiledContext:
         """One routing card for a node named by address rather than held."""
         ...
@@ -66,8 +66,16 @@ class View(Protocol):
         """One sibling set, grouped by kind."""
         ...
 
+    def routing_cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        """One sibling set made only from pure routing cards."""
+        ...
+
     def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
         """Routing cards for a declared reference overlay."""
+        ...
+
+    def routing_cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        """Pure routing cards for a declared reference overlay."""
         ...
 
     def execution_of(self, tool: ContextNode) -> CompiledContext:
@@ -199,7 +207,14 @@ class ContextNode(ABC):
         normalized = CompileLevel(level)
         if normalized is CompileLevel.ROUTE:
             return self._compile_route()
+        if normalized is CompileLevel.INSPECT:
+            return self._compile_inspect(view if view is not None else _ALONE)
         return self._compile_active(view if view is not None else _ALONE)
+
+    def routing_card(self, view: View) -> CompiledContext:
+        """Render the minimal openable card without any subtype extension."""
+
+        return {**self._compile_route(), "ref": view.ref_of(self)}
 
     def card(self, view: View) -> CompiledContext:
         """Render one routing card: what this node is, and how to open it.
@@ -215,7 +230,17 @@ class ContextNode(ABC):
         one place to be true rather than three renderers to agree.
         """
 
-        return {**self._compile_route(), "ref": view.ref_of(self)}
+        return self.routing_card(view)
+
+    def _compile_inspect(self, view: View) -> CompiledContext:
+        """Reveal one structural level without instructions or execution facts."""
+
+        payload = {
+            "node": self.routing_card(view),
+            "members": view.routing_cards_of(self.members()),
+            "uses": view.routing_cards_for(self.uses),
+        }
+        return payload
 
     def branches(self) -> tuple[ContextNode, ...]:
         """The sub-roles below this node: the choices a session picks between.
@@ -277,6 +302,9 @@ class _Alone:
     def card_of(self, node: ContextNode) -> CompiledContext:
         return node.card(self)
 
+    def routing_card_of(self, node: ContextNode) -> CompiledContext:
+        return node.routing_card(self)
+
     def card_for(self, ref: str) -> CompiledContext:
         raise ModelValidationError(
             f"Nothing here can resolve {ref!r}: this node is being compiled on "
@@ -287,8 +315,20 @@ class _Alone:
     def cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
         return group_cards(nodes, self)
 
+    def routing_cards_of(self, nodes: Iterable[ContextNode]) -> CompiledContext:
+        return group_routing_cards(nodes, self)
+
     def cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
         return [self.card_for(ref) for ref in refs]
+
+    def routing_cards_for(self, refs: Iterable[str]) -> list[CompiledContext]:
+        return [self.routing_card_of_ref(ref) for ref in refs]
+
+    def routing_card_of_ref(self, ref: str) -> CompiledContext:
+        raise ModelValidationError(
+            f"Nothing here can resolve {ref!r}: this node is being compiled on "
+            "its own, outside any forest."
+        )
 
     def execution_of(self, tool: ContextNode) -> CompiledContext:
         return {
@@ -327,4 +367,18 @@ def group_cards(
     return grouped
 
 
-__all__ = ["CompileLevel", "ContextNode", "View", "group_cards"]
+def group_routing_cards(
+    nodes: Iterable[ContextNode],
+    view: View,
+) -> CompiledContext:
+    """Render one sibling set without Tool schemas or other active facets."""
+
+    grouped: CompiledContext = {"roles": [], "skills": [], "tools": []}
+    for node in nodes:
+        grouped[node.group].append(view.routing_card_of(node))
+    return grouped
+
+
+__all__ = [
+    "CompileLevel", "ContextNode", "View", "group_cards", "group_routing_cards",
+]

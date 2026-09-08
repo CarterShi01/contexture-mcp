@@ -251,7 +251,7 @@ async def test_disclosure_only_publication_has_no_executable_binding() -> None:
         Contexture(name="architecture", roots=(Worker,))
     )
     wire = app.server().build()
-    assert tuple(tool.name for tool in await wire.list_tools()) == GATEWAY_TOOLS[:2]
+    assert tuple(tool.name for tool in await wire.list_tools()) == GATEWAY_TOOLS[:3]
     owner = await app.server().surface.api.open("worker")
     opened = await app.server().surface.api.open(owner["publication"])
     assert opened["tools"] == [
