@@ -16,6 +16,7 @@ AUTHORING_API = {
     "NodeNotFoundError",
     "Principal",
     "Prompt",
+    "Publication",
     "Resource",
     "Role",
     "Skill",

@@ -6,6 +6,38 @@ may contain documented breaking changes.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-09-08
+
+### Added
+
+- `Publication`, a specialized Role with the inherited constructor and ordinary
+  Role cards, and optional `Role.publication` for a constructed finishing
+  procedure with dedicated capabilities or shared Tool `uses`.
+- ACTIVE owners designate the Publication with a ref string and append a
+  framework contract to open it before finishing and follow its procedure with
+  results and evidence. Business `Role.instructions` remains unchanged;
+  Publication details stay hidden until opened.
+
+### Compatibility
+
+- No Publication means exact existing ROUTE/ACTIVE output and no extra
+  obligations. Publications use ordinary validated containment and
+  complete-subtree selection, not alternative work branches or automatic
+  containment-tree inheritance.
+- The four gateways, Tool-only execution, approval boundaries, and existing
+  Prompt/Resource exposure pointers are unchanged. No automatic execution or
+  guarantee of external Agent compliance is introduced.
+
+### Documentation
+
+- Accepted [ADR 021](docs/adr/021-role-publication-and-instruction-composition.md)
+  and documented authoring, instruction composition, and the normative optional
+  Role member contract.
+- Publication extension evidence is in `tests/test_publication.py` and
+  `tests/test_publication_integration.py`,
+  separately from the unchanged 16 legacy conformance rules and 0.12
+  fixture/golden inventories. No TypeScript or Go parity claim is added.
+
 ## [0.13.0] - 2026-09-07
 
 ### Added
@@ -81,7 +113,8 @@ may contain documented breaking changes.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.12.0rc1...v0.13.0
 [0.12.0rc1]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v0.12.0rc1
 [0.11.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.10.0...v0.11.0

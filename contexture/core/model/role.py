@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator
 
 from .node import ContextNode, View
+from ..constants import OPEN_TOOL
 from ..errors import (
     DuplicateNameError,
     LookupFailure,
@@ -48,7 +49,7 @@ class Role(ContextNode):
     soon as anything is stamped onto a node, because a shared member would take
     the last stamp written anywhere in the process.
 
-    **Membership is fixed once a tree has been built from this role.** The four
+    **Membership is fixed once a tree has been built from this role.** The
     member lists are ordinary lists, and assembling one at runtime is supported
     — that is what the imperative door is for. Changing one *after* the role is
     serving is not: since the 2026-07-28 revision a server may not vary its
@@ -66,9 +67,11 @@ class Role(ContextNode):
     #: that coordinates others owns no tools at all, so every word here is
     #: orchestration — which branch a task belongs to, and what has to be
     #: established before one of them is opened.
+    #: This is business-authored text. ACTIVE compilation adds the framework's
+    #: closing contract when `publication` is present, without changing this field.
     instructions: str
-    # Which of the four a thing belongs in is the modelling decision this
-    # framework asks a business to make, and the four questions are:
+    # Which member a thing belongs in is the modelling decision this
+    # framework asks a business to make:
     #
     #   children   Is this a branch a session enters *instead of* its
     #              siblings? Since ADR 007 the role axis is lazy, so a child
@@ -85,6 +88,11 @@ class Role(ContextNode):
     skills: list[Skill] = field(default_factory=list)
     tools: list[Tool] = field(default_factory=list)
 
+    #: An optional finishing responsibility with its own procedure and equipment.
+    #: Built like other members, but not an alternative work branch. None adds
+    #: neither a member nor instructions; containment does not inherit it.
+    publication: Publication | None = None
+
     kind: ClassVar[str] = "role"
     group: ClassVar[str] = "roles"
 
@@ -94,15 +102,21 @@ class Role(ContextNode):
             raise ModelValidationError(
                 f"Role {self.name!r} must have active instructions."
             )
+        if self.publication is not None and not isinstance(self.publication, Publication):
+            raise ModelValidationError(
+                f"Role {self.name!r} publication must be a constructed Publication "
+                "or None. Build a Publication subclass with PublicationSubclass(); "
+                "a class or an ordinary Role is not a publication member."
+            )
         self._require_built_members()
         self._require_unique_members()
 
     def branches(self) -> tuple[ContextNode, ...]:
         """The sub-roles a session enters *instead of* one another.
 
-        Only the children: a skill and a tool are things this role holds, not
-        ways on from it. What asks is anything that has to say how many choices
-        remain — `signpost`, and the breadth-first roster.
+        Only the children: Publication, skills and tools are equipment, not
+        alternative ways on from it. What asks is anything that has to say how
+        many choices remain — `signpost`, and the breadth-first roster.
         """
 
         return tuple(self.children)
@@ -112,13 +126,14 @@ class Role(ContextNode):
 
         One definition of "what this role contains", used by the uniqueness
         check below, by `member()`, and by every caller that needs to walk a
-        role without caring which of the three lists a thing came from. The
-        three lists stay as fields because a declaration states them separately
-        and a payload groups them separately; traversal is where they are one
-        thing.
+        role without caring which member field a thing came from. A Publication
+        is contained just like other equipment, so registration and validation
+        traverse it without a separate lifecycle.
         """
 
         yield from self.children
+        if self.publication is not None:
+            yield self.publication
         yield from self.skills
         yield from self.tools
 
@@ -220,4 +235,41 @@ class Role(ContextNode):
         }
         if self.uses:
             payload["uses"] = view.cards_for(self.uses)
+        if self.publication is not None:
+            ref = view.ref_of(self.publication)
+            if not any(card["ref"] == ref for card in payload["roles"]):
+                raise ModelValidationError(
+                    "The declared Publication is unavailable in this view. "
+                    "Open the owning Role through a surface containing its "
+                    "complete publication subtree."
+                )
+            payload["publication"] = ref
+            payload["instructions"] = (
+                f"{self.instructions}\n\n"
+                "Publication (framework contract):\n"
+                f"Before finishing this role's work, call {OPEN_TOOL} with "
+                f"ref={ref!r} and follow that Publication's instructions using "
+                "the work's results and evidence. Opening it only discloses "
+                "the procedure; it does not execute it or establish success. "
+                "Use its available capabilities as instructed, respect required "
+                "approvals, and report the actual outcome. If publication is "
+                "blocked, fails, or awaits approval, report that state rather "
+                "than claiming success or bypassing approval."
+            )
         return payload
+
+
+class Publication(Role):
+    """A Role specialized in preserving work as durable, reusable results.
+
+    Business subclasses provide instructions and compose their own children,
+    Skills and Tools, or reference shared capabilities with `uses`. An owner
+    designates one with `publication=MyPublication()`, and the framework adds
+    the instruction to open it before finishing that owner's work.
+
+    It remains an ordinary Role on the wire, not an executable callback or a
+    fourth node kind. Only explicit Tool calls have effects. No host hook,
+    automatic finish detection, or guarantee of agent compliance is implied.
+    """
+
+    __slots__ = ()

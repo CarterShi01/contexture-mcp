@@ -154,6 +154,10 @@ Use this decision rule:
   to name the Tools it needs.
 - Add a child **Role** only when an agent must choose among distinct business
   responsibilities. Add it to the parent's `children=[...]`.
+- Add a **Publication** when finishing a Role's work needs a separately
+  disclosed procedure for durable, reusable results. It specializes Role and
+  belongs in `publication=MyPublication()`, not among alternative work branches.
+  This is the accepted Python 0.14.0 extension described below.
 
 After changing the graph, verify it:
 
@@ -165,6 +169,118 @@ uv run contexture inspect --all --summary
 
 Take refs from `list` or cards returned by `inspect`; do not construct them by
 guessing.
+
+### Optional Publication (Python 0.14.0)
+
+Publication is finishing equipment, not a new node kind or an automatically
+executed callback. Import `Publication` from `contexture` and author its
+constructor like any Role: give it business instructions and compose dedicated
+Skills/Tools or reference shared Tools with `uses`.
+
+This composition example assumes the application's Channels provides a
+`task_results.save(task_id, findings)` service. The dedicated Tool forwards to
+that business service; storage and authorization remain the service's concern.
+
+```python
+from enum import Enum
+
+from contexture import Publication, Role, Tool
+
+
+class SaveTaskFindings(Tool):
+    def __init__(self) -> None:
+        super().__init__(
+            name="save-findings",
+            description="Save supported findings for a task.",
+        )
+
+    async def invoke(self, task_id: str, findings: str) -> str:
+        return await self.channels.task_results.save(task_id, findings)
+
+
+class TaskPublication(Publication):
+    def __init__(self) -> None:
+        super().__init__(
+            name="task-publication",
+            description="Preserve task findings and continuation evidence.",
+            instructions=(
+                "Consolidate supported findings and continuation information. "
+                "Use save-findings with the task ID and evidence. "
+                "Report its actual receipt or pending approval, "
+                "blockers, and failures; never claim an unconfirmed write."
+            ),
+            tools=[SaveTaskFindings()],
+        )
+
+
+class TaskWorker(Role):
+    def __init__(self, publication: Publication | None = None) -> None:
+        super().__init__(
+            name="task-worker",
+            description="Perform a task from its supplied context.",
+            instructions="Work from the supplied task context and evidence.",
+            publication=publication,
+        )
+
+
+class _DefaultPublication(Enum):
+    TASK = "task"
+
+
+class PublishingTaskWorker(TaskWorker):
+    def __init__(
+        self,
+        publication: Publication | None | _DefaultPublication = _DefaultPublication.TASK,
+    ) -> None:
+        if isinstance(publication, _DefaultPublication):
+            publication = TaskPublication()
+        super().__init__(publication=publication)
+```
+
+`TaskWorker()` has no Publication. `PublishingTaskWorker()` constructs a fresh
+default; `PublishingTaskWorker(publication=None)` explicitly disables it.
+The typed sentinel is only a business-constructor convenience, not a framework
+API. Pass classes such as `PublishingTaskWorker` as application root factories;
+pass constructed nodes as members. Never put `TaskPublication()` in a default
+argument, reuse it across owners/compilations, or pass the class as the
+`publication` member. Share external services through Channels or `uses`.
+
+If the saving Tool is already declared elsewhere in the same graph, reference
+its canonical ref with `uses=("work/task-context/save",)` instead of containing
+the same Tool instance twice. Both the owner and that shared Tool must be in the
+effective selected surface; `uses` cannot make an excluded Tool available.
+
+Opening the owner shows a normal routing card in `roles` and a `publication`
+string naming its real ref. The framework appends an instruction to open that
+ref with `contexture_open` before finishing the owner's work and follow its
+procedure using results and evidence. `Role.instructions` remains your business
+text; the appended contract is framework instructions, not another category of
+business text. Publication instructions and capabilities stay hidden until it
+is opened. Opening does not execute the procedure or prove success; only Tools
+execute, with existing approval and authorization requirements.
+
+Without a Publication, ROUTE/ACTIVE output and obligations are unchanged. There
+is no framework enabled flag, no-op, automatic finish hook, or guarantee that an
+external Agent follows the contract. A parent's Publication does not implicitly
+apply to contained children. An explicitly nested Publication is ordinary
+acyclic containment; opening one directly adds no extra framework contract
+unless it has its own `publication` member.
+
+Selecting an owner includes its Publication subtree. Selecting the Publication
+alone exposes neither the owner nor an obligation to finish owner work.
+Prompt-only owners and their Publications remain hidden from ordinary model
+disclosure; framework composition refuses an unavailable Publication card
+rather than leaking its ref.
+
+Publication means preserving durable, reusable results, not public Internet
+distribution or automatic user visibility. For OC, a TaskPublication can
+consolidate existing TaskContext data; inherited input preparation is not
+publication. A separate ProjectKnowledgePublication may propose genre-specific
+knowledge changes for authorized review, then write approved content to Desk
+or apply it to project git with a commit receipt. Do not promote every completed
+Task or bypass Founder approval. Business-defined guards may sequence memory
+consolidation and consideration of promotion; no universal workflow engine or
+OC migration is implied. See [ADR 021](adr/021-role-publication-and-instruction-composition.md).
 
 ## 7. Connect external systems only when needed
 
@@ -203,6 +319,9 @@ app = Contexture(
     resources=(OperationsRunbook,),
 )
 ```
+
+These lower-case *publications* are exposure pointers, not the `Publication`
+Role used to preserve work results.
 
 If a complete tree is meaningful only after a person chooses a Prompt, declare
 it with `prompt_roots=(Commands,)`. It remains available to Prompts but is not

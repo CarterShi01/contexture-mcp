@@ -16,6 +16,14 @@
 > left. The directory names it uses predate
 > [ADR 010](adr/010-the-directories-are-the-architecture.md).
 
+> **Publication update (accepted for Python 0.14.0, 2026-09-08).**
+> [ADR 021](adr/021-role-publication-and-instruction-composition.md) adds
+> optional finishing equipment to Role: `Publication`, a specialized Role,
+> not a fourth node kind. §16.1 describes the current contract. Earlier
+> incremental examples remain historical where they differ from the
+> [public model](../spec/model.md); lower-case Prompt/Resource *publications*
+> still mean exposure pointers, not this new Role specialization.
+
 ## 1. Purpose
 
 This document records the design reasoning behind the object model at the
@@ -80,8 +88,9 @@ form has exactly one author.
 
 | Type | Question answered | Primary responsibility |
 |---|---|---|
-| `Role` | Who owns this responsibility? | Coordinate a bounded area of work. |
-| `Skill` | How should this class of work be performed? | Supply reusable workflow knowledge. |
+| `Role` | Who owns this responsibility, and how does it work? | Coordinate work and member use through its instructions. |
+| `Publication` | How are the work's results preserved for reuse? | Specialize Role as optional finishing equipment. |
+| `Skill` | Which reusable technique does the Role use? | Supply a procedure followed within the Role's work. |
 | `Tool` | Which operation can this Role run? | Execute one typed Python method. |
 | `Resource` | Which content can this Role read? | Address content without loading it. |
 | `Disclosure` | Where is the agent, what is next, and what has it paid for? | Deliver the role skeleton whole, resolve a reference, and open one node. |
@@ -89,8 +98,9 @@ form has exactly one author.
 A useful shorthand is:
 
 ```text
-Role       = who
-Skill      = how
+Role       = responsibility and work orchestration
+Publication = result-preserving responsibility
+Skill      = reusable technique
 Tool       = executable operation
 Resource   = readable context
 Compiler   = context disclosure
@@ -182,6 +192,14 @@ alongside a route card for every member, and a card is three short strings —
 it says what a member is, never when to reach for it relative to its siblings.
 An agent that is handed cards without that sentence is left to infer the order
 from the names.
+
+For an optional Publication, the business still owns that procedure text.
+`Role.instructions` is never rewritten: framework `_compile_active` appends
+only the framework publication contract to the disclosed instructions, naming
+the actual Publication ref to open before finishing. These are **business
+instructions** and **framework instructions**, not a third instruction ownership
+category. The Publication's full business procedure remains behind its own
+open call; see §16.1.
 
 ## 7. Step 3: Skill as reusable workflow knowledge
 
@@ -292,6 +310,12 @@ An active Role does not recursively activate all descendants. It exposes:
 
 This invariant prevents an accidental full-tree context expansion.
 
+With the 0.14 Publication extension, an ACTIVE owner additionally designates its
+Publication with a `publication` string equal to the member's canonical ref.
+That member has an ordinary routing card in `roles`; its instructions and
+capabilities are not inlined. ROUTE output is unchanged, and an owner without
+a Publication retains its exact existing ACTIVE output.
+
 ## 10. Why `kind` belongs in the route card
 
 Before Tools existed, a route card containing only `name` and `description` was
@@ -381,7 +405,7 @@ This is the whole reason a resource is a resource rather than a paragraph
 pasted into a Skill. Discovering a hundred runbooks costs a hundred
 descriptions, not a hundred documents.
 
-Publication requires an argument-free read-only Tool. The MCP Resource itself
+Resource publication requires an argument-free read-only Tool. The MCP Resource itself
 has no write operation, while model-controlled access still travels through
 `contexture_invoke_read_only`.
 
@@ -483,9 +507,9 @@ classDiagram
     class Role {
         +instructions: str
         +children: Role[]
+        +publication: Publication?
         +skills: Skill[]
         +tools: Tool[]
-        +resources: Resource[]
     }
 
     class Skill {
@@ -498,22 +522,68 @@ classDiagram
         +parameters()
     }
 
-    class Resource {
-        +uri: str
-        +mime_type: str
-        +read()
+    class Publication {
+        +kind: role
+        +group: roles
     }
 
     ContextNode <|-- Role
     ContextNode <|-- Skill
     ContextNode <|-- Tool
+    Role <|-- Publication
     Role *-- Role : children
+    Role *-- Publication : publication
     Role *-- Skill : skills
     Role *-- Tool : tools
 ```
 
-Three node types, one base class, and a role that holds only what it declares.
-Prompt and Resource are protocol publications outside this graph.
+Three node kinds, one base class, and a Role that holds only what it declares.
+Publication specializes Role. Prompt and Resource are protocol exposure
+publications outside this graph.
+
+### 16.1 Publication is finishing equipment
+
+The accepted Python 0.14.0 API exports `Publication` from `contexture`, inheriting
+Role's constructor (`name`, `description`, `instructions`, `children`, `skills`,
+`tools`, `uses`, `publication`). `Role.publication` accepts a constructed
+Publication or `None`, defaulting to `None`. A business constructor supplies the
+procedure and owns dedicated capabilities or references shared Tools through
+`uses`; it is not a handler the framework runs.
+
+`members()` traverses children, the optional Publication, Skills, then Tools.
+All normal uniqueness, shared-instance, cycle, and ref checks apply. Paths,
+Channels, and runtime Tool Bindings are compiled normally. `branches()` remains
+children-only: publishing results is equipment for finishing the responsibility,
+not an alternative responsibility to choose instead. Complete-subtree selection
+therefore includes the Publication, without adding it to the branch roster.
+
+The owner's ACTIVE `roles` array includes the ordinary Publication routing
+card, and its optional `publication` string designates that card's ref.
+Framework instructions use the existing `OPEN_TOOL` name (`contexture_open`)
+and the actual view-supplied path. They require opening the Publication before
+finishing owner work and following its procedure with the results and evidence.
+Merely opening it executes nothing. Pending approval, blockers, and failures
+must be reported truthfully, never turned into invented success or an approval
+bypass. The four gateways and Tool-only execution remain unchanged: there is
+no `Role.invoke`, finish handler, hook, destructor, host-specific runtime, or
+guarantee that an external Agent complies.
+
+There is no containment-tree inheritance. Business constructors can use ordinary
+Python inheritance to supply fresh defaults, with explicit `None` disabling
+publication; the framework adds neither an enabled flag nor a no-op member.
+Share services through Channels or `uses`, never graph-node instances across
+owners or compilations. A Publication may explicitly hold another Publication
+under ordinary acyclic containment. Its type alone adds no extra obligations
+when opened directly; its own explicit `publication` member does.
+
+Selecting the Publication alone exposes its subtree without its owner or an
+owner-finishing contract. `uses` does not widen selection. Prompt-only owners
+cannot leak their Publications through ordinary model disclosure. If a view
+cannot supply the Publication card, framework instruction composition refuses
+instead of emitting an unavailable ref or silently omitting the contract.
+Publication means durable, reusable results, not public Internet distribution
+or automatic user visibility. See [ADR 021](adr/021-role-publication-and-instruction-composition.md)
+for OC TaskContext and approval-gated project-knowledge use cases.
 
 ## 17. Terminal-state additions
 

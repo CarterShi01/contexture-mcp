@@ -58,6 +58,7 @@ from .core.constants import (
     OPEN_TOOL,
 )
 from .core.model.system_api import GATEWAY, unresolved
+from .core.model.role import Role
 from .core.model.tool import Tool
 from .core.types import JsonObject
 from .server import messages
@@ -436,13 +437,16 @@ def every_ref(tree: Disclosure) -> Iterator[str]:
     is — a truncated read of a deep spine tells you least.
     """
 
-    for ref, role in tree.index.roles_by_level():
-        yield ref
-        # Sub-roles are skipped here rather than filtered out of `members()`:
-        # the walk yields each of them at its own level, with its own members
-        # under it, and listing one twice would double every deep branch.
-        for member in (*role.skills, *role.tools):
-            yield f"{ref}{SEPARATOR}{member.name}"
+    # Unlike the routing roster, a full inspection includes Publication equipment.
+    queue = [root for root in tree.index.roots if isinstance(root, Role)]
+    while queue:
+        role = queue.pop(0)
+        yield tree.index.ref_of(role)
+        for member in role.members():
+            if isinstance(member, Role):
+                queue.append(member)
+            else:
+                yield tree.index.ref_of(member)
 
 
 def trace(

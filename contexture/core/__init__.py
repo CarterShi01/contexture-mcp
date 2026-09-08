@@ -55,6 +55,7 @@ _EXPORTS = {
     "NodeUsage": ".model",
     "Telemetry": ".model",
     "current_telemetry": ".model",
+    "Publication": ".model",
     "Role": ".model",
     "RootSelection": ".model",
     "SurfaceSelection": ".model",

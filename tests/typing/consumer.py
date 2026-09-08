@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from contexture import Contexture, Role, Skill, Tool
+from contexture import Contexture, Publication, Role, Skill, Tool
 from contexture.server import ContextureOptions
 
 
@@ -27,6 +27,17 @@ class Status(Tool):
         return {"deployment": deployment, "status": "ready"}
 
 
+class OperationSummary(Publication):
+    def __init__(self) -> None:
+        super().__init__(
+            name="summary",
+            description="Prepare reusable deployment findings.",
+            instructions="Read the status and report findings with evidence.",
+            skills=[Explain()],
+            tools=[Status()],
+        )
+
+
 class Operations(Role):
     def __init__(self) -> None:
         super().__init__(
@@ -35,6 +46,7 @@ class Operations(Role):
             instructions="Choose the smallest relevant capability.",
             skills=[Explain()],
             tools=[Status()],
+            publication=OperationSummary(),
         )
 
 

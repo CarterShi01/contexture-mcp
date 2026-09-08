@@ -38,8 +38,8 @@ uv add contexture-mcp
 # or: python -m pip install contexture-mcp
 ```
 
-To pin this source release after publication, request
-`contexture-mcp==0.13.0`.
+To pin the upcoming Python 0.14.0 release after publication, request
+`contexture-mcp==0.14.0`.
 
 ## Five-minute application
 
@@ -117,6 +117,7 @@ explicit `--allow-write`.
 | --- | --- | --- |
 | `Contexture` | one application value | Lazy composition root |
 | `Role` | subclass + constructor | Responsibility and containment boundary |
+| `Publication` | specialized Role + constructor (0.14.0) | Optional procedure and capabilities for preserving work results |
 | `Skill` | subclass + constructor | Procedure the model follows |
 | `Tool` | subclass + typed `invoke()` | Deterministic code Contexture executes |
 | `Prompt` | subclass + constructor | User-triggered entrance to an existing node |
@@ -126,6 +127,17 @@ explicit `--allow-write`.
 Role, Skill, and Tool form the graph. Prompt and Resource provide another
 protocol entrance to a ref the graph already owns. Use `prompt_roots` for
 complete trees that only the user-controlled Prompt plane may enter.
+
+The accepted Python 0.14.0 design lets a Role hold
+`publication=TaskPublication()`. Its ACTIVE response designates an ordinary
+Role card with a `publication` ref string and appends framework instructions
+to open it before finishing, leaving business `Role.instructions` unchanged.
+The procedure stays hidden until opened; opening executes nothing and never
+bypasses approval. With `publication=None` (the default), existing output and
+obligations are unchanged. Publication means durable, reusable results, not
+public visibility or Prompt/Resource exposure pointers. See the
+[authoring example](docs/handbook.md#optional-publication-python-0140) and
+[accepted ADR 021](docs/adr/021-role-publication-and-instruction-composition.md).
 
 ## Progressive disclosure
 

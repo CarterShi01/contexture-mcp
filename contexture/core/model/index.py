@@ -415,7 +415,10 @@ class Index:
                 yield ref, node
 
     def roles_by_level(self) -> Iterator[tuple[str, Role]]:
-        """The role axis breadth-first: every root, then every child.
+        """The routing axis breadth-first: every root, then every child branch.
+
+        Publication equipment is in `walk()` and `roles_with_refs()`, but not
+        this axis of alternative work branches.
 
         Ordering matters wherever the walk is going to be *cut off*. A
         depth-first roster truncated to a budget spends it on one deep spine and

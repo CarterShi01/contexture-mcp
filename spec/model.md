@@ -30,7 +30,7 @@ Role, Skill, and Tool are the closed node set.
 
 | Node | Required facts | Meaning |
 | --- | --- | --- |
-| Role | name, description, instructions, members, optional uses refs | A stable responsibility and containment boundary an agent can enter. |
+| Role | name, description, instructions, members, optional uses refs, optional publication member | A stable responsibility and containment boundary an agent can enter. |
 | Skill | name, description, instructions, optional uses refs | Procedural knowledge followed by the model and not executed by Contexture. |
 | Tool | name, description, read-only classification, input contract, invoke body, optional uses refs | A deterministic capability executed by Contexture. |
 
@@ -43,6 +43,76 @@ A Role exposes complete immediate sibling groups when opened. Reverse
 dependencies and whole-graph facts are available only through an explicitly
 declared introspection Tool; ordinary disclosure does not reveal unentered
 branches.
+
+### Optional Role Publication (0.14 extension)
+
+This is the normative Publication extension accepted for Python 0.14.0 in
+[ADR 021](../docs/adr/021-role-publication-and-instruction-composition.md).
+It does not establish implementation or cross-language parity; the legacy
+fixture/golden inventories remain pinned to 0.12.
+
+Publication MUST be a specialization of Role, not a fourth node kind. It keeps
+`kind="role"` and `group="roles"` and the same declaration facts: name,
+description, instructions, children, skills, tools, uses, and publication.
+Python exports `Publication` from `contexture` and inherits the Role
+constructor. Its business constructor authors a procedure and may compose
+dedicated capabilities or reference shared Tools through `uses`.
+
+A Role MAY designate one constructed Publication as its optional `publication`
+member. Python spells this `publication: Publication | None = None`; a class
+or a non-Publication node MUST NOT be accepted in that field. Absence MUST
+preserve exact existing ROUTE and ACTIVE output, with no `publication` payload
+field, extra instructions, or publication obligations. There is no enabled
+flag, no no-op member, and no implicit construction for explicit `None`.
+
+The designated Publication MUST participate in containment traversal after
+children and before Skills and Tools. Normal name and cross-kind uniqueness,
+shared-instance, cycle, and ref validation MUST apply. It receives its
+canonical path, Channels, and runtime Tool Bindings by the ordinary lifecycle.
+It MUST NOT be added to `branches()` or treated as an alternative work branch.
+Containment MUST NOT implicitly inherit an ancestor's Publication. Ordinary
+business-constructor inheritance may supply fresh defaults, but explicit
+absence disables them. Nodes MUST be fresh per owner and compilation; shared
+services belong in Channels or behind existing `uses` refs.
+
+Business-authored `Role.instructions` MUST remain unchanged. Framework ACTIVE
+compilation (`Role._compile_active` in Python) MUST append framework
+instructions when the Role has a Publication. There are exactly two instruction
+ownership categories: business and framework. The Publication's own procedure
+belongs to the former.
+
+The ACTIVE owner MUST include the Publication's ordinary routing card in
+`roles`, after child Role cards, and a `publication` STRING equal to that
+card's actual ref. It MUST NOT inline the Publication's instructions, Skills,
+or Tool schemas. The framework instruction MUST reference that real path and
+the existing `contexture_open` gateway (Python's `OPEN_TOOL` constant), require
+opening the Publication before finishing the owner's work, and require
+following its procedure with the work's results and evidence. It MUST make
+clear that opening is not execution or successful publication, and require
+accurate reporting of pending approval, blockers, and failures, without
+inventing success or bypassing approval. ROUTE output MUST NOT gain this
+designation or instruction.
+
+Complete-subtree selection includes a selected owner's Publication. Selecting
+the Publication alone MUST expose only its subtree, not its owner or an
+owner-finishing obligation. `uses` MUST NOT widen selection. Prompt-only
+owners MUST NOT leak their Publications through ordinary model disclosure.
+If the current view cannot supply the Publication card, framework instruction
+composition MUST refuse rather than reveal a hidden ref, silently omit the
+contract, or instruct opening an unavailable member.
+
+A Publication MAY explicitly contain another Publication under the same
+acyclic containment rules. Opening a Publication directly MUST NOT introduce
+extra framework obligations merely because of its type; only its own explicit
+`publication` member triggers the same contract as on any Role.
+
+Publication means durable, reusable results, not public Internet distribution
+or automatic user visibility. It is distinct from Prompt/Resource
+*publications*, which remain exposure pointers rather than nodes.
+The four runtime gateways and Tool-only execution MUST remain unchanged.
+Publication introduces no automatic execution, finish handler, `Role.invoke`,
+hook, destructor, host-specific runtime, or guarantee of external Agent
+compliance. Existing approval and authorization boundaries remain in force.
 
 ## Bindings and execution
 
@@ -67,7 +137,8 @@ open/close lifecycle. Successful open is paired with close; a partially failed
 open unwinds resources already acquired. Declaration-only validation does not
 open Channels.
 
-Prompt and Resource are publications, not nodes. Each points to a node already
+Prompt and Resource are exposure publications, not Publication Roles or nodes.
+Each points to a node already
 held by the canonical Index. A Prompt is user-controlled. A Resource is
 host-controlled, has a stable URI, and may be backed only by an argument-free
 read-only Tool.
