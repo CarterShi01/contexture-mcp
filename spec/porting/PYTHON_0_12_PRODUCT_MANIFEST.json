@@ -955,25 +955,37 @@
         "register_root"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/manager.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/manager.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified native ControllerManager registration, owned immutable snapshots, root ordering and uniqueness, shared-node and containment-cycle refusal, generic kind dispatch, canonical refs, ordinary and lifecycle channel handling, future-only rebinding, complete npm gates, packed consumer execution, and independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/manager.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "manager_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified native ControllerManager registration, owned defensive snapshots, root ordering and uniqueness, shared-node and containment-cycle refusal, typed and generic kind dispatch, canonical refs, ordinary and lifecycle channel handling, future-only rebinding, complete race-enabled Go gates, external module consumer execution, and independent acceptance audit."
         }
       }
     },
@@ -2825,29 +2837,35 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/manager.test.ts"
           ],
           "tests": [
             "test/manager.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by the focused native manager suite covering construction, registration groups and order, invalid declarations, duplicate identity and addresses, cycles, immutable snapshots, and channel lifetime/rebinding, plus the complete npm gate."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "manager_test.go"
           ],
           "tests": [
             "manager_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by the focused native manager suite covering construction, typed and generic registration, root order, invalid declarations, duplicate identity and addresses, cycles, defensive snapshots, and channel lifetime/rebinding, plus complete race-enabled Go gates."
         }
       }
     },

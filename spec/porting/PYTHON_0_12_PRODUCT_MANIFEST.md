@@ -41,7 +41,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/execution_api.go` | verified |
 | contexture/core/model/graph_context.py | source | bound_graph, current_graph | verified: `src/core/model/graph-context.ts`, `src/core/model/runtime.ts` | verified: `core/model/graph_context.go`, `core/model/runtime.go` | verified |
 | contexture/core/model/index.py | source | Index | designed: `src/core/model/index.ts` | designed: `core/model/index.go` | missing |
-| contexture/core/model/manager.py | source | ControllerManager, register_root | designed: `src/core/model/manager.ts` | designed: `core/model/manager.go` | missing |
+| contexture/core/model/manager.py | source | ControllerManager, register_root | verified: `src/core/model/manager.ts` | verified: `core/model/manager.go` | verified |
 | contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
 | contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
@@ -99,7 +99,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_index.py | test | — | designed: `test/index.test.ts` | designed: `index_test.go` | missing |
 | tests/test_inspection.py | test | — | designed: `test/inspection.test.ts` | designed: `inspection_test.go` | missing |
 | tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |
-| tests/test_manager.py | test | — | designed: `test/manager.test.ts` | designed: `manager_test.go` | missing |
+| tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
 | tests/test_messages.py | test | — | designed: `test/messages.test.ts` | designed: `messages_test.go` | missing |
 | tests/test_oc_goal_case_study.py | test | — | designed: `test/oc_goal_case_study.test.ts` | designed: `oc_goal_case_study_test.go` | missing |
 | tests/test_project_channels.py | test | — | designed: `test/project_channels.test.ts` | designed: `project_channels_test.go` | missing |
