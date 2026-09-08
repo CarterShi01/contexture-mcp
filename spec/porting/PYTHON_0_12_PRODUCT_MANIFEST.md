@@ -19,7 +19,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | Python path | Kind | Public symbols | TypeScript | Go | Status |
 | --- | --- | --- | --- | --- | --- |
 | contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | designed: `src/index.ts` | designed: `facade.go` | missing |
-| contexture/application.py | source | Contexture, RootFactory | designed: `src/application.ts` | designed: `core/model/application.go` | missing |
+| contexture/application.py | source | Contexture, RootFactory | verified: `src/application.ts` | verified: `core/model/application.go` | verified |
 | contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | designed: `src/cli/index.ts` | designed: `cmd/contexture/index.go` | missing |
 | contexture/cli/__main__.py | source | — | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
 | contexture/cli/main.py | source | build_parser, main | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
@@ -35,7 +35,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | designed: `src/core/mcp-interface/tool.ts` | designed: `core/mcpinterface/tool.go` | missing |
 | contexture/core/model/__init__.py | source | Channels, CompileLevel, CompiledGraph, ContextNode, ControllerManager, InMemoryTelemetry, NodeUsage, Role, RootSelection, Skill, Telemetry, Tool, View, current_graph, current_telemetry, register_root | designed: `src/core/model/doc.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/model/binding.py | source | Binding, PlainBinding | designed: `src/core/model/binding.ts` | designed: `core/model/binding.go` | missing |
-| contexture/core/model/channels.py | source | Channels, provisioned | designed: `src/core/model/channels.ts` | designed: `core/model/channels.go` | missing |
+| contexture/core/model/channels.py | source | Channels, provisioned | verified: `src/core/model/channels.ts` | verified: `core/model/channels.go` | verified |
 | contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | verified: `src/core/model/disclosure.ts` | verified: `core/model/disclosure.go` | verified |
 | contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/disclosure_api.go` | verified |
 | contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/execution_api.go` | verified |

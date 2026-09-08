@@ -68,25 +68,42 @@
         "RootFactory"
       ],
       "responsibility": "Lazy application declaration facade.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/application.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/declarations.test.ts",
+            "test/server-application.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified lazy factories, immutable declaration snapshots, Prompt/Resource/Channels validation, fresh compilation, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "application_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified lazy factories, defensive declaration snapshots, Prompt/Resource/Channels validation, fresh compilation, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
@@ -651,25 +668,41 @@
         "provisioned"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/channels.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/lifecycle.test.ts",
+            "test/manager.test.ts",
+            "test/server-launch.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified nominal lifecycle ownership, open/serve/close/reverse-cleanup order, partial failure unwind, late registrar rejection, undefined primary failures, ordinary handle pass-through, complete npm gates, and independent audit at fd7c671."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/channels.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "channels_test.go",
+            "manager_test.go",
+            "server/launch_test.go",
+            "web/surface_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified sealed lifecycle ownership, typed-nil rejection, open/serve/close/reverse-cleanup order, partial error and panic unwind, ordinary ChannelHandle identity, complete race-enabled Go gates, and independent audit at 13ade77."
         }
       }
     },
