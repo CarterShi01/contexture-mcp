@@ -636,25 +636,40 @@
         "PlainBinding"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/binding.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/binding.test.ts",
+            "test/golden-disclosure.test.ts",
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified one coupled schema-validation-invocation Binding, Python-compatible unknown-field stripping, explicit strict and loose policies, finite numeric disclosure, rejection of unprojectable Zod behavior, normative golden output, complete npm gates, packed/scaffold consumers, and independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/binding.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "binding_test.go",
+            "golden_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified one coupled schema-validation-decoding-invocation Binding, permissive-strip and strict unknown-field policies, runtime-applied defaults, lossless 64-bit numeric validation, decoder-aligned derived and explicit schemas, normative golden output, complete race-enabled Go gates, external consumer evidence, and independent acceptance audit."
         }
       }
     },

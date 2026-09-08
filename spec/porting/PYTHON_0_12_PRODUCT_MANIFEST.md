@@ -34,7 +34,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/mcp_interface/resource.py | source | Resource | designed: `src/core/mcp-interface/resource.ts` | designed: `core/mcpinterface/resource.go` | missing |
 | contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | designed: `src/core/mcp-interface/tool.ts` | designed: `core/mcpinterface/tool.go` | missing |
 | contexture/core/model/__init__.py | source | Channels, CompileLevel, CompiledGraph, ContextNode, ControllerManager, InMemoryTelemetry, NodeUsage, Role, RootSelection, Skill, Telemetry, Tool, View, current_graph, current_telemetry, register_root | designed: `src/core/model/doc.ts` | designed: `core/model/doc.go` | missing |
-| contexture/core/model/binding.py | source | Binding, PlainBinding | designed: `src/core/model/binding.ts` | designed: `core/model/binding.go` | missing |
+| contexture/core/model/binding.py | source | Binding, PlainBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
 | contexture/core/model/channels.py | source | Channels, provisioned | verified: `src/core/model/channels.ts` | verified: `core/model/channels.go` | verified |
 | contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | verified: `src/core/model/disclosure.ts` | verified: `core/model/disclosure.go` | verified |
 | contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/disclosure_api.go` | verified |
