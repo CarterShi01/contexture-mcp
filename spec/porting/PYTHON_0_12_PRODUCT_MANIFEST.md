@@ -46,7 +46,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
 | contexture/core/model/runtime.py | source | ApplicationRuntime | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
-| contexture/core/model/skill.py | source | Skill | implemented: `src/core/model/skill.ts` | implemented: `core/model/skill.go` | implemented |
+| contexture/core/model/skill.py | source | Skill | verified: `src/core/model/skill.ts` | verified: `core/model/skill.go` | verified |
 | contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | designed: `src/core/model/system_api.ts` | designed: `core/model/system_api.go` | missing |
 | contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | designed: `src/core/model/telemetry.ts` | designed: `core/model/telemetry.go` | missing |
 | contexture/core/model/tool.py | source | Tool | verified: `src/core/model/tool.ts`, `src/core/model/binding.ts` | verified: `core/model/tool.go`, `core/model/binding.go` | verified |

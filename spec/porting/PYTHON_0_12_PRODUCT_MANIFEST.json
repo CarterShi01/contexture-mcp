@@ -1101,10 +1101,10 @@
         "Skill"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "implemented",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "implemented",
+          "status": "verified",
           "paths": [
             "src/core/model/skill.ts"
           ],
@@ -1116,10 +1116,10 @@
             "docs/handbook.md",
             "docs/handbook.zh-CN.md"
           ],
-          "reason": "Implemented instructions, validation, immutable snapshots, cycle-safe one-layer uses, and bounded disclosure; retained below verified pending a dedicated acceptance audit."
+          "reason": "Verified instructions and identity validation, immutable snapshots, cycle-safe one-layer uses, selected and prompt-plane filtering, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "implemented",
+          "status": "verified",
           "paths": [
             "core/model/skill.go"
           ],
@@ -1131,7 +1131,7 @@
             "docs/handbook.md",
             "docs/handbook.zh-CN.md"
           ],
-          "reason": "Implemented instructions, validation, defensive snapshots, cycle-safe one-layer Uses, and bounded disclosure; retained below verified pending a dedicated acceptance audit."
+          "reason": "Verified instructions and identity validation, defensive snapshots, cycle-safe one-layer Uses, selected and prompt-plane filtering, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
