@@ -36,13 +36,13 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/__init__.py | source | Channels, CompileLevel, CompiledGraph, ContextNode, ControllerManager, InMemoryTelemetry, NodeUsage, Role, RootSelection, Skill, Telemetry, Tool, View, current_graph, current_telemetry, register_root | designed: `src/core/model/doc.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/model/binding.py | source | Binding, PlainBinding | designed: `src/core/model/binding.ts` | designed: `core/model/binding.go` | missing |
 | contexture/core/model/channels.py | source | Channels, provisioned | designed: `src/core/model/channels.ts` | designed: `core/model/channels.go` | missing |
-| contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | designed: `src/core/model/disclosure.ts` | designed: `core/model/disclosure.go` | missing |
-| contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | designed: `src/core/model/system-api.ts` | designed: `core/model/system_api.go` | missing |
-| contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | designed: `src/core/model/system-api.ts` | designed: `core/model/system_api.go` | missing |
-| contexture/core/model/graph_context.py | source | bound_graph, current_graph | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
+| contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | verified: `src/core/model/disclosure.ts` | verified: `core/model/disclosure.go` | verified |
+| contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/disclosure_api.go` | verified |
+| contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/execution_api.go` | verified |
+| contexture/core/model/graph_context.py | source | bound_graph, current_graph | verified: `src/core/model/graph-context.ts`, `src/core/model/runtime.ts` | verified: `core/model/graph_context.go`, `core/model/runtime.go` | verified |
 | contexture/core/model/index.py | source | Index | designed: `src/core/model/index.ts` | designed: `core/model/index.go` | missing |
 | contexture/core/model/manager.py | source | ControllerManager, register_root | designed: `src/core/model/manager.ts` | designed: `core/model/manager.go` | missing |
-| contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | designed: `src/core/model/node.ts` | designed: `core/model/node.go` | missing |
+| contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
 | contexture/core/model/role.py | source | Role | designed: `src/core/model/role.ts` | designed: `core/model/role.go` | missing |
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
 | contexture/core/model/runtime.py | source | ApplicationRuntime | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
@@ -67,7 +67,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | designed: `src/server/instructions.ts` | designed: `server/instructions.go` | missing |
 | contexture/server/launch.py | source | Launch, claude_code_config, cli_commands, codex_config, cursor_config | designed: `src/server/launch.ts` | designed: `server/launch.go` | missing |
 | contexture/server/messages.py | source | COMMAND_CLOSING, COMMAND_PREAMBLE, COMPLETION_LIMIT, GOTO_ARGUMENT, GOTO_ARGUMENT_DESCRIPTION, GOTO_DESCRIPTION, GOTO_PROMPT, PREAMBLE, REF_RULE, SIGNPOST_PREAMBLE, command_description, signpost, truncated_completion | designed: `src/server/messages.ts` | designed: `server/messages.go` | missing |
-| contexture/server/options.py | source | ContextureOptions, DEFAULT_HOST, DEFAULT_PATH, DEFAULT_PORT, LOOPBACK, ServeError, Transport, configure_logging | designed: `src/server/options.ts` | designed: `server/options.go` | missing |
+| contexture/server/options.py | source | ContextureOptions, DEFAULT_HOST, DEFAULT_PATH, DEFAULT_PORT, LOOPBACK, ServeError, Transport, configure_logging | verified: `src/server/options.ts`, `src/server/server.ts`, `src/server/logging.ts` | verified: `server/options.go`, `server/launch.go`, `server/logging.go` | verified |
 | contexture/server/root_selector.py | source | FixedRootSelector, HeaderRootSelector, ROOTS_HEADER, RootCeiling, RootSelectionMiddleware, RootSelector | designed: `src/server/root_selector.ts` | designed: `server/root_selector.go` | missing |
 | contexture/server/server.py | source | ContextureServer | designed: `src/server/server.ts` | designed: `server/server.go` | missing |
 | contexture/server/surface/__init__.py | source | DisclosureSurface, RuntimeSurface, Surface, published_name, translated | designed: `src/server/surface/surface.ts` | designed: `server/surface/surface.go` | missing |

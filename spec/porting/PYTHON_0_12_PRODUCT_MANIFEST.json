@@ -657,25 +657,44 @@
         "register_root"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/disclosure.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/disclosure.test.ts",
+            "test/disclosure-prompt-plane.test.ts",
+            "test/golden-disclosure.test.ts",
+            "test/tool-disclosure.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified through the native disclosure implementation, focused and golden execution evidence, complete npm gate, packed consumer, and independent audit through commit 237db24."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/disclosure.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "disclosure_test.go",
+            "golden_test.go",
+            "tool_disclosure_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified through native disclosure and dependency-card behavior, focused and golden execution evidence, complete Go gates, module consumer, and independent audit on master through fd9df4a."
         }
       }
     },
@@ -689,25 +708,41 @@
         "DisclosureAPI"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/system-api.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/system-api.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified public DisclosureAPI facade, root attenuation, person aliases, selected graph, recovery, packed consumer execution, complete npm gate, and independent audit at 237db24."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/system_api.go"
+            "core/model/disclosure_api.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "disclosure_api_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified native DisclosureAPI facade and packed module consumer through focused tests, complete Go gates, and independent audit beginning at 7388c92 and retained through fd9df4a."
         }
       }
     },
@@ -721,25 +756,38 @@
         "ExecutionAPI"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/system-api.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/execution-api.test.ts",
+            "test/system-api.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified independent ExecutionAPI, host-read aliases, prompt-root protection, root attenuation, recovery boundaries, packed consumer execution, complete npm gate, and independent audit at 9dde487."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/system_api.go"
+            "core/model/execution_api.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "execution_api_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified native ExecutionAPI and resource read path through focused tests, complete Go gates, module consumer, and independent audit beginning at f7507ea and retained through fd9df4a."
         }
       }
     },
@@ -753,25 +801,40 @@
         "current_graph"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
+            "src/core/model/graph-context.ts",
             "src/core/model/runtime.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/graph-context.test.ts",
+            "test/runtime.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified AsyncLocalStorage graph scope, nesting, concurrency isolation, authoritative runtime selection, packed consumer execution, complete npm gate, and independent audit at 2ab02d6."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
+            "core/model/graph_context.go",
             "core/model/runtime.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "graph_context_test.go",
+            "runtime_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified explicit Go graph context scope, isolation, runtime propagation, complete race-enabled Go gates, and independent audit beginning at 15cba82 and retained through fd9df4a."
         }
       }
     },
@@ -850,25 +913,38 @@
         "group_cards"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/node.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/node-parity.test.ts",
+            "test/compiler.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified CompileLevel, ContextNode and View lifecycle, canonical standalone refs, type-safe containment, grouped cards, packed consumer execution, complete npm gate, and independent audit at 3ee3cba."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/model/node.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "node_parity_test.go",
+            "compiler_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified CompileLevel, View, route and active compilation, canonical standalone refs, type-safe containment, grouped cards, external module consumer execution, complete race-enabled Go gates, and independent audit on the Node lifecycle slice."
         }
       }
     },
@@ -1708,25 +1784,44 @@
         "configure_logging"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/options.ts"
+            "src/server/options.ts",
+            "src/server/server.ts",
+            "src/server/logging.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/options.test.ts",
+            "test/server-launch.test.ts",
+            "test/logging.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified auth ownership, stdio conflicts, request limits, canonical paths, bind safety, cleanup, packed consumer execution, complete npm gate, and independent audit at de8d36c."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/options.go"
+            "server/options.go",
+            "server/launch.go",
+            "server/logging.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/options_test.go",
+            "server/launch_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified native transport options, auth and bind safety, packed module consumer, complete race-enabled Go gates, and independent audit through fd9df4a."
         }
       }
     },

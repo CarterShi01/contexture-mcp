@@ -35,6 +35,14 @@ def test_verifier_rejects_pinned_source_hash_drift() -> None:
         product_manifest.verify_manifest(changed)
 
 
+def test_verifier_rejects_package_baseline_drift() -> None:
+    manifest = product_manifest.build_manifest()
+    manifest["baseline"]["version"] = "0.14.0"
+
+    with pytest.raises(ValueError, match="package baseline"):
+        product_manifest.verify_manifest(manifest)
+
+
 def test_verifier_rejects_an_unmapped_product_counterpart() -> None:
     manifest = product_manifest.build_manifest()
     changed = copy.deepcopy(manifest)
@@ -44,6 +52,91 @@ def test_verifier_rejects_an_unmapped_product_counterpart() -> None:
 
     with pytest.raises(ValueError, match="is unmapped"):
         product_manifest.verify_manifest(changed)
+
+
+def test_verifier_requires_both_languages_and_bilingual_evidence_for_verified_rows() -> None:
+    manifest = product_manifest.build_manifest()
+    entry = manifest["sourceModules"][0]
+    entry["status"] = "verified"
+    for target in entry["targets"].values():
+        target["status"] = "verified"
+        target["tests"] = ["focused.test"]
+        target["documentation"] = ["docs/handbook.md", "docs/handbook.zh-CN.md"]
+    entry["targets"]["go"]["status"] = "implemented"
+
+    with pytest.raises(ValueError, match="go is verified"):
+        product_manifest.verify_manifest(manifest)
+
+    entry["targets"]["go"]["status"] = "verified"
+    entry["targets"]["typescript"]["documentation"] = ["docs/handbook.md"]
+    with pytest.raises(ValueError, match="Simplified Chinese"):
+        product_manifest.verify_manifest(manifest)
+
+
+def test_verifier_checks_verified_binding_evidence_paths(tmp_path) -> None:
+    manifest = product_manifest.build_manifest()
+    entry = manifest["sourceModules"][0]
+    entry["status"] = "verified"
+    roots = {language: tmp_path / language for language in product_manifest.LANGUAGES}
+    for language, target in entry["targets"].items():
+        target["status"] = "verified"
+        target["paths"] = ["src/facade.txt"]
+        target["tests"] = ["test/facade.txt"]
+        target["documentation"] = ["docs/handbook.md", "docs/handbook.zh-CN.md"]
+        for relative in (*target["paths"], *target["tests"], *target["documentation"]):
+            candidate = roots[language] / relative
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text("evidence", encoding="utf-8")
+
+    product_manifest.verify_manifest(manifest, binding_roots=roots)
+    (roots["typescript"] / "test/facade.txt").unlink()
+    with pytest.raises(ValueError, match="missing evidence"):
+        product_manifest.verify_manifest(manifest, binding_roots=roots)
+
+
+@pytest.mark.parametrize("outside", ["../outside.txt", "/outside.txt"])
+def test_verifier_rejects_evidence_paths_outside_binding_repository(tmp_path, outside) -> None:
+    manifest = product_manifest.build_manifest()
+    entry = manifest["sourceModules"][0]
+    entry["status"] = "verified"
+    roots = {language: tmp_path / language for language in product_manifest.LANGUAGES}
+    for language, target in entry["targets"].items():
+        target["status"] = "verified"
+        target["paths"] = ["src/facade.txt"]
+        target["tests"] = ["test/facade.txt"]
+        target["documentation"] = ["docs/handbook.md", "docs/handbook.zh-CN.md"]
+        for relative in (*target["paths"], *target["tests"], *target["documentation"]):
+            candidate = roots[language] / relative
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text("evidence", encoding="utf-8")
+    entry["targets"]["typescript"]["paths"] = [outside]
+
+    with pytest.raises(ValueError, match="outside its binding repository"):
+        product_manifest.verify_manifest(manifest, binding_roots=roots)
+
+
+def test_verifier_rejects_evidence_symlinks_outside_binding_repository(tmp_path) -> None:
+    manifest = product_manifest.build_manifest()
+    entry = manifest["sourceModules"][0]
+    entry["status"] = "verified"
+    roots = {language: tmp_path / language for language in product_manifest.LANGUAGES}
+    for language, target in entry["targets"].items():
+        target["status"] = "verified"
+        target["paths"] = ["src/facade.txt"]
+        target["tests"] = ["test/facade.txt"]
+        target["documentation"] = ["docs/handbook.md", "docs/handbook.zh-CN.md"]
+        for relative in (*target["paths"], *target["tests"], *target["documentation"]):
+            candidate = roots[language] / relative
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text("evidence", encoding="utf-8")
+    external = tmp_path / "external.txt"
+    external.write_text("outside", encoding="utf-8")
+    link = roots["typescript"] / "src/link.txt"
+    link.symlink_to(external)
+    entry["targets"]["typescript"]["paths"] = ["src/link.txt"]
+
+    with pytest.raises(ValueError, match="outside its binding repository"):
+        product_manifest.verify_manifest(manifest, binding_roots=roots)
 
 
 def test_markdown_view_is_deterministic() -> None:

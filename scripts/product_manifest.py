@@ -25,6 +25,10 @@ MARKDOWN_PATH = PORTING / "PYTHON_0_12_PRODUCT_MANIFEST.md"
 BASELINE = "3b274421360d5569a23922bfc72b71d5828cf995"
 SCHEMA_VERSION = 1
 LANGUAGES = ("typescript", "go")
+BINDING_DIRECTORIES = {
+    "typescript": "contexture-mcp-typescript",
+    "go": "contexture-mcp-go",
+}
 ENTRY_STATUSES = {"missing", "designed", "implemented", "verified"}
 TARGET_STATUSES = {"unmapped", "not-applicable", "designed", "implemented", "verified"}
 PRODUCT_ASSET_PATHS = (
@@ -414,10 +418,34 @@ def _verify_target(target: Any, location: str) -> None:
         raise ValueError(f"{location}.reason must be a string")
     if target["status"] == "unmapped":
         raise ValueError(f"{location} is unmapped; every Python product row needs a native target")
-    if target["status"] == "unmapped" and (target["paths"] or target["tests"]):
-        raise ValueError(f"{location} cannot name evidence while unmapped")
     if target["status"] in {"implemented", "verified"} and (not target["paths"] or not target["tests"]):
         raise ValueError(f"{location} needs implementation and test paths")
+
+
+def _verify_target_evidence(
+    target: dict[str, Any],
+    location: str,
+    binding_root: Path,
+) -> None:
+    if target["status"] != "verified":
+        return
+    root = binding_root.resolve()
+    for key in ("paths", "tests", "documentation"):
+        for relative in target[key]:
+            relative_path = Path(relative)
+            if relative_path.is_absolute() or ".." in relative_path.parts:
+                raise ValueError(
+                    f"{location}.{key} names evidence outside its binding repository: {relative!r}"
+                )
+            candidate = (root / relative_path).resolve()
+            if not candidate.is_relative_to(root):
+                raise ValueError(
+                    f"{location}.{key} names evidence outside its binding repository: {relative!r}"
+                )
+            if not candidate.is_file():
+                raise ValueError(
+                    f"{location}.{key} names missing evidence {relative!r} under {root}"
+                )
 
 
 def _verify_entry(entry: Any, expected: GitFile, kind: str) -> None:
@@ -447,6 +475,20 @@ def _verify_entry(entry: Any, expected: GitFile, kind: str) -> None:
         raise ValueError(f"{expected.path} must name both language targets")
     for language in LANGUAGES:
         _verify_target(entry["targets"][language], f"{expected.path}.{language}")
+    if entry["status"] == "verified":
+        for language in LANGUAGES:
+            target = entry["targets"][language]
+            if target["status"] != "verified":
+                raise ValueError(
+                    f"{expected.path} cannot be verified until {language} is verified"
+                )
+            documentation = target["documentation"]
+            if not any(path.endswith(".md") and "zh-CN" not in path for path in documentation):
+                raise ValueError(f"{expected.path}.{language} needs English documentation")
+            if not any("zh-CN" in path for path in documentation):
+                raise ValueError(
+                    f"{expected.path}.{language} needs Simplified Chinese documentation"
+                )
 
 
 def _verify_entries(entries: Any, expected_paths: list[str], revision: str, kind: str) -> None:
@@ -459,7 +501,12 @@ def _verify_entries(entries: Any, expected_paths: list[str], revision: str, kind
         _verify_entry(entry, _file(revision, path), kind)
 
 
-def verify_manifest(manifest: dict[str, Any], revision: str = BASELINE) -> None:
+def verify_manifest(
+    manifest: dict[str, Any],
+    revision: str = BASELINE,
+    *,
+    binding_roots: dict[str, Path] | None = None,
+) -> None:
     _require_keys(
         manifest,
         {"schemaVersion", "baseline", "languages", "sourceModules", "testModules", "productAssets"},
@@ -475,12 +522,25 @@ def verify_manifest(manifest: dict[str, Any], revision: str = BASELINE) -> None:
         raise ValueError("product manifest baseline revision is not pinned correctly")
     if baseline["repository"] != "CarterShi01/contexture-mcp":
         raise ValueError("unexpected product manifest repository")
+    if baseline["package"] != "contexture-mcp" or baseline["version"] != "0.12.0rc1":
+        raise ValueError("unexpected product manifest package baseline")
     if manifest["languages"] != list(LANGUAGES):
         raise ValueError("product manifest language order changed")
 
     _verify_entries(manifest["sourceModules"], source_paths(revision), revision, "source")
     _verify_entries(manifest["testModules"], test_paths(revision), revision, "test")
     _verify_entries(manifest["productAssets"], product_asset_paths(revision), revision, "asset")
+    if binding_roots is not None:
+        if set(binding_roots) != set(LANGUAGES):
+            raise ValueError("evidence verification needs both binding roots")
+        for collection in ("sourceModules", "testModules", "productAssets"):
+            for entry in manifest[collection]:
+                for language in LANGUAGES:
+                    _verify_target_evidence(
+                        entry["targets"][language],
+                        f"{entry['path']}.{language}",
+                        binding_roots[language],
+                    )
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -495,10 +555,15 @@ def main(arguments: list[str] | None = None) -> int:
     parser.add_argument("--revision", default=BASELINE, help="pinned Python revision to inventory")
     parser.add_argument("--write", action="store_true", help="write JSON and Markdown inventories")
     parser.add_argument("--check", action="store_true", help="verify checked-in inventory")
+    parser.add_argument(
+        "--check-evidence",
+        action="store_true",
+        help="also require every verified TS and Go evidence path in sibling repositories",
+    )
     options = parser.parse_args(arguments)
 
-    if options.write == options.check:
-        parser.error("pass exactly one of --write or --check")
+    if int(options.write) + int(options.check) + int(options.check_evidence) != 1:
+        parser.error("pass exactly one of --write, --check, or --check-evidence")
 
     try:
         if options.write:
@@ -510,7 +575,17 @@ def main(arguments: list[str] | None = None) -> int:
             MARKDOWN_PATH.write_text(render_markdown(manifest), encoding="utf-8")
             print(f"wrote {MANIFEST_PATH.relative_to(ROOT)} and {MARKDOWN_PATH.relative_to(ROOT)}")
         else:
-            verify_manifest(_load_manifest(MANIFEST_PATH), options.revision)
+            binding_roots = None
+            if options.check_evidence:
+                binding_roots = {
+                    language: ROOT.parent / directory
+                    for language, directory in BINDING_DIRECTORIES.items()
+                }
+            verify_manifest(
+                _load_manifest(MANIFEST_PATH),
+                options.revision,
+                binding_roots=binding_roots,
+            )
             expected = render_markdown(_load_manifest(MANIFEST_PATH))
             actual = MARKDOWN_PATH.read_text(encoding="utf-8")
             if actual != expected:
