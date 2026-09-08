@@ -27,8 +27,8 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | designed: `src/cli/scaffold.ts` | designed: `cmd/contexture/scaffold.go` | missing |
 | contexture/cli/usage.py | source | UsageError | designed: `src/cli/usage.ts` | designed: `cmd/contexture/usage.go` | missing |
 | contexture/core/__init__.py | source | — | designed: `src/core/index.ts` | designed: `core/model/doc.go` | missing |
-| contexture/core/constants.py | source | — | designed: `src/core/foundation/constants.ts` | designed: `core/foundation/constants.go` | missing |
-| contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | designed: `src/core/foundation/errors.ts` | designed: `core/foundation/errors.go` | missing |
+| contexture/core/constants.py | source | — | verified: `src/core/foundation/vocabulary.ts` | verified: `core/foundation/constants.go` | verified |
+| contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | verified: `src/core/foundation/errors.ts` | verified: `core/foundation/errors.go` | verified |
 | contexture/core/mcp_interface/__init__.py | source | Prompt, Resource, TOOLS, ToolPlane, published | designed: `src/core/mcp-interface/index.ts` | designed: `core/mcpinterface/index.go` | missing |
 | contexture/core/mcp_interface/prompt.py | source | Prompt | designed: `src/core/mcp-interface/prompt.ts` | designed: `core/mcpinterface/prompt.go` | missing |
 | contexture/core/mcp_interface/resource.py | source | Resource | designed: `src/core/mcp-interface/resource.ts` | designed: `core/mcpinterface/resource.go` | missing |
@@ -43,14 +43,14 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/index.py | source | Index | designed: `src/core/model/index.ts` | designed: `core/model/index.go` | missing |
 | contexture/core/model/manager.py | source | ControllerManager, register_root | designed: `src/core/model/manager.ts` | designed: `core/model/manager.go` | missing |
 | contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
-| contexture/core/model/role.py | source | Role | designed: `src/core/model/role.ts` | designed: `core/model/role.go` | missing |
+| contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
 | contexture/core/model/runtime.py | source | ApplicationRuntime | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
-| contexture/core/model/skill.py | source | Skill | designed: `src/core/model/skill.ts` | designed: `core/model/skill.go` | missing |
+| contexture/core/model/skill.py | source | Skill | implemented: `src/core/model/skill.ts` | implemented: `core/model/skill.go` | implemented |
 | contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | designed: `src/core/model/system_api.ts` | designed: `core/model/system_api.go` | missing |
 | contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | designed: `src/core/model/telemetry.ts` | designed: `core/model/telemetry.go` | missing |
-| contexture/core/model/tool.py | source | Tool | designed: `src/core/model/tool.ts` | designed: `core/model/tool.go` | missing |
-| contexture/core/principal.py | source | Principal, bound, current_principal | designed: `src/core/foundation/principal.ts` | designed: `core/foundation/principal.go` | missing |
+| contexture/core/model/tool.py | source | Tool | verified: `src/core/model/tool.ts`, `src/core/model/binding.ts` | verified: `core/model/tool.go`, `core/model/binding.go` | verified |
+| contexture/core/principal.py | source | Principal, bound, current_principal | verified: `src/core/foundation/principal.ts`, `src/core/model/runtime.ts` | verified: `core/foundation/principal.go`, `core/model/graph_context.go` | verified |
 | contexture/core/types.py | source | — | designed: `src/core/foundation/types.ts` | designed: `core/foundation/types.go` | missing |
 | contexture/demo/__init__.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/index.ts` | designed: `demo/index.go` | missing |
 | contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | designed: `src/demo/documents.ts` | designed: `demo/documents.go` | missing |
