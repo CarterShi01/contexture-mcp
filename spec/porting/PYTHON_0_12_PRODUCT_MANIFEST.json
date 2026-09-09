@@ -1525,25 +1525,26 @@
         "KubernetesPlatform"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/index.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified public lazy KubernetesPlatform, IncidentResponse and DeploymentOps demo factories through packaged demo facade, focused tests, external consumer, complete npm gates, bilingual overview and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "demo/index.go"
+            "demo/role.go",
+            "demo/server.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified public lazy KubernetesPlatform, IncidentResponse and DeploymentOps demo factories through importable demo package, focused tests, external module consumer, complete race-enabled Go gates, bilingual overview and independent audit."
         }
       }
     },
@@ -1654,25 +1655,25 @@
         "main"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/server.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified public app, rollback Prompt, two Markdown Resources, non-starting build and explicit main entrypoint through real package subpaths, focused tests, packed consumer, CLI wiring, complete npm gates and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "demo/server.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "cli/application_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified public Application, rollback Prompt, two Markdown Resources and non-starting Build helper, with executable main mapped to the demo CLI, focused tests, external module consumer, complete race-enabled Go gates and independent audit."
         }
       }
     },
