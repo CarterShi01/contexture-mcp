@@ -63,7 +63,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
 | contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | verified: `src/server/application.ts` | verified: `server/application.go` | verified |
 | contexture/server/binding.py | source | TypeHintBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
-| contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | designed: `src/server/identity.ts` | designed: `server/identity.go` | missing |
+| contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | verified: `src/server/identity.ts` | verified: `server/identity.go` | verified |
 | contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | designed: `src/server/instructions.ts` | designed: `server/instructions.go` | missing |
 | contexture/server/launch.py | source | Launch, claude_code_config, cli_commands, codex_config, cursor_config | designed: `src/server/launch.ts` | designed: `server/launch.go` | missing |
 | contexture/server/messages.py | source | COMMAND_CLOSING, COMMAND_PREAMBLE, COMPLETION_LIMIT, GOTO_ARGUMENT, GOTO_ARGUMENT_DESCRIPTION, GOTO_DESCRIPTION, GOTO_PROMPT, PREAMBLE, REF_RULE, SIGNPOST_PREAMBLE, command_description, signpost, truncated_completion | designed: `src/server/messages.ts` | designed: `server/messages.go` | missing |
@@ -95,7 +95,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_disclosure_application.py | test | — | verified: `test/server-application.test.ts`, `test/server.test.ts` | verified: `server/application_test.go`, `server/server_test.go` | verified |
 | tests/test_golden.py | test | — | designed: `test/golden.test.ts` | designed: `golden_test.go` | missing |
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
-| tests/test_identity.py | test | — | designed: `test/identity.test.ts` | designed: `identity_test.go` | missing |
+| tests/test_identity.py | test | — | verified: `test/identity.test.ts` | verified: `server/identity_test.go`, `principal_test.go`, `server/launch_test.go` | verified |
 | tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
 | tests/test_inspection.py | test | — | designed: `test/inspection.test.ts` | designed: `inspection_test.go` | missing |
 | tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |

@@ -1934,25 +1934,25 @@
         "principal_of"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/identity.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/identity.test.ts", "test/server-launch.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified business-owned verifier adaptation, immutable Principal roundtrip with claims.iss precedence, machine identity, absolute issuer/resource validation, path-aware RFC 9728 metadata publication and 401 challenge, required scopes, verifier server failures, packed consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "server/identity.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["server/identity_test.go", "server/launch_test.go", "principal_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified business-owned verifier adaptation, defensive Principal roundtrip with claims.iss precedence, machine identity, native NumericDate forms, absolute issuer/resource validation, path-aware RFC 9728 metadata publication and challenge, required scopes, verifier server failures, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -2862,29 +2862,33 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/identity.test.ts"
           ],
           "tests": [
             "test/identity.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by focused identity and real HTTP suites covering immutable/redacted principals, request binding and concurrency, SDK roundtrip, rejected/machine tokens, URL validation, metadata/challenge, scopes, and verifier failures, plus complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "identity_test.go"
+            "server/identity_test.go",
+            "principal_test.go",
+            "server/launch_test.go"
           ],
           "tests": [
-            "identity_test.go"
+            "server/identity_test.go",
+            "principal_test.go",
+            "server/launch_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by focused identity, principal, context and HTTP suites covering immutable/redacted facts, concurrency, SDK roundtrip, rejected/machine tokens, URL validation, metadata/challenge, scopes, and verifier failures, plus complete race-enabled Go gates."
         }
       }
     },
