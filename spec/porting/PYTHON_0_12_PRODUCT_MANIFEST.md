@@ -62,7 +62,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | designed: `src/inspection.ts` | designed: `inspection/inspection.go` | missing |
 | contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
 | contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | verified: `src/server/application.ts` | verified: `server/application.go` | verified |
-| contexture/server/binding.py | source | TypeHintBinding | designed: `src/server/binding.ts` | designed: `server/binding.go` | missing |
+| contexture/server/binding.py | source | TypeHintBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
 | contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | designed: `src/server/identity.ts` | designed: `server/identity.go` | missing |
 | contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | designed: `src/server/instructions.ts` | designed: `server/instructions.go` | missing |
 | contexture/server/launch.py | source | Launch, claude_code_config, cli_commands, codex_config, cursor_config | designed: `src/server/launch.ts` | designed: `server/launch.go` | missing |

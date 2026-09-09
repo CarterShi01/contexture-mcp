@@ -1889,25 +1889,37 @@
         "TypeHintBinding"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/binding.ts"
+            "src/core/model/binding.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/binding.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified one Binding owns disclosed schema and validated invocation, validation precedes handlers, native schema corpus and unknown-key policies are faithful, generated title keywords are removed without deleting title-named inputs, packed invalid-input consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/binding.go"
+            "core/model/binding.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "binding_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified one Binding owns defensive schema and validated invocation, validation precedes handlers, native and explicit schema corpora stay decoder-aligned, generated title keywords are removed without deleting title-named inputs, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
