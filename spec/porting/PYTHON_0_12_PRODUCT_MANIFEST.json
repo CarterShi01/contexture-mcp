@@ -1481,25 +1481,28 @@
       "pythonImport": "contexture.core.types",
       "publicSymbols": [],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/foundation/types.ts"
+            "src/core/model/binding.ts",
+            "src/core/model/node.ts",
+            "src/index.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/public-api.test.ts", "test/binding.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified recursive JsonValue/JsonObject and readonly CompiledContext native mappings, deliberate omission of unused RequestId alias, direct static usage, packed type consumer compilation, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/foundation/types.go"
+            "core/model/node.go",
+            "facade.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["node_parity_test.go", "binding_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified CompiledContext native map and JSON map/slice mappings, deliberate omission of unconstrained JSON/unused RequestId aliases, defensive payload behavior, external module consumer compilation, complete race-enabled Go gates, and independent audit."
         }
       }
     },

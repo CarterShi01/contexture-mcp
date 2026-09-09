@@ -51,7 +51,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | verified: `src/core/model/telemetry.ts`, `src/core/model/runtime.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go`, `server/application.go` | verified |
 | contexture/core/model/tool.py | source | Tool | verified: `src/core/model/tool.ts`, `src/core/model/binding.ts` | verified: `core/model/tool.go`, `core/model/binding.go` | verified |
 | contexture/core/principal.py | source | Principal, bound, current_principal | verified: `src/core/foundation/principal.ts`, `src/core/model/runtime.ts` | verified: `core/foundation/principal.go`, `core/model/graph_context.go` | verified |
-| contexture/core/types.py | source | — | designed: `src/core/foundation/types.ts` | designed: `core/foundation/types.go` | missing |
+| contexture/core/types.py | source | — | verified: `src/core/model/binding.ts`, `src/core/model/node.ts`, `src/index.ts` | verified: `core/model/node.go`, `facade.go` | verified |
 | contexture/demo/__init__.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/index.ts` | designed: `demo/index.go` | missing |
 | contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | designed: `src/demo/documents.ts` | designed: `demo/documents.go` | missing |
 | contexture/demo/fixtures.py | source | — | designed: `src/demo/fixtures.ts` | designed: `demo/fixtures.go` | missing |
