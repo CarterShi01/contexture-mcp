@@ -18,12 +18,63 @@ def test_build_manifest_is_self_consistent() -> None:
     assert manifest["sourceModules"]
     assert manifest["testModules"]
     assert manifest["productAssets"]
-    assert all(
-        target["status"] == "designed" and target["paths"]
+    applicable = [
+        entry
         for collection in ("sourceModules", "testModules", "productAssets")
         for entry in manifest[collection]
+        if entry["path"] not in product_manifest.NOT_APPLICABLE_PATHS
+    ]
+    assert all(
+        target["status"] == "designed" and target["paths"]
+        for entry in applicable
         for target in entry["targets"].values()
     )
+
+
+def test_oc_goal_exclusion_is_exact_and_generated() -> None:
+    manifest = product_manifest.build_manifest()
+    excluded = {
+        entry["path"]
+        for collection in ("sourceModules", "testModules", "productAssets")
+        for entry in manifest[collection]
+        if entry["status"] == "not-applicable"
+    }
+
+    assert excluded == product_manifest.NOT_APPLICABLE_PATHS
+    for collection in ("sourceModules", "testModules", "productAssets"):
+        for entry in manifest[collection]:
+            if entry["path"] not in excluded:
+                continue
+            assert all(
+                target == product_manifest._not_applicable_target()
+                for target in entry["targets"].values()
+            )
+
+
+def test_verifier_rejects_exclusions_outside_exact_oc_goal_scope() -> None:
+    manifest = product_manifest.build_manifest()
+    entry = manifest["sourceModules"][0]
+    entry["status"] = "not-applicable"
+    entry["targets"] = {
+        language: product_manifest._not_applicable_target()
+        for language in product_manifest.LANGUAGES
+    }
+
+    with pytest.raises(ValueError, match="must have an applicable status"):
+        product_manifest.verify_manifest(manifest)
+
+
+def test_verifier_requires_oc_goal_exclusions() -> None:
+    manifest = product_manifest.build_manifest()
+    entry = next(
+        entry
+        for entry in manifest["testModules"]
+        if entry["path"] == "tests/test_oc_goal_case_study.py"
+    )
+    entry["status"] = "missing"
+
+    with pytest.raises(ValueError, match="must have not-applicable"):
+        product_manifest.verify_manifest(manifest)
 
 
 def test_verifier_rejects_pinned_source_hash_drift() -> None:

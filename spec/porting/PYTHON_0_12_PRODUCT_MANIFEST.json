@@ -36,43 +36,25 @@
         "current_telemetry"
       ],
       "responsibility": "Public declaration-facing package facade.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/index.ts"
           ],
-          "tests": [
-            "test/public-api.test.ts",
-            "test/layering.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "README.md",
-            "README.zh-CN.md"
-          ],
-          "reason": "Verified every pinned authoring concept through native TypeScript value/type mappings, SDK-neutral declaration imports, direct public API tests, packed installed-package consumer checks, complete npm gates, bilingual architecture documentation, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "facade.go"
           ],
-          "tests": [
-            "public_api_test.go",
-            "facade_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md",
-            "README.md",
-            "README.zh-CN.md"
-          ],
-          "reason": "Verified every pinned authoring concept through native Go types, functions, error sentinels and context accessors, direct public API tests, external module consumer checks, complete race-enabled Go gates, bilingual handbook documentation, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -86,42 +68,25 @@
         "RootFactory"
       ],
       "responsibility": "Lazy application declaration facade.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/application.ts"
           ],
-          "tests": [
-            "test/declarations.test.ts",
-            "test/server-application.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "README.md",
-            "README.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified lazy factories, immutable declaration snapshots, Prompt/Resource/Channels validation, fresh compilation, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/application.go"
           ],
-          "tests": [
-            "application_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "README.md",
-            "README.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified lazy factories, defensive declaration snapshots, Prompt/Resource/Channels validation, fresh compilation, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -151,25 +116,25 @@
         "resolve_target"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/index.ts"
           ],
-          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified importable CLI facade for main/version, classifiable usage errors, project discovery and scaffold APIs through focused tests, packed consumer, complete npm gates, and bilingual docs."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "cli/application.go"
+            "cmd/contexture/index.go"
           ],
-          "tests": ["cli/application_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified importable Go CLI application runner and classifiable UsageError through focused tests, external module consumer, complete race-enabled Go gates, and bilingual docs."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -180,25 +145,25 @@
       "pythonImport": "contexture.cli.__main__",
       "publicSymbols": [],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/main.ts"
           ],
-          "tests": ["test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified npm executable entrypoint, version, explicit argv/output adaptation, stderr usage diagnostics and status two through focused and installed-package tests."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "cmd/contexture/main.go"
           ],
-          "tests": ["cmd/contexture/main_test.go", "cmd/contexture/scaffold_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native main/os.Exit entrypoint, version, process argument/output adaptation, usage status two, project forwarding and generated workflows through complete race-enabled Go gates."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -212,26 +177,25 @@
         "main"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/main.ts"
           ],
-          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified new/list/check/call/inspect/serve/demo workflows, project targets, JSON and file input exclusivity, write gate, inspection controls, complete transport options, usage/runtime exit statuses, demo fallback, packed/generated-project consumers, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "cmd/contexture/main.go",
-            "cli/application.go"
+            "cmd/contexture/main.go"
           ],
-          "tests": ["cmd/contexture/main_test.go", "cmd/contexture/scaffold_test.go", "cli/application_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native new/list/check/call/inspect/serve/demo workflows, nearest static project forwarding, JSON/file input, write gate, inspection controls, transport policy parsed before compilation, stderr notices, exit statuses, generated-project workflows, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -255,26 +219,25 @@
         "resolve_target"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/project.ts"
           ],
-          "tests": ["test/cli.test.ts", "test/project.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified nearest app-only project discovery, config validation, lexical and realpath target confinement, module export validation, packed find/load consumer, generated project workflow, complete npm gates, bilingual docs, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "cmd/contexture/main.go",
-            "cli/application.go"
+            "cmd/contexture/project.go"
           ],
-          "tests": ["cmd/contexture/scaffold_test.go", "cli/application_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified nearest go.mod/static entry boundary, refusal to skip incomplete nested modules, statically linked Application mapping, nested command forwarding, generated project workflow, complete race-enabled Go gates, bilingual docs, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -291,25 +254,25 @@
         "render_file"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/scaffold.ts"
           ],
-          "tests": ["test/scaffold.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified stable name derivation, project template inventory, unknown-template diagnostics, no unresolved variables/suffixes, overwrite refusal, runnable generated project, packed and independent scaffold consumers, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "cmd/contexture/scaffold.go"
           ],
-          "tests": ["cmd/contexture/scaffold_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified stable name derivation, project template inventory, unknown-template diagnostics, no unresolved variables, overwrite refusal, generated project go mod tidy and check/list/inspect/call workflow, nested global command forwarding, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -322,26 +285,25 @@
         "UsageError"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/cli/usage.ts"
           ],
-          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified Contexture-classified UsageError, stderr rendering and status two across CLI/scaffold requests, packed consumer behavior and complete npm gates."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "cli/application.go",
-            "cmd/contexture/scaffold.go"
+            "cmd/contexture/usage.go"
           ],
-          "tests": ["cli/application_test.go", "cmd/contexture/scaffold_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified importable ErrContexture-classified UsageError, command compatibility alias, stderr/status-two behavior, external module consumer and complete race-enabled Go gates."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -381,41 +343,25 @@
       "pythonImport": "contexture.core.constants",
       "publicSymbols": [],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/foundation/vocabulary.ts"
+            "src/core/foundation/constants.ts"
           ],
-          "tests": [
-            "test/foundation-vocabulary.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified the shared package, separator, and fixed gateway vocabulary through focused tests, packed consumer execution, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/foundation/constants.go"
           ],
-          "tests": [
-            "foundation_vocabulary_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified the typed package, separator, and fixed gateway vocabulary through focused tests, external module consumer execution, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -434,37 +380,25 @@
         "WrongDoorError"
       ],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/foundation/errors.ts"
           ],
-          "tests": [
-            "test/errors.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified the native error hierarchy, structured lookup facts, wrong-door classification, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/foundation/errors.go"
           ],
-          "tests": [
-            "error_vocabulary_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified the Go category hierarchy, structured lookup facts, errors.Is behavior, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -481,30 +415,25 @@
         "published"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/index.ts",
-            "src/core/foundation/publications.ts",
-            "src/core/foundation/vocabulary.ts"
+            "src/core/mcp-interface/index.ts"
           ],
-          "tests": ["test/foundation-vocabulary.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified SDK-neutral Prompt/Resource declarations and fixed Tool-plane vocabulary through foundation ownership, public facade, layering tests, packed type consumer, complete npm gates, and independent audit; Python published() class normalization is not needed for native object declarations."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/mcpinterface/prompt.go",
-            "core/mcpinterface/resource.go",
-            "core/mcpinterface/tool.go",
-            "facade.go"
+            "core/mcpinterface/index.go"
           ],
-          "tests": ["foundation_vocabulary_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified SDK-neutral alias declarations and fixed Tool-plane vocabulary through foundation ownership, public facade, external module consumer, complete race-enabled Go gates, and independent audit; Python published() class normalization is unnecessary for native structs."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -517,25 +446,25 @@
         "Prompt"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/mcp-interface/prompt.ts"
           ],
-          "tests": ["test/declarations.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native Prompt shape, immutable snapshots, model-open policy, publication compilation, public type consumer, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/mcpinterface/prompt.go"
           ],
-          "tests": ["foundation_vocabulary_test.go", "application_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native Prompt alias shape, defensive snapshots, zero-safe model-open policy, publication compilation, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -548,25 +477,25 @@
         "Resource"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/mcp-interface/resource.ts"
           ],
-          "tests": ["test/declarations.test.ts", "test/publications.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native Resource shape, immutable snapshots, read-only argument-free Tool validation, public type consumer, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/mcpinterface/resource.go"
           ],
-          "tests": ["foundation_vocabulary_test.go", "publications_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified native Resource alias shape, defensive snapshots, read-only argument-free Tool validation, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -584,25 +513,25 @@
         "ToolPlane"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/mcp-interface/tool.ts"
           ],
-          "tests": ["test/foundation-vocabulary.test.ts", "test/system-api.test.ts", "test/gateway-wire.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified fixed four-name Tool plane, immutable order, foundation ownership, business Tool exclusion from top-level MCP, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/mcpinterface/tool.go"
           ],
-          "tests": ["foundation_vocabulary_test.go", "gateway_recovery_test.go", "server/gateway_wire_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified fixed typed four-name Tool plane, defensive order, foundation ownership, business Tool exclusion from top-level MCP, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -662,40 +591,25 @@
         "PlainBinding"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/binding.ts"
           ],
-          "tests": [
-            "test/binding.test.ts",
-            "test/golden-disclosure.test.ts",
-            "scripts/verify-package-consumer.mjs",
-            "scripts/verify-scaffold-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified one coupled schema-validation-invocation Binding, Python-compatible unknown-field stripping, explicit strict and loose policies, finite numeric disclosure, rejection of unprojectable Zod behavior, normative golden output, complete npm gates, packed/scaffold consumers, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/binding.go"
           ],
-          "tests": [
-            "binding_test.go",
-            "golden_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified one coupled schema-validation-decoding-invocation Binding, permissive-strip and strict unknown-field policies, runtime-applied defaults, lossless 64-bit numeric validation, decoder-aligned derived and explicit schemas, normative golden output, complete race-enabled Go gates, external consumer evidence, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -709,41 +623,25 @@
         "provisioned"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/channels.ts"
           ],
-          "tests": [
-            "test/lifecycle.test.ts",
-            "test/manager.test.ts",
-            "test/server-launch.test.ts"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified nominal lifecycle ownership, open/serve/close/reverse-cleanup order, partial failure unwind, late registrar rejection, undefined primary failures, ordinary handle pass-through, complete npm gates, and independent audit at fd7c671."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/channels.go"
           ],
-          "tests": [
-            "channels_test.go",
-            "manager_test.go",
-            "server/launch_test.go",
-            "web/surface_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified sealed lifecycle ownership, typed-nil rejection, open/serve/close/reverse-cleanup order, partial error and panic unwind, ordinary ChannelHandle identity, complete race-enabled Go gates, and independent audit at 13ade77."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -759,44 +657,25 @@
         "register_root"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/disclosure.ts"
           ],
-          "tests": [
-            "test/disclosure.test.ts",
-            "test/disclosure-prompt-plane.test.ts",
-            "test/golden-disclosure.test.ts",
-            "test/tool-disclosure.test.ts"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified through the native disclosure implementation, focused and golden execution evidence, complete npm gate, packed consumer, and independent audit through commit 237db24."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/disclosure.go"
           ],
-          "tests": [
-            "disclosure_test.go",
-            "golden_test.go",
-            "tool_disclosure_test.go"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified through native disclosure and dependency-card behavior, focused and golden execution evidence, complete Go gates, module consumer, and independent audit on master through fd9df4a."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -810,41 +689,25 @@
         "DisclosureAPI"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/system-api.ts"
           ],
-          "tests": [
-            "test/system-api.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified public DisclosureAPI facade, root attenuation, person aliases, selected graph, recovery, packed consumer execution, complete npm gate, and independent audit at 237db24."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/disclosure_api.go"
+            "core/model/system_api.go"
           ],
-          "tests": [
-            "disclosure_api_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified native DisclosureAPI facade and packed module consumer through focused tests, complete Go gates, and independent audit beginning at 7388c92 and retained through fd9df4a."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -858,38 +721,25 @@
         "ExecutionAPI"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/system-api.ts"
           ],
-          "tests": [
-            "test/execution-api.test.ts",
-            "test/system-api.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified independent ExecutionAPI, host-read aliases, prompt-root protection, root attenuation, recovery boundaries, packed consumer execution, complete npm gate, and independent audit at 9dde487."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/execution_api.go"
+            "core/model/system_api.go"
           ],
-          "tests": [
-            "execution_api_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified native ExecutionAPI and resource read path through focused tests, complete Go gates, module consumer, and independent audit beginning at f7507ea and retained through fd9df4a."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -903,40 +753,25 @@
         "current_graph"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/graph-context.ts",
             "src/core/model/runtime.ts"
           ],
-          "tests": [
-            "test/graph-context.test.ts",
-            "test/runtime.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified AsyncLocalStorage graph scope, nesting, concurrency isolation, authoritative runtime selection, packed consumer execution, complete npm gate, and independent audit at 2ab02d6."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/graph_context.go",
             "core/model/runtime.go"
           ],
-          "tests": [
-            "graph_context_test.go",
-            "runtime_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified explicit Go graph context scope, isolation, runtime propagation, complete race-enabled Go gates, and independent audit beginning at 15cba82 and retained through fd9df4a."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -949,41 +784,25 @@
         "Index"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/compiler.ts",
-            "src/core/model/reference-queries.ts"
+            "src/core/model/index.ts"
           ],
-          "tests": [
-            "test/index-facade.test.ts",
-            "test/compiler.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified immutable compiled snapshots, canonical lookup diagnostics, containment and dependency queries, bindings, traversal order, Python-compatible completion ranking and slicing, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/compiler.go",
-            "core/model/selected_graph.go"
+            "core/model/index.go"
           ],
-          "tests": [
-            "index_query_test.go",
-            "compiler_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified immutable defensive snapshots, canonical lookup diagnostics, containment and dependency queries, bindings, traversal order, Python-compatible completion ranking and slicing, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -997,37 +816,25 @@
         "register_root"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/manager.ts"
           ],
-          "tests": [
-            "test/manager.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified native ControllerManager registration, owned immutable snapshots, root ordering and uniqueness, shared-node and containment-cycle refusal, generic kind dispatch, canonical refs, ordinary and lifecycle channel handling, future-only rebinding, complete npm gates, packed consumer execution, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/manager.go"
           ],
-          "tests": [
-            "manager_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified native ControllerManager registration, owned defensive snapshots, root ordering and uniqueness, shared-node and containment-cycle refusal, typed and generic kind dispatch, canonical refs, ordinary and lifecycle channel handling, future-only rebinding, complete race-enabled Go gates, external module consumer execution, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1043,38 +850,25 @@
         "group_cards"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/node.ts"
           ],
-          "tests": [
-            "test/node-parity.test.ts",
-            "test/compiler.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified CompileLevel, ContextNode and View lifecycle, canonical standalone refs, type-safe containment, grouped cards, packed consumer execution, complete npm gate, and independent audit at 3ee3cba."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/node.go"
           ],
-          "tests": [
-            "node_parity_test.go",
-            "compiler_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified CompileLevel, View, route and active compilation, canonical standalone refs, type-safe containment, grouped cards, external module consumer execution, complete race-enabled Go gates, and independent audit on the Node lifecycle slice."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1087,43 +881,25 @@
         "Role"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/role.ts",
-            "src/core/model/compiler.ts",
-            "src/core/model/node.ts"
+            "src/core/model/role.ts"
           ],
-          "tests": [
-            "test/role-parity.test.ts",
-            "test/node-parity.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified lazy Role groups, cross-kind membership, canonical refs, immutable snapshots, bounded active cards, packed consumer execution, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/role.go",
-            "core/model/compiler.go",
-            "core/model/node.go"
+            "core/model/role.go"
           ],
-          "tests": [
-            "role_parity_test.go",
-            "node_parity_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified lazy Role groups, cross-kind membership, canonical refs, defensive snapshots, active cards, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1141,43 +917,25 @@
         "current_root_selection"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/root-selection.ts"
           ],
-          "tests": [
-            "test/root-selection.test.ts",
-            "test/root-selector.test.ts",
-            "test/disclosure-prompt-plane.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified root selection compatibility, selected graph filtering, monotonic intersection, request-local binding, unrestricted prompt ownership without ceiling widening, path-selected compatible supersets, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/selection.go",
-            "core/model/selected_graph.go",
-            "core/model/graph_context.go"
+            "core/model/root_selection.go"
           ],
-          "tests": [
-            "root_selection_test.go",
-            "server/root_selector_test.go",
-            "disclosure_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified root selection compatibility, selected graph filtering, monotonic intersection, request-context binding, unrestricted prompt ownership without ceiling widening, path-selected compatible supersets, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1190,41 +948,25 @@
         "ApplicationRuntime"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/runtime.ts",
-            "src/core/model/graph-context.ts"
+            "src/core/model/runtime.ts"
           ],
-          "tests": [
-            "test/runtime.test.ts",
-            "test/graph-context.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified bound-index enforcement, read/write invocation doors, principal and graph scoping, concurrent isolation, selection attenuation, telemetry isolation, packed runtime consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/runtime.go",
-            "core/model/graph_context.go"
+            "core/model/runtime.go"
           ],
-          "tests": [
-            "runtime_test.go",
-            "graph_context_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified bound-index enforcement, read/write invocation doors, principal and graph scoping, fail-fast request accessors, concurrent isolation, selection attenuation, telemetry isolation, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1237,37 +979,25 @@
         "Skill"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/core/model/skill.ts"
           ],
-          "tests": [
-            "test/skill.test.ts",
-            "test/disclosure.test.ts"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified instructions and identity validation, immutable snapshots, cycle-safe one-layer uses, selected and prompt-plane filtering, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "core/model/skill.go"
           ],
-          "tests": [
-            "skill_parity_test.go",
-            "disclosure_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified instructions and identity validation, defensive snapshots, cycle-safe one-layer Uses, selected and prompt-plane filtering, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1291,45 +1021,25 @@
         "wrong_door"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/system-api.ts"
+            "src/core/model/system_api.ts"
           ],
-          "tests": [
-            "test/system-api.test.ts",
-            "test/gateway-wire.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified fixed gateway inventory and descriptions, SystemAPI compatibility aliases, independent disclosure and execution halves, stateless progressive navigation, person and Host doors, complete lookup and wrong-door recovery, selection authorization, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/gateway.go",
-            "core/model/disclosure_api.go",
-            "core/model/execution_api.go"
+            "core/model/system_api.go"
           ],
-          "tests": [
-            "gateway_test.go",
-            "gateway_recovery_test.go",
-            "disclosure_api_test.go",
-            "execution_api_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified fixed defensive gateway inventory and descriptions, SystemAPI compatibility aliases, independent disclosure and execution halves, stateless navigation, person and Host doors, complete lookup and bidirectional wrong-door recovery, selection authorization, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1347,42 +1057,25 @@
         "report"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/telemetry.ts",
-            "src/core/model/runtime.ts"
+            "src/core/model/telemetry.ts"
           ],
-          "tests": [
-            "test/telemetry.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified immutable usage aggregates, unseen values, Role/Skill and Tool accounting, task-local nested telemetry scopes, fail-fast access, async exporter isolation, payload exclusion, shared compilation collector, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/runtime.go",
-            "core/model/graph_context.go",
-            "server/application.go"
+            "core/model/telemetry.go"
           ],
-          "tests": [
-            "telemetry_test.go",
-            "runtime_test.go",
-            "server/application_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified race-safe usage aggregates, unseen values, Role/Skill and Tool accounting, context-derived nested telemetry scopes, fail-fast access, exporter error and panic isolation, payload exclusion, shared compilation collector, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1395,41 +1088,25 @@
         "Tool"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/tool.ts",
-            "src/core/model/binding.ts"
+            "src/core/model/tool.ts"
           ],
-          "tests": [
-            "test/tool-parity.test.ts",
-            "test/tool-disclosure.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified declaration validation, schema-bound execution, read-only classification, immutable snapshots, disclosure cards, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/tool.go",
-            "core/model/binding.go"
+            "core/model/tool.go"
           ],
-          "tests": [
-            "tool_parity_test.go",
-            "tool_disclosure_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified typed declaration validation, schema-bound execution, read-only classification, defensive snapshots, disclosure cards, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1444,41 +1121,25 @@
         "current_principal"
       ],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/foundation/principal.ts",
-            "src/core/model/runtime.ts"
+            "src/core/foundation/principal.ts"
           ],
-          "tests": [
-            "test/identity.test.ts",
-            "test/runtime.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified immutable identity facts, claim redaction, optional request-local principal scope, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/foundation/principal.go",
-            "core/model/graph_context.go"
+            "core/foundation/principal.go"
           ],
-          "tests": [
-            "principal_test.go",
-            "graph_context_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified immutable identity facts, claim redaction, explicit request context propagation, external module consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1489,28 +1150,25 @@
       "pythonImport": "contexture.core.types",
       "publicSymbols": [],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/binding.ts",
-            "src/core/model/node.ts",
-            "src/index.ts"
+            "src/core/foundation/types.ts"
           ],
-          "tests": ["test/public-api.test.ts", "test/binding.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified recursive JsonValue/JsonObject and readonly CompiledContext native mappings, deliberate omission of unused RequestId alias, direct static usage, packed type consumer compilation, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/node.go",
-            "facade.go"
+            "core/foundation/types.go"
           ],
-          "tests": ["node_parity_test.go", "binding_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified CompiledContext native map and JSON map/slice mappings, deliberate omission of unconstrained JSON/unused RequestId aliases, defensive payload behavior, external module consumer compilation, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1525,26 +1183,25 @@
         "KubernetesPlatform"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/index.ts"
           ],
-          "tests": ["test/demo.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified public lazy KubernetesPlatform, IncidentResponse and DeploymentOps demo factories through packaged demo facade, focused tests, external consumer, complete npm gates, bilingual overview and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "demo/role.go",
-            "demo/server.go"
+            "demo/index.go"
           ],
-          "tests": ["demo/demo_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified public lazy KubernetesPlatform, IncidentResponse and DeploymentOps demo factories through importable demo package, focused tests, external module consumer, complete race-enabled Go gates, bilingual overview and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1558,25 +1215,25 @@
         "RollbackPolicy"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/documents.ts"
           ],
-          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified complete deterministic CrashLoop runbook and rollback policy document Tools, names, read-only/no-argument behavior, publication reads, golden disclosure, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "demo/documents.go"
           ],
-          "tests": ["demo/demo_test.go", "golden_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified complete deterministic CrashLoop runbook and rollback policy document Tools, names, read-only/no-argument behavior, publication reads, golden disclosure, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1587,25 +1244,25 @@
       "pythonImport": "contexture.demo.fixtures",
       "publicSymbols": [],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/fixtures.ts"
           ],
-          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified deterministic Kubernetes namespace, Pod, Deployment, status, event, log and rollout fixture values through demo and golden tests, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "demo/fixtures.go"
           ],
-          "tests": ["demo/demo_test.go", "golden_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified deterministic Kubernetes namespace, Pod, Deployment, status, event, log and rollout fixture values through demo and golden tests, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1620,25 +1277,25 @@
         "KubernetesPlatform"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/role.ts"
           ],
-          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified KubernetesPlatform, IncidentResponse and DeploymentOps topology, declarations, instructions, member placement, progressive disclosure and golden cards through complete npm gates and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "demo/role.go"
           ],
-          "tests": ["demo/demo_test.go", "golden_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified KubernetesPlatform, IncidentResponse and DeploymentOps topology, declarations, instructions, member placement, progressive disclosure and golden cards through complete race-enabled Go gates and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1655,25 +1312,25 @@
         "main"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/server.ts"
           ],
-          "tests": ["test/demo.test.ts", "test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified public app, rollback Prompt, two Markdown Resources, non-starting build and explicit main entrypoint through real package subpaths, focused tests, packed consumer, CLI wiring, complete npm gates and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "demo/server.go"
           ],
-          "tests": ["demo/demo_test.go", "cli/application_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified public Application, rollback Prompt, two Markdown Resources and non-starting Build helper, with executable main mapped to the demo CLI, focused tests, external module consumer, complete race-enabled Go gates and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1688,25 +1345,25 @@
         "RollBackAFailedRelease"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/demo/skills.ts"
           ],
-          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified diagnosis and rollback Skill names, complete procedures, ordering and evidence constraints, cross-branch DIAGNOSIS uses card, golden disclosure, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "demo/skills.go"
           ],
-          "tests": ["demo/demo_test.go", "golden_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified diagnosis and rollback Skill names, complete procedures, ordering and evidence constraints, cross-branch DIAGNOSIS uses card, golden disclosure, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1769,25 +1426,25 @@
         "trace"
       ],
       "responsibility": "Transport-free disclosure inspection API.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/inspection.ts"
           ],
-          "tests": ["test/inspection.test.ts", "test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified transport-free honest replay, immutable/computed costs with Python ties-to-even estimates, UTF-8 bytes, connect checks and gateway aside, nested breadth-first refs, readable refusals, opt-in text/binary reads, findings, stable nullable JSON, packed replay consumer, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "inspection/inspection.go"
           ],
-          "tests": ["inspection/inspection_test.go", "cmd/contexture/main_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified transport-free honest replay, marshal-computed costs with Python ties-to-even estimates, UTF-8 bytes, connect checks and gateway cost, nested breadth-first refs, readable refusals, opt-in text/binary reads, findings, stable nullable JSON, external replay consumer, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1798,44 +1455,25 @@
       "pythonImport": "contexture.server",
       "publicSymbols": [],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/index.ts"
           ],
-          "tests": [
-            "test/public-api.test.ts",
-            "test/layering.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md"
-          ],
-          "reason": "Verified every pinned server facade concept through the @contexture/mcp/server export map, direct public API resolution and layering tests, packed installed-package imports and behavior, bilingual architecture mapping, complete npm gates, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/doc.go",
-            "server/application.go",
-            "server/launch.go",
-            "server/options.go",
-            "server/identity.go",
-            "server/root_selector.go",
-            "server/host_launch.go"
+            "server/index.go"
           ],
-          "tests": [
-            "public_api_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified every pinned server facade concept through native Go server package modules, direct package mapping tests, external module compilation and behavior, bilingual handbook mapping, complete race-enabled Go gates, and independent acceptance audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1855,40 +1493,25 @@
         "serve"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/application.ts"
           ],
-          "tests": [
-            "test/server-application.test.ts",
-            "test/compiler.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md"
-          ],
-          "reason": "Verified bound and disclosure-only compiled containers, shared Index/Disclosure/Runtime/Publications/telemetry identities, official two-door structural server assembly, rejection of execution dependencies, fresh lazy compilation, native parts/serve mappings, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "server/application.go"
           ],
-          "tests": [
-            "server/application_test.go",
-            "application_test.go",
-            "compiler_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified bound and disclosure-only compiled containers, shared Index/Disclosure/Runtime/Publications/telemetry identities, official two-door structural server assembly, rejection of Channels and Resources, fresh lazy compilation, native parts/serve mappings, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1901,37 +1524,25 @@
         "TypeHintBinding"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/core/model/binding.ts"
+            "src/server/binding.ts"
           ],
-          "tests": [
-            "test/binding.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified one Binding owns disclosed schema and validated invocation, validation precedes handlers, native schema corpus and unknown-key policies are faithful, generated title keywords are removed without deleting title-named inputs, packed invalid-input consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "core/model/binding.go"
+            "server/binding.go"
           ],
-          "tests": [
-            "binding_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified one Binding owns defensive schema and validated invocation, validation precedes handlers, native and explicit schema corpora stay decoder-aligned, generated title keywords are removed without deleting title-named inputs, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1946,25 +1557,25 @@
         "principal_of"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/identity.ts"
           ],
-          "tests": ["test/identity.test.ts", "test/server-launch.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified business-owned verifier adaptation, immutable Principal roundtrip with claims.iss precedence, machine identity, absolute issuer/resource validation, path-aware RFC 9728 metadata publication and 401 challenge, required scopes, verifier server failures, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "server/identity.go"
           ],
-          "tests": ["server/identity_test.go", "server/launch_test.go", "principal_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified business-owned verifier adaptation, defensive Principal roundtrip with claims.iss precedence, machine identity, native NumericDate forms, absolute issuer/resource validation, path-aware RFC 9728 metadata publication and challenge, required scopes, verifier server failures, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -1981,25 +1592,25 @@
         "neutral"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/instructions.ts"
           ],
-          "tests": ["test/instructions.test.ts", "test/server.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified contract-first bootstrap, UTF-8 byte budgets, breadth-first declaration order, whole sibling groups, root and depth truncation recovery, selected surfaces, fixed constants, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/instructions/instructions.go"
+            "server/instructions.go"
           ],
-          "tests": ["server/instructions/instructions_test.go", "server/server_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified contract-first bootstrap, UTF-8 byte budgets, breadth-first declaration order, whole sibling groups, root and depth truncation recovery, selected surfaces, fixed constants, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2016,25 +1627,25 @@
         "cursor_config"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/launch.ts"
           ],
-          "tests": ["test/launch.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified Launch snapshots, safe POSIX quoting, Claude Code/Cursor JSON and Codex TOML rendering, Python-compatible empty and Unicode strings, project-scoped CLI commands with one launch suffix, packed consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/host_launch.go"
+            "server/launch.go"
           ],
-          "tests": ["server/host_launch_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified defensive Launch vectors, safe POSIX quoting, Claude Code/Cursor JSON and Codex TOML rendering, Python-compatible empty and Unicode strings, project-scoped CLI commands with one launch suffix, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2059,25 +1670,25 @@
         "truncated_completion"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "src/server/messages.ts"
           ],
-          "tests": ["test/messages.test.ts", "test/completion.test.ts", "scripts/verify-package-consumer.mjs"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified fixed bootstrap, ref, goto, command, signpost and completion text, SDK-neutral ownership, real completion integration, packed message consumer behavior, complete npm gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/messages/messages.go"
+            "server/messages.go"
           ],
-          "tests": ["server/messages/messages_test.go", "server/completion_test.go", "internal/releasecheck/module_consumer_test.go"],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified one public message package owns bootstrap, ref, goto, command, signpost and completion text, instructions reuse the same constants, real completion integration, external module consumer behavior, complete race-enabled Go gates, and independent audit."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2097,44 +1708,25 @@
         "configure_logging"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "src/server/options.ts",
-            "src/server/server.ts",
-            "src/server/logging.ts"
+            "src/server/options.ts"
           ],
-          "tests": [
-            "test/options.test.ts",
-            "test/server-launch.test.ts",
-            "test/logging.test.ts",
-            "scripts/verify-package-consumer.mjs"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified auth ownership, stdio conflicts, request limits, canonical paths, bind safety, cleanup, packed consumer execution, complete npm gate, and independent audit at de8d36c."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/options.go",
-            "server/launch.go",
-            "server/logging.go"
+            "server/options.go"
           ],
-          "tests": [
-            "server/options_test.go",
-            "server/launch_test.go",
-            "internal/releasecheck/module_consumer_test.go"
-          ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified native transport options, auth and bind safety, packed module consumer, complete race-enabled Go gates, and independent audit through fd9df4a."
+          "tests": [],
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2637,31 +2229,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/declarations.test.ts",
-            "test/server-application.test.ts"
+            "test/application.test.ts"
           ],
           "tests": [
-            "test/declarations.test.ts",
-            "test/server-application.test.ts"
+            "test/application.test.ts"
           ],
-          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
-          "reason": "Verified lazy declarations, invalid roots, SDK-neutral import layering, fresh forests, prompt-root audiences, shared runtime container, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "application_test.go"
           ],
           "tests": [
             "application_test.go"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified lazy declarations, invalid roots, SDK-neutral package layering, fresh forests, prompt-root audiences, shared runtime container, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2771,33 +2361,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/server-application.test.ts",
-            "test/server.test.ts"
+            "test/disclosure_application.test.ts"
           ],
           "tests": [
-            "test/server-application.test.ts",
-            "test/server.test.ts"
+            "test/disclosure_application.test.ts"
           ],
-          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
-          "reason": "Verified unbound/no-runtime isolation, structural Tool cards, official two-door MCP assembly, Prompt support, no Resources, independent Indexes, dependency rejection, packed consumer, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/application_test.go",
-            "server/server_test.go"
+            "disclosure_application_test.go"
           ],
           "tests": [
-            "server/application_test.go",
-            "server/server_test.go"
+            "disclosure_application_test.go"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified unbound/no-runtime isolation, structural Tool cards, official two-door MCP assembly, Prompt support, no Resources, independent Indexes, dependency rejection, external consumer, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2874,33 +2460,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/identity.test.ts"
           ],
           "tests": [
             "test/identity.test.ts"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by focused identity and real HTTP suites covering immutable/redacted principals, request binding and concurrency, SDK roundtrip, rejected/machine tokens, URL validation, metadata/challenge, scopes, and verifier failures, plus complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/identity_test.go",
-            "principal_test.go",
-            "server/launch_test.go"
+            "identity_test.go"
           ],
           "tests": [
-            "server/identity_test.go",
-            "principal_test.go",
-            "server/launch_test.go"
+            "identity_test.go"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by focused identity, principal, context and HTTP suites covering immutable/redacted facts, concurrency, SDK roundtrip, rejected/machine tokens, URL validation, metadata/challenge, scopes, and verifier failures, plus complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2911,39 +2493,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/index-facade.test.ts",
-            "test/compiler.test.ts"
+            "test/index.test.ts"
           ],
           "tests": [
-            "test/index-facade.test.ts",
-            "test/compiler.test.ts"
+            "test/index.test.ts"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native Index suites covering canonical addressing and diagnostics, foreign-node queries, kind and containment traversal, immutable snapshots, bindings, Python-compatible matching, signposts, crossings, and disclosure-only isolation, plus complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "index_query_test.go",
-            "compiler_test.go"
+            "index_test.go"
           ],
           "tests": [
-            "index_query_test.go",
-            "compiler_test.go"
+            "index_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native Index suites covering canonical addressing and diagnostics, foreign-node queries, kind and containment traversal, defensive snapshots, bindings, Python-compatible matching, signposts, crossings, and disclosure-only isolation, plus complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -2954,31 +2526,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/inspection.test.ts"
           ],
           "tests": [
             "test/inspection.test.ts"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by focused inspection and CLI suites covering honest payloads, nested BFS, costs, limits/findings, refusal accounting, read gating, binary summaries, terminal/JSON rendering and packed replay, plus complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "inspection/inspection_test.go",
-            "cmd/contexture/main_test.go"
+            "inspection_test.go"
           ],
           "tests": [
-            "inspection/inspection_test.go",
-            "cmd/contexture/main_test.go"
+            "inspection_test.go"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by focused inspection and CLI suites covering honest payloads, nested BFS, computed costs, limits/findings, refusal accounting, read gating, binary summaries, terminal/JSON rendering and external replay, plus complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3022,35 +2592,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/manager.test.ts"
           ],
           "tests": [
             "test/manager.test.ts"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by the focused native manager suite covering construction, registration groups and order, invalid declarations, duplicate identity and addresses, cycles, immutable snapshots, and channel lifetime/rebinding, plus the complete npm gate."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "manager_test.go"
           ],
           "tests": [
             "manager_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by the focused native manager suite covering construction, typed and generic registration, root order, invalid declarations, duplicate identity and addresses, cycles, defensive snapshots, and channel lifetime/rebinding, plus complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3061,33 +2625,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/messages.test.ts"
           ],
           "tests": [
             "test/messages.test.ts"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by direct message, completion, publication, instruction and layering suites plus packed consumer and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "server/messages/messages_test.go",
-            "server/completion_test.go",
-            "server/instructions/instructions_test.go"
+            "messages_test.go"
           ],
           "tests": [
-            "server/messages/messages_test.go",
-            "server/completion_test.go",
-            "server/instructions/instructions_test.go"
+            "messages_test.go"
           ],
-          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by direct message, completion and instruction suites plus external module consumer and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3098,29 +2658,21 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "test/oc_goal_case_study.test.ts"
-          ],
-          "tests": [
-            "test/oc_goal_case_study.test.ts"
-          ],
+          "status": "not-applicable",
+          "paths": [],
+          "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "oc_goal_case_study_test.go"
-          ],
-          "tests": [
-            "oc_goal_case_study_test.go"
-          ],
+          "status": "not-applicable",
+          "paths": [],
+          "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
@@ -3168,37 +2720,29 @@
         "test_server_api_is_deliberate"
       ],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/public-api.test.ts"
+            "test/public_api.test.ts"
           ],
           "tests": [
-            "test/public-api.test.ts",
-            "scripts/verify-package-consumer.mjs"
+            "test/public_api.test.ts"
           ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md"
-          ],
-          "reason": "Verified by a direct native concept map for every pinned authoring and server promise, declaration type checks, packed package imports and behavior, bilingual architecture mapping, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "public_api_test.go"
           ],
           "tests": [
-            "public_api_test.go",
-            "internal/releasecheck/module_consumer_test.go"
+            "public_api_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by direct native root/server package concept maps, external module compile and behavior checks, bilingual handbook mapping, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3209,41 +2753,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/root-selection.test.ts",
-            "test/root-selector.test.ts",
-            "test/disclosure-prompt-plane.test.ts"
+            "test/root_selection.test.ts"
           ],
           "tests": [
-            "test/root-selection.test.ts",
-            "test/root-selector.test.ts",
-            "test/disclosure-prompt-plane.test.ts"
+            "test/root_selection.test.ts"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native suites covering root compatibility, selection isolation, concurrency, headers and ceilings, SelectedGraph, unrestricted prompt ownership, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "root_selection_test.go"
           ],
           "tests": [
-            "root_selection_test.go",
-            "server/root_selector_test.go",
-            "disclosure_test.go"
+            "root_selection_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native suites covering root compatibility, selection isolation, request contexts, headers and ceilings, SelectedGraph, unrestricted prompt ownership, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3254,39 +2786,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/runtime.test.ts",
-            "test/graph-context.test.ts"
+            "test/runtime.test.ts"
           ],
           "tests": [
-            "test/runtime.test.ts",
-            "test/graph-context.test.ts"
+            "test/runtime.test.ts"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native Runtime tests covering principal scoping and concurrency, wrong-door facts, graph and telemetry scopes, selection attenuation, execution outcomes, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "runtime_test.go",
-            "graph_context_test.go"
+            "runtime_test.go"
           ],
           "tests": [
-            "runtime_test.go",
-            "graph_context_test.go"
+            "runtime_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native Runtime tests covering principal scoping and concurrency, wrong-door facts, fail-fast graph and telemetry scopes, selection attenuation, execution outcomes, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3297,31 +2819,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/scaffold.test.ts"
           ],
           "tests": [
             "test/scaffold.test.ts"
           ],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by name/template, overwrite, nearest project, target safety, config/export, CLI workflow, demo fallback, packed and independent generated-project consumer suites plus complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "cmd/contexture/scaffold_test.go",
-            "cmd/contexture/main_test.go"
+            "scaffold_test.go"
           ],
           "tests": [
-            "cmd/contexture/scaffold_test.go",
-            "cmd/contexture/main_test.go"
+            "scaffold_test.go"
           ],
-          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
-          "reason": "Verified by name/template, overwrite, nearest module boundary, generated go mod/build/check/list/inspect/call workflows, nested global command forwarding and demo fallback suites plus complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3467,45 +2987,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "test/system-api.test.ts",
-            "test/gateway-wire.test.ts"
+            "test/system_api.test.ts"
           ],
           "tests": [
-            "test/system-api.test.ts",
-            "test/gateway-wire.test.ts"
+            "test/system_api.test.ts"
           ],
-          "documentation": [
-            "docs/architecture.md",
-            "docs/architecture.zh-CN.md",
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native and wire suites covering progressive traces, fixed vocabulary, descriptions, references, reservations, statelessness, all lookup recoveries, both invocation doors, compatibility facade aliases, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
-            "gateway_test.go",
-            "gateway_recovery_test.go",
-            "disclosure_api_test.go",
-            "execution_api_test.go"
+            "system_api_test.go"
           ],
           "tests": [
-            "gateway_test.go",
-            "gateway_recovery_test.go",
-            "disclosure_api_test.go",
-            "execution_api_test.go"
+            "system_api_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by focused native suites covering fixed vocabulary and descriptions, progressive disclosure, reservations, statelessness, all lookup recoveries, bidirectional invocation doors, compatibility facade aliases, and complete race-enabled Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -3516,35 +3020,29 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "verified",
+      "status": "missing",
       "targets": {
         "typescript": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "test/telemetry.test.ts"
           ],
           "tests": [
             "test/telemetry.test.ts"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by the focused native telemetry suite covering disclosure isolation, usage reads inside Tools, success/failure aggregation, async concurrency, nested scopes, exporter failures, and complete npm gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         },
         "go": {
-          "status": "verified",
+          "status": "designed",
           "paths": [
             "telemetry_test.go"
           ],
           "tests": [
             "telemetry_test.go"
           ],
-          "documentation": [
-            "docs/handbook.md",
-            "docs/handbook.zh-CN.md"
-          ],
-          "reason": "Verified by the focused native telemetry suite covering disclosure isolation, Tool access, success/failure aggregation, goroutine concurrency under race detection, nested contexts, exporter failures and panics, and complete Go gates."
+          "documentation": [],
+          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
         }
       }
     },
@@ -4744,375 +4242,315 @@
     {
       "path": "docs/case-studies/oc-goal/.gitignore",
       "sha256": "4cad133d4f0a6cf4bba15f1b8bbae48d6a55f20b94f75487c51a93cc6a5af59f",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/.gitignore"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/.gitignore"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/DESIGN.md",
       "sha256": "669f5aa7007a13822f72f9cb279f7e4626b74da40b3c151d6075464f14cd3730",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/DESIGN.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/DESIGN.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/PLAN.md",
       "sha256": "d0dbcadbc05ce7b626d17a5c580c3667718d5c1c1c610b84f794d7db8f2e7a84",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/PLAN.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/PLAN.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/README.md",
       "sha256": "38ea65406666d224a3d7866665403365883b9b3cd05ee6a4828afbbfca1a153e",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/README.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/README.md"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/check.py",
       "sha256": "15395564f7e0cfb1b331018f1063e55b2d9e45689d2b688dd0d3f3ce921bc1e9",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/check.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/check.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/__init__.py",
       "sha256": "ab5231ba389761215450e030ba508e40f971678a58a9236f41acf337cec0aa90",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/__init__.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/__init__.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/db/__init__.py",
       "sha256": "37d0f1acbb47b9445c779f93952d6b1735e956e357525ce13940786c66bd4dd8",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/db/__init__.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/db/__init__.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/db/schema.py",
       "sha256": "70906e952c491a08382d340042329e43df3d6da841defcf3ef31e0a779d6e3b9",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/db/schema.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/db/schema.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/models.py",
       "sha256": "1343692679011dd7ae8047f9fb63f766974996eb25894edfc32bf2bfe5e406b6",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/models.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/models.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/repository.py",
       "sha256": "1e5e9c20147062ad7732b18246e471ae8cc1e836b3bd90242e5ae33cdac86e65",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/repository.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/repository.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/role.py",
       "sha256": "24a255025587a0d7a42c1f1891f4e8d544869a3170e0ea85feab64eca5495f60",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/role.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/role.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/seed.py",
       "sha256": "67d94677990ad0522b0e5fbc7b08589e5c337a2b7a01712a54a3e35b7e92cb50",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/seed.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/seed.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/skills.py",
       "sha256": "bbd35cf70a12d9f6f73ca993356f6cc142d578ba8d92e5bb201a144931cfa5e2",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/skills.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/skills.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/oc_goal/tools.py",
       "sha256": "89c566ba6b89934d947edc7570f8a31110278f8ea65aad895983a67f4bfdd14f",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/tools.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/oc_goal/tools.py"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },
     {
       "path": "docs/case-studies/oc-goal/pyproject.toml",
       "sha256": "8396834189ede03e979717b867843150c57efd7682fc2bfb799c69e50234d407",
-      "status": "missing",
+      "status": "not-applicable",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/pyproject.toml"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/case-studies/oc-goal/pyproject.toml"
-          ],
+          "status": "not-applicable",
+          "paths": [],
           "tests": [],
           "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "reason": "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
         }
       }
     },

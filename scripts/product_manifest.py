@@ -29,7 +29,7 @@ BINDING_DIRECTORIES = {
     "typescript": "contexture-mcp-typescript",
     "go": "contexture-mcp-go",
 }
-ENTRY_STATUSES = {"missing", "designed", "implemented", "verified"}
+ENTRY_STATUSES = {"missing", "designed", "implemented", "verified", "not-applicable"}
 TARGET_STATUSES = {"unmapped", "not-applicable", "designed", "implemented", "verified"}
 PRODUCT_ASSET_PATHS = (
     "pyproject.toml",
@@ -40,6 +40,29 @@ PRODUCT_ASSET_PATHS = (
     "LICENSE",
     "RELEASING.md",
     "SECURITY.md",
+)
+NOT_APPLICABLE_PATHS = frozenset(
+    {
+        "tests/test_oc_goal_case_study.py",
+        "docs/case-studies/oc-goal/.gitignore",
+        "docs/case-studies/oc-goal/DESIGN.md",
+        "docs/case-studies/oc-goal/PLAN.md",
+        "docs/case-studies/oc-goal/README.md",
+        "docs/case-studies/oc-goal/check.py",
+        "docs/case-studies/oc-goal/oc_goal/__init__.py",
+        "docs/case-studies/oc-goal/oc_goal/db/__init__.py",
+        "docs/case-studies/oc-goal/oc_goal/db/schema.py",
+        "docs/case-studies/oc-goal/oc_goal/models.py",
+        "docs/case-studies/oc-goal/oc_goal/repository.py",
+        "docs/case-studies/oc-goal/oc_goal/role.py",
+        "docs/case-studies/oc-goal/oc_goal/seed.py",
+        "docs/case-studies/oc-goal/oc_goal/skills.py",
+        "docs/case-studies/oc-goal/oc_goal/tools.py",
+        "docs/case-studies/oc-goal/pyproject.toml",
+    }
+)
+NOT_APPLICABLE_REASON = (
+    "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
 )
 
 
@@ -267,6 +290,22 @@ def _target_placeholder(language: str, path: str, *, kind: str) -> dict[str, Any
     }
 
 
+def _not_applicable_target() -> dict[str, Any]:
+    return {
+        "status": "not-applicable",
+        "paths": [],
+        "tests": [],
+        "documentation": [],
+        "reason": NOT_APPLICABLE_REASON,
+    }
+
+
+def _targets(path: str, *, kind: str) -> dict[str, dict[str, Any]]:
+    if path in NOT_APPLICABLE_PATHS:
+        return {language: _not_applicable_target() for language in LANGUAGES}
+    return {language: _target_placeholder(language, path, kind=kind) for language in LANGUAGES}
+
+
 def _module_entry(source: GitFile, *, kind: str) -> dict[str, Any]:
     is_test = kind == "test"
     return {
@@ -276,8 +315,8 @@ def _module_entry(source: GitFile, *, kind: str) -> dict[str, Any]:
         "pythonImport": _package_import(source.path) if source.path.endswith(".py") and not is_test else None,
         "publicSymbols": _symbols(source, is_test=is_test) if source.path.endswith(".py") else [],
         "responsibility": _responsibility(source.path, is_test=is_test),
-        "status": "missing",
-        "targets": {language: _target_placeholder(language, source.path, kind=kind) for language in LANGUAGES},
+        "status": "not-applicable" if source.path in NOT_APPLICABLE_PATHS else "missing",
+        "targets": _targets(source.path, kind=kind),
     }
 
 
@@ -285,8 +324,8 @@ def _asset_entry(source: GitFile) -> dict[str, Any]:
     return {
         "path": source.path,
         "sha256": source.sha256,
-        "status": "missing",
-        "targets": {language: _target_placeholder(language, source.path, kind="asset") for language in LANGUAGES},
+        "status": "not-applicable" if source.path in NOT_APPLICABLE_PATHS else "missing",
+        "targets": _targets(source.path, kind="asset"),
     }
 
 
@@ -369,8 +408,9 @@ def render_markdown(manifest: dict[str, Any]) -> str:
         f"- Test modules: {len(tests)}",
         f"- Product assets: {len(assets)}",
         "",
-        "Every row has a planned native target. A target status of designed means",
-        "no implementation or parity credit has yet been claimed; it is not an exemption.",
+        "Every applicable row has a planned native target. A target status of designed means",
+        "no implementation or parity credit has yet been claimed; it is not an exemption. The",
+        "Python-only OC Goal case-study rows are explicitly marked not-applicable.",
         "",
         "## Source modules",
         "",
@@ -461,6 +501,10 @@ def _verify_entry(entry: Any, expected: GitFile, kind: str) -> None:
         raise ValueError(f"baseline content hash drifted for {expected.path}")
     if entry["status"] not in ENTRY_STATUSES:
         raise ValueError(f"{expected.path} has invalid status")
+    is_excluded = expected.path in NOT_APPLICABLE_PATHS
+    if is_excluded != (entry["status"] == "not-applicable"):
+        expected_status = "not-applicable" if is_excluded else "an applicable status"
+        raise ValueError(f"{expected.path} must have {expected_status}")
     if kind != "asset" and entry["kind"] != kind:
         raise ValueError(f"{expected.path} has wrong kind")
     if kind != "asset":
@@ -488,6 +532,21 @@ def _verify_entry(entry: Any, expected: GitFile, kind: str) -> None:
             if not any("zh-CN" in path for path in documentation):
                 raise ValueError(
                     f"{expected.path}.{language} needs Simplified Chinese documentation"
+                )
+    if entry["status"] == "not-applicable":
+        for language in LANGUAGES:
+            target = entry["targets"][language]
+            if target["status"] != "not-applicable":
+                raise ValueError(
+                    f"{expected.path} is not-applicable, so {language} must be not-applicable"
+                )
+            if target["paths"] or target["tests"] or target["documentation"]:
+                raise ValueError(
+                    f"{expected.path}.{language} not-applicable target must not claim evidence"
+                )
+            if not target["reason"]:
+                raise ValueError(
+                    f"{expected.path}.{language} not-applicable target needs a reason"
                 )
 
 
