@@ -24,7 +24,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/cli/__main__.py | source | — | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
 | contexture/cli/main.py | source | build_parser, main | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
 | contexture/cli/project.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, ProjectConfig, Serving, find_project, load_application, load_channels, load_published, load_roots, resolve_target | designed: `src/cli/project.ts` | designed: `cmd/contexture/project.go` | missing |
-| contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | designed: `src/cli/scaffold.ts` | designed: `cmd/contexture/scaffold.go` | missing |
+| contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
 | contexture/cli/usage.py | source | UsageError | designed: `src/cli/usage.ts` | designed: `cmd/contexture/usage.go` | missing |
 | contexture/core/__init__.py | source | — | designed: `src/core/index.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/constants.py | source | — | verified: `src/core/foundation/vocabulary.ts` | verified: `core/foundation/constants.go` | verified |

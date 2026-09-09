@@ -289,25 +289,25 @@
         "render_file"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/scaffold.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified stable name derivation, project template inventory, unknown-template diagnostics, no unresolved variables/suffixes, overwrite refusal, runnable generated project, packed and independent scaffold consumers, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cmd/contexture/scaffold_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified stable name derivation, project template inventory, unknown-template diagnostics, no unresolved variables, overwrite refusal, generated project go mod tidy and check/list/inspect/call workflow, nested global command forwarding, complete race-enabled Go gates, and independent audit."
         }
       }
     },
