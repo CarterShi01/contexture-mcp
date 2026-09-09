@@ -1115,25 +1115,43 @@
         "current_root_selection"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/model/root-selection.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/root-selection.test.ts",
+            "test/root-selector.test.ts",
+            "test/disclosure-prompt-plane.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified root selection compatibility, selected graph filtering, monotonic intersection, request-local binding, unrestricted prompt ownership without ceiling widening, path-selected compatible supersets, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/root_selection.go"
+            "core/model/selection.go",
+            "core/model/selected_graph.go",
+            "core/model/graph_context.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "root_selection_test.go",
+            "server/root_selector_test.go",
+            "disclosure_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified root selection compatibility, selected graph filtering, monotonic intersection, request-context binding, unrestricted prompt ownership without ceiling widening, path-selected compatible supersets, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
@@ -3071,29 +3089,41 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/root_selection.test.ts"
+            "test/root-selection.test.ts",
+            "test/root-selector.test.ts",
+            "test/disclosure-prompt-plane.test.ts"
           ],
           "tests": [
-            "test/root_selection.test.ts"
+            "test/root-selection.test.ts",
+            "test/root-selector.test.ts",
+            "test/disclosure-prompt-plane.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native suites covering root compatibility, selection isolation, concurrency, headers and ceilings, SelectedGraph, unrestricted prompt ownership, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "root_selection_test.go"
           ],
           "tests": [
-            "root_selection_test.go"
+            "root_selection_test.go",
+            "server/root_selector_test.go",
+            "disclosure_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native suites covering root compatibility, selection isolation, request contexts, headers and ceilings, SelectedGraph, unrestricted prompt ownership, and complete race-enabled Go gates."
         }
       }
     },
