@@ -6,6 +6,37 @@ may contain documented breaking changes.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-09-10
+
+### Added
+
+- Added optional `Role.pre_process` and `Role.post_process` members, each a
+  specialized Role with ordinary containment, selection, Channels, and Tool
+  Binding behavior.
+- Added the public `binding_instruction(source, body, *, action=None)` helper
+  for application-owned hard rules that cannot be enforced in code.
+- Framework process obligations now use fixed head and tail markers and a
+  separate `>>> REQUIRED:` action line.
+
+### Changed
+
+- Replaced the framework-level `Publication` concept and `publication=` slot
+  with `PostProcess` / `post_process=`. No compatibility alias is provided.
+- PreProcess contracts are composed before unchanged business instructions and
+  explicitly return the Agent to owner work; PostProcess contracts remain after
+  business instructions and preserve truthful failure and approval reporting.
+- Accepted [ADR 023](docs/adr/023-process-members-and-instruction-emphasis.md),
+  superseding ADR 021.
+
+### Compatibility
+
+- Applications without process members retain exact ROUTE and ACTIVE output.
+  Process members do not add callbacks, workflow state, or execution guarantees;
+  only explicit Tool calls have effects.
+- Python 0.16.0 is a breaking pre-1.0 release for applications using the old
+  `Publication` name or `publication` payload field. No TypeScript or Go parity
+  is claimed by this release.
+
 ## [0.15.0] - 2026-09-08
 
 ### Added
@@ -132,7 +163,8 @@ may contain documented breaking changes.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.16.0...HEAD
+[0.16.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.12.0rc1...v0.13.0

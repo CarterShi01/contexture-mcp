@@ -437,7 +437,7 @@ def every_ref(tree: Disclosure) -> Iterator[str]:
     is — a truncated read of a deep spine tells you least.
     """
 
-    # Unlike the routing roster, a full inspection includes Publication equipment.
+    # Unlike the routing roster, a full inspection includes process equipment.
     queue = [root for root in tree.index.roots if isinstance(root, Role)]
     while queue:
         role = queue.pop(0)

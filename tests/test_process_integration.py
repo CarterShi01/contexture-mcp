@@ -1,4 +1,4 @@
-"""Publication equipment follows the existing runtime and MCP execution paths."""
+"""Process equipment follows the existing runtime and MCP execution paths."""
 
 from __future__ import annotations
 
@@ -9,12 +9,7 @@ import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
 from contexture import (
-    Channels,
-    Contexture,
-    Principal,
-    Publication,
-    Role,
-    Tool,
+    Channels, Contexture, Principal, PostProcess, PreProcess, Role, Tool,
     current_principal,
 )
 from contexture.core.constants import INVOKE_TOOL, OPEN_TOOL
@@ -43,7 +38,7 @@ class Storage(Channels):
 
 def storage_of(tool: Tool) -> Storage:
     if not isinstance(tool.channels, Storage):
-        raise RuntimeError("Publication storage was not provisioned.")
+        raise RuntimeError("Process storage was not provisioned.")
     return tool.channels
 
 
@@ -84,46 +79,55 @@ class ApproveKnowledge(Tool):
         return {"status": "published", "ref": "knowledge.md"}
 
 
-class TaskPublication(Publication):
-    def __init__(self) -> None:
-        super().__init__(
-            name="memory",
-            description="Preserve reusable task findings.",
-            instructions="Save supported findings and report the receipt.",
-            tools=[SaveFinding()],
-        )
+@pytest.fixture(params=[("post_process", PostProcess), ("pre_process", PreProcess)])
+def phase(request):
+    return request.param
 
 
-class KnowledgePublication(Publication):
-    def __init__(self) -> None:
-        super().__init__(
-            name="knowledge",
-            description="Promote reviewed project knowledge.",
-            instructions=(
-                "Propose only reusable findings after task storage succeeds. "
-                "Await authorized review; a pending candidate is not published."
-            ),
-            tools=[ProposeKnowledge(), ApproveKnowledge()],
-        )
+def task_results(kind):
+    return kind(
+        name="memory",
+        description="Preserve reusable task findings.",
+        instructions="Save supported findings and report the receipt.",
+        tools=[SaveFinding()],
+    )
 
 
-class Worker(Role):
-    def __init__(self) -> None:
-        super().__init__(
-            name="worker",
-            description="Investigate a task.",
-            instructions="Investigate and establish the evidence.",
-            publication=TaskPublication(),
-        )
+def knowledge_results(kind):
+    return kind(
+        name="knowledge",
+        description="Promote reviewed project knowledge.",
+        instructions=(
+            "Propose only reusable findings after task storage succeeds. "
+            "Await authorized review; a pending candidate is not published."
+        ),
+        tools=[ProposeKnowledge(), ApproveKnowledge()],
+    )
+
+
+@pytest.fixture
+def worker(phase):
+    slot, kind = phase
+
+    class Worker(Role):
+        def __init__(self):
+            super().__init__(
+                name="worker", description="Investigate a task.",
+                instructions="Investigate and establish the evidence.",
+                **{slot: task_results(kind)},
+            )
+
+    return Worker
 
 
 @pytest.mark.asyncio
-async def test_disclosure_and_inspection_have_no_publication_effects(tmp_path: Path) -> None:
+async def test_disclosure_and_inspection_have_no_process_effects(tmp_path, worker):
     storage = Storage(tmp_path)
-    tree = Disclosure(compiled(Worker, channels=storage))
+    tree = Disclosure(compiled(worker, channels=storage))
     api = SystemAPI(tree)
 
     await api.discover()
+    await api.inspect(list(every_ref(tree)))
     for ref in every_ref(tree):
         opened = await api.open(ref)
         assert open_step(tree, ref).payload == opened
@@ -133,16 +137,16 @@ async def test_disclosure_and_inspection_have_no_publication_effects(tmp_path: P
 
 
 @pytest.mark.asyncio
-async def test_explicit_mcp_call_uses_disclosed_schema_and_persists(tmp_path: Path) -> None:
+async def test_explicit_mcp_call_uses_disclosed_schema_and_persists(tmp_path, worker, phase):
     storage = Storage(tmp_path)
-    server = serve(Worker, channels=storage).build()
+    server = serve(worker, channels=storage).build()
     assert tuple(tool.name for tool in await server.list_tools()) == GATEWAY_TOOLS
 
     owner_result = await server.call_tool(OPEN_TOOL, {"ref": "worker"})
     owner = json.loads(owner_result.content[0].text)
-    publication_result = await server.call_tool(OPEN_TOOL, {"ref": owner["publication"]})
-    publication = json.loads(publication_result.content[0].text)
-    tool = publication["tools"][0]
+    process_result = await server.call_tool(OPEN_TOOL, {"ref": owner[phase[0]]})
+    process = json.loads(process_result.content[0].text)
+    tool = process["tools"][0]
     assert tool["ref"] == "worker/memory/save"
     assert tool["read_only"] is False
     assert tool["input_schema"]["required"] == ["finding"]
@@ -161,16 +165,20 @@ async def test_explicit_mcp_call_uses_disclosed_schema_and_persists(tmp_path: Pa
 
 
 @pytest.mark.asyncio
-async def test_publication_tools_keep_validation_errors_and_write_door(tmp_path: Path) -> None:
-    index = compiled(Worker, channels=Storage(tmp_path))
+async def test_process_tools_keep_validation_errors_and_write_door(tmp_path, worker):
+    index = compiled(worker, channels=Storage(tmp_path))
     runtime = ApplicationRuntime(index)
     with pytest.raises(WrongDoorError):
         await runtime.invoke_read_only("worker/memory/save", {"finding": "evidence"})
     with pytest.raises(ToolError):
         await runtime.invoke("worker/memory/save", {})
+    with pytest.raises(ToolError) as empty:
+        await runtime.invoke("worker/memory/save", {"finding": " "})
+    assert isinstance(empty.value.__cause__, ValueError)
+    assert str(empty.value.__cause__) == "A finding must not be empty."
     assert list(tmp_path.iterdir()) == []
 
-    # A failing business call must not become a publication receipt.
+    # A failing business call must not become a successful process receipt.
     (tmp_path / "findings.md").mkdir()
     with pytest.raises(ToolError):
         await runtime.invoke("worker/memory/save", {"finding": "evidence"})
@@ -178,21 +186,19 @@ async def test_publication_tools_keep_validation_errors_and_write_door(tmp_path:
 
 
 @pytest.mark.asyncio
-async def test_composed_publication_preserves_pending_review_and_authority(tmp_path: Path) -> None:
-    publication = Publication(
-        name="results",
-        description="Preserve task and project results.",
+async def test_composed_process_preserves_pending_review_and_authority(tmp_path, phase):
+    slot, kind = phase
+    process = kind(
+        name="results", description="Preserve task and project results.",
         instructions=(
             "First consolidate task findings. Then consider proposing reusable "
             "knowledge, respecting review and reporting pending approval."
         ),
-        children=[TaskPublication(), KnowledgePublication()],
+        children=[task_results(kind), knowledge_results(kind)],
     )
     worker = Role(
-        name="worker",
-        description="Investigate a task.",
-        instructions="Investigate.",
-        publication=publication,
+        name="worker", description="Investigate a task.", instructions="Investigate.",
+        **{slot: process},
     )
     storage = Storage(tmp_path)
     index = compiled(worker, channels=storage)
@@ -200,7 +206,7 @@ async def test_composed_publication_preserves_pending_review_and_authority(tmp_p
     tree = Disclosure(index)
     async with index.provisioned():
         owner = tree.open("worker")
-        result_roles = tree.open(owner["publication"])["roles"]
+        result_roles = tree.open(owner[slot])["roles"]
         assert [role["name"] for role in result_roles] == ["memory", "knowledge"]
         await runtime.invoke("worker/results/memory/save", {"finding": "Evidence."})
         assert not (tmp_path / "candidate.md").exists()
@@ -210,15 +216,12 @@ async def test_composed_publication_preserves_pending_review_and_authority(tmp_p
 
         with pytest.raises(ToolError, match="authorized reviewer"):
             await runtime.invoke(
-                "worker/results/knowledge/approve",
-                principal=Principal(subject="worker"),
+                "worker/results/knowledge/approve", principal=Principal(subject="worker"),
             )
         assert not (tmp_path / "knowledge.md").exists()
         receipt = await runtime.invoke(
             "worker/results/knowledge/approve",
-            principal=Principal(
-                subject="reviewer", scopes=frozenset({"knowledge.approve"})
-            ),
+            principal=Principal(subject="reviewer", scopes=frozenset({"knowledge.approve"})),
         )
         assert receipt["status"] == "published"
 
@@ -228,9 +231,9 @@ async def test_composed_publication_preserves_pending_review_and_authority(tmp_p
 
 
 @pytest.mark.asyncio
-async def test_prompt_only_publication_cannot_be_entered_by_model(tmp_path: Path) -> None:
+async def test_prompt_only_process_cannot_be_entered_by_model(tmp_path, worker, phase):
     tree = Disclosure(
-        compiled(Worker, channels=Storage(tmp_path)),
+        compiled(worker, channels=Storage(tmp_path)),
         prompt_roots=frozenset({"worker"}),
     )
     api = SystemAPI(tree)
@@ -242,25 +245,73 @@ async def test_prompt_only_publication_cannot_be_entered_by_model(tmp_path: Path
         await api.invoke("worker/memory/save", {"finding": "evidence"})
     assert list(tmp_path.iterdir()) == []
     owner = await api.open_for_person("worker")
-    assert owner["publication"] == "worker/memory"
+    assert owner[phase[0]] == "worker/memory"
 
 
 @pytest.mark.asyncio
-async def test_disclosure_only_publication_has_no_executable_binding() -> None:
-    app = compile_disclosure_application(
-        Contexture(name="architecture", roots=(Worker,))
-    )
+async def test_disclosure_only_process_has_no_executable_binding(worker, phase):
+    app = compile_disclosure_application(Contexture(name="architecture", roots=(worker,)))
     wire = app.server().build()
     assert tuple(tool.name for tool in await wire.list_tools()) == GATEWAY_TOOLS[:3]
     owner = await app.server().surface.api.open("worker")
-    opened = await app.server().surface.api.open(owner["publication"])
+    opened = await app.server().surface.api.open(owner[phase[0]])
     assert opened["tools"] == [
         {
-            "kind": "tool",
-            "name": "save",
-            "description": "Save task findings.",
+            "kind": "tool", "name": "save", "description": "Save task findings.",
             "ref": "worker/memory/save",
         }
     ]
     with pytest.raises(ModelValidationError, match="no executable bindings"):
         app.index.binding_of("worker/memory/save")
+
+
+@pytest.mark.asyncio
+async def test_prepare_return_to_owner_then_cleanup_are_explicit_calls():
+    events = []
+
+    class Step(Tool):
+        def __init__(self, name):
+            super().__init__(name=name, description=f"Perform {name}.")
+
+        async def invoke(self) -> str:
+            if self.name == "work" and events != ["prepare"]:
+                raise PermissionError("Preparation is required by the work tool.")
+            events.append(self.name)
+            return self.name
+
+    owner = Role(
+        name="worker", description="Work in a temporary workspace.",
+        instructions="Use the work tool after setup, then release the workspace.",
+        pre_process=PreProcess(
+            name="setup", description="Prepare the workspace.",
+            instructions="Use the prepare tool.", tools=[Step("prepare")],
+        ),
+        post_process=PostProcess(
+            name="cleanup", description="Release the workspace.",
+            instructions="Use the cleanup tool.", tools=[Step("cleanup")],
+        ),
+        tools=[Step("work")],
+    )
+    server = serve(owner).build()
+
+    async def open_node(ref):
+        result = await server.call_tool(OPEN_TOOL, {"ref": ref})
+        assert not result.is_error
+        return json.loads(result.content[0].text)
+
+    opened = await open_node("worker")
+    assert "return to this role's own instructions" in opened["instructions"]
+    assert "publication" not in opened["instructions"].lower()
+    assert "results and evidence" not in opened["instructions"]
+    await open_node(opened["pre_process"])
+    await open_node(opened["post_process"])
+    assert events == []
+    with pytest.raises(ToolError, match="Preparation is required by the work tool"):
+        await server.call_tool(INVOKE_TOOL, {"ref": "worker/work", "arguments": {}})
+    assert events == []
+    for ref in ("worker/setup/prepare", "worker/work", "worker/cleanup/cleanup"):
+        if ref == "worker/work":
+            assert await open_node("worker") == opened
+        result = await server.call_tool(INVOKE_TOOL, {"ref": ref, "arguments": {}})
+        assert not result.is_error
+    assert events == ["prepare", "work", "cleanup"]

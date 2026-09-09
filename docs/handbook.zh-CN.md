@@ -133,6 +133,9 @@ Schema 会从这一份声明重新生成。
   `skills=[...]`，用 `uses` 指向所需 Tool。
 - Agent 必须在不同业务职责间选择：才添加子 **Role**，放入
   `children=[...]`。
+- Role 需要一棵独立、延迟展开的准备或收尾能力子树：添加
+  **PreProcess** 或 **PostProcess**，放入 `pre_process=...` 或
+  `post_process=...`；它们不是可选业务分支。
 
 修改图之后执行：
 
@@ -143,6 +146,49 @@ uv run contexture inspect --all --summary
 ```
 
 ref 应来自 `list` 或 `inspect` 返回的卡片，不要靠字符串猜测。
+
+### 可选过程成员（Python 0.16.0）
+
+PreProcess 与 PostProcess 都是 Role 的特化，不是新节点类型，也不是会自动执行的
+回调。业务构造函数照常提供 `instructions`、Skill、Tool 与 `uses`：
+
+```python
+from contexture import PostProcess, Role
+
+
+class PreserveResults(PostProcess):
+  def __init__(self) -> None:
+    super().__init__(
+      name="preserve-results",
+      description="Preserve supported findings and their receipt.",
+      instructions="Store only supported findings and report the actual receipt.",
+      tools=[SaveFindings()],
+    )
+
+
+class TaskWorker(Role):
+  def __init__(self) -> None:
+    super().__init__(
+      name="task-worker",
+      description="Perform one task from supplied context.",
+      instructions="Work from the supplied task context and evidence.",
+      post_process=PreserveResults(),
+    )
+```
+
+打开 owner 时，PostProcess 仍只是一张普通 Role 卡片，并以 `post_process` 字符串
+标明真实 ref。框架会在业务 instructions 之后追加固定头尾标记，要求 Agent 在结束
+前打开该 ref；打开只披露流程，并不执行 Tool 或证明成功。PreProcess 对称地出现在
+业务 instructions 之前，要求开始前打开，并在准备完成后回到 owner instructions。
+
+不声明过程成员时，ROUTE/ACTIVE 输出逐字保持不变。过程成员不进入 `branches()`，
+不被后代隐式继承，也不提供开始/结束事件或执行保证。PreProcess 应装载“Agent 要执行
+的准备流程”，不能替代必须成立的不变量；能由 Tool 检查的保证必须在 Tool 内拒绝违规
+调用。
+
+业务可用框架导出的 `binding_instruction(source, body, action=None)` 标记确实无法用
+代码强制的硬规则。`source` 必须诚实标明业务权威，不能冒充 `contexture`。详情见
+[ADR 023](adr/023-process-members-and-instruction-emphasis.md)。
 
 ## 7. 只在需要时连接外部系统
 

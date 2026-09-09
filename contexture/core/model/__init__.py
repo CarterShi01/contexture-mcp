@@ -27,7 +27,7 @@ from .channels import Channels
 from .graph_context import current_graph
 from .manager import ControllerManager, register_root
 from .node import CompiledGraph, CompileLevel, ContextNode, View
-from .role import Publication, Role
+from .role import PostProcess, PreProcess, Role
 from .root_selection import RootSelection, SurfaceSelection
 from .skill import Skill
 from .telemetry import InMemoryTelemetry, NodeUsage, Telemetry, current_telemetry
@@ -45,7 +45,8 @@ __all__ = [
     "Telemetry",
     "current_telemetry",
     "View",
-    "Publication",
+    "PostProcess",
+    "PreProcess",
     "Role",
     "RootSelection",
     "SurfaceSelection",

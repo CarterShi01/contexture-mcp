@@ -5,6 +5,7 @@ advanced hosting namespace; ``contexture.core`` is implementation detail.
 """
 
 from .application import Contexture as Contexture
+from .core.emphasis import binding_instruction as binding_instruction
 from .core.errors import ContextureError as ContextureError
 from .core.errors import DeclarationError as DeclarationError
 from .core.errors import DuplicateNameError as DuplicateNameError
@@ -14,7 +15,8 @@ from .core.mcp_interface import Prompt as Prompt
 from .core.mcp_interface import Resource as Resource
 from .core.model.channels import Channels as Channels
 from .core.model.graph_context import current_graph as current_graph
-from .core.model.role import Publication as Publication
+from .core.model.role import PostProcess as PostProcess
+from .core.model.role import PreProcess as PreProcess
 from .core.model.role import Role as Role
 from .core.model.skill import Skill as Skill
 from .core.model.telemetry import current_telemetry as current_telemetry
@@ -34,12 +36,14 @@ __all__ = [
     "NodeNotFoundError",
     "Principal",
     "Prompt",
-    "Publication",
+    "PostProcess",
+    "PreProcess",
     "Resource",
     "Role",
     "Skill",
     "Tool",
     "__version__",
+    "binding_instruction",
     "current_graph",
     "current_principal",
     "current_telemetry",

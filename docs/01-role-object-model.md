@@ -16,10 +16,11 @@
 > left. The directory names it uses predate
 > [ADR 010](adr/010-the-directories-are-the-architecture.md).
 
-> **Publication update (accepted for Python 0.14.0, 2026-09-08).**
-> [ADR 021](adr/021-role-publication-and-instruction-composition.md) adds
-> optional finishing equipment to Role: `Publication`, a specialized Role,
-> not a fourth node kind. §16.1 describes the current contract. Earlier
+> **Process-member update (accepted for Python 0.16.0, 2026-09-09).**
+> [ADR 023](adr/023-process-members-and-instruction-emphasis.md) supersedes
+> ADR 021 and adds optional preparing and finishing equipment to Role:
+> `PreProcess` and `PostProcess`, both specialized Roles rather than new node
+> kinds. §16.1 describes the current contract. Earlier
 > incremental examples remain historical where they differ from the
 > [public model](../spec/model.md); lower-case Prompt/Resource *publications*
 > still mean exposure pointers, not this new Role specialization.
@@ -89,7 +90,7 @@ form has exactly one author.
 | Type | Question answered | Primary responsibility |
 |---|---|---|
 | `Role` | Who owns this responsibility, and how does it work? | Coordinate work and member use through its instructions. |
-| `Publication` | How are the work's results preserved for reuse? | Specialize Role as optional finishing equipment. |
+| `PreProcess` / `PostProcess` | What dedicated preparation or finishing procedure surrounds this work? | Specialize Role as optional process equipment. |
 | `Skill` | Which reusable technique does the Role use? | Supply a procedure followed within the Role's work. |
 | `Tool` | Which operation can this Role run? | Execute one typed Python method. |
 | `Resource` | Which content can this Role read? | Address content without loading it. |
@@ -99,7 +100,7 @@ A useful shorthand is:
 
 ```text
 Role       = responsibility and work orchestration
-Publication = result-preserving responsibility
+Process member = preparing or finishing responsibility
 Skill      = reusable technique
 Tool       = executable operation
 Resource   = readable context
@@ -193,13 +194,12 @@ it says what a member is, never when to reach for it relative to its siblings.
 An agent that is handed cards without that sentence is left to infer the order
 from the names.
 
-For an optional Publication, the business still owns that procedure text.
-`Role.instructions` is never rewritten: framework `_compile_active` appends
-only the framework publication contract to the disclosed instructions, naming
-the actual Publication ref to open before finishing. These are **business
-instructions** and **framework instructions**, not a third instruction ownership
-category. The Publication's full business procedure remains behind its own
-open call; see §16.1.
+For optional process members, the business still owns each procedure text.
+`Role.instructions` is never rewritten: framework `_compile_active` composes a
+fixed PreProcess contract before it and a fixed PostProcess contract after it,
+naming the actual refs to open. These are **business instructions** and
+**framework instructions**, not a third ownership category. Each process
+member's business procedure remains behind its own open call; see §16.1.
 
 ## 7. Step 3: Skill as reusable workflow knowledge
 
@@ -310,11 +310,11 @@ An active Role does not recursively activate all descendants. It exposes:
 
 This invariant prevents an accidental full-tree context expansion.
 
-With the 0.14 Publication extension, an ACTIVE owner additionally designates its
-Publication with a `publication` string equal to the member's canonical ref.
-That member has an ordinary routing card in `roles`; its instructions and
+With the 0.16 process-member extension, an ACTIVE owner additionally designates
+its optional members with `pre_process` / `post_process` strings equal to their
+canonical refs. Each has an ordinary routing card in `roles`; instructions and
 capabilities are not inlined. ROUTE output is unchanged, and an owner without
-a Publication retains its exact existing ACTIVE output.
+either member retains its exact existing ACTIVE output.
 
 ## 10. Why `kind` belongs in the route card
 
@@ -507,7 +507,8 @@ classDiagram
     class Role {
         +instructions: str
         +children: Role[]
-        +publication: Publication?
+      +pre_process: PreProcess?
+      +post_process: PostProcess?
         +skills: Skill[]
         +tools: Tool[]
     }
@@ -522,7 +523,12 @@ classDiagram
         +parameters()
     }
 
-    class Publication {
+    class PreProcess {
+      +kind: role
+      +group: roles
+    }
+
+    class PostProcess {
         +kind: role
         +group: roles
     }
@@ -530,60 +536,46 @@ classDiagram
     ContextNode <|-- Role
     ContextNode <|-- Skill
     ContextNode <|-- Tool
-    Role <|-- Publication
+    Role <|-- PreProcess
+    Role <|-- PostProcess
     Role *-- Role : children
-    Role *-- Publication : publication
+    Role *-- PreProcess : pre_process
+    Role *-- PostProcess : post_process
     Role *-- Skill : skills
     Role *-- Tool : tools
 ```
 
 Three node kinds, one base class, and a Role that holds only what it declares.
-Publication specializes Role. Prompt and Resource are protocol exposure
-publications outside this graph.
+PreProcess and PostProcess specialize Role. Prompt and Resource are protocol
+exposure publications outside this graph.
 
-### 16.1 Publication is finishing equipment
+### 16.1 Process members are preparing and finishing equipment
 
-The accepted Python 0.14.0 API exports `Publication` from `contexture`, inheriting
-Role's constructor (`name`, `description`, `instructions`, `children`, `skills`,
-`tools`, `uses`, `publication`). `Role.publication` accepts a constructed
-Publication or `None`, defaulting to `None`. A business constructor supplies the
-procedure and owns dedicated capabilities or references shared Tools through
-`uses`; it is not a handler the framework runs.
+The Python 0.16.0 API exports `PreProcess` and `PostProcess`, both inheriting
+Role's constructor. `Role.pre_process` and `Role.post_process` accept a
+constructed matching specialization or `None`. A business constructor supplies
+the procedure and owns dedicated capabilities or references shared Tools through
+`uses`; neither member is a handler the framework runs.
 
-`members()` traverses children, the optional Publication, Skills, then Tools.
-All normal uniqueness, shared-instance, cycle, and ref checks apply. Paths,
-Channels, and runtime Tool Bindings are compiled normally. `branches()` remains
-children-only: publishing results is equipment for finishing the responsibility,
-not an alternative responsibility to choose instead. Complete-subtree selection
-therefore includes the Publication, without adding it to the branch roster.
+`members()` traverses pre-process, children, post-process, Skills, then Tools.
+All normal uniqueness, sharing, cycle, ref, Channels, Binding, and selection
+rules apply. `branches()` remains children-only because process equipment is not
+an alternative responsibility.
 
-The owner's ACTIVE `roles` array includes the ordinary Publication routing
-card, and its optional `publication` string designates that card's ref.
-Framework instructions use the existing `OPEN_TOOL` name (`contexture_open`)
-and the actual view-supplied path. They require opening the Publication before
-finishing owner work and following its procedure with the results and evidence.
-Merely opening it executes nothing. Pending approval, blockers, and failures
-must be reported truthfully, never turned into invented success or an approval
-bypass. The four gateways and Tool-only execution remain unchanged: there is
-no `Role.invoke`, finish handler, hook, destructor, host-specific runtime, or
-guarantee that an external Agent complies.
+ACTIVE includes ordinary process routing cards and exact string designations.
+Fixed framework blocks require opening PreProcess before starting and
+PostProcess before finishing. The former explicitly sends the Agent back to the
+owner instructions after preparation. Opening executes nothing; only explicit
+Tool calls have effects. Failures and pending approvals are reported rather
+than converted into success.
 
-There is no containment-tree inheritance. Business constructors can use ordinary
-Python inheritance to supply fresh defaults, with explicit `None` disabling
-publication; the framework adds neither an enabled flag nor a no-op member.
-Share services through Channels or `uses`, never graph-node instances across
-owners or compilations. A Publication may explicitly hold another Publication
-under ordinary acyclic containment. Its type alone adds no extra obligations
-when opened directly; its own explicit `publication` member does.
-
-Selecting the Publication alone exposes its subtree without its owner or an
-owner-finishing contract. `uses` does not widen selection. Prompt-only owners
-cannot leak their Publications through ordinary model disclosure. If a view
-cannot supply the Publication card, framework instruction composition refuses
-instead of emitting an unavailable ref or silently omitting the contract.
-Publication means durable, reusable results, not public Internet distribution
-or automatic user visibility. See [ADR 021](adr/021-role-publication-and-instruction-composition.md)
-for OC TaskContext and approval-gated project-knowledge use cases.
+There is no containment-tree inheritance or automatic start/finish event.
+Explicit nesting is ordinary containment and gains no extra semantics. A
+process member is a procedure an Agent should perform, not an invariant the
+application can rely on; enforce guarantees in the Tool that could violate
+them. Prompt-only and selected surfaces preserve the same visibility boundary,
+and a missing process card causes composition to refuse without leaking a ref.
+See [ADR 023](adr/023-process-members-and-instruction-emphasis.md).
 
 ## 17. Terminal-state additions
 

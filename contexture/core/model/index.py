@@ -417,8 +417,9 @@ class Index:
     def roles_by_level(self) -> Iterator[tuple[str, Role]]:
         """The routing axis breadth-first: every root, then every child branch.
 
-        Publication equipment is in `walk()` and `roles_with_refs()`, but not
-        this axis of alternative work branches.
+        Process equipment — a Role's PreProcess and PostProcess — is in
+        `walk()` and `roles_with_refs()`, but not this axis of alternative work
+        branches.
 
         Ordering matters wherever the walk is going to be *cut off*. A
         depth-first roster truncated to a budget spends it on one deep spine and

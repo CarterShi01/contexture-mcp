@@ -33,7 +33,10 @@ project that only wanted to declare a Role.
 from __future__ import annotations
 
 import importlib
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .emphasis import binding_instruction as binding_instruction
 
 #: Exported name -> the submodule that defines it.
 _EXPORTS = {
@@ -43,6 +46,7 @@ _EXPORTS = {
     "ModelValidationError": ".errors",
     "NodeNotFoundError": ".errors",
     "WrongDoorError": ".errors",
+    "binding_instruction": ".emphasis",
     "Principal": ".principal",
     "bound": ".principal",
     "current_principal": ".principal",
@@ -55,7 +59,8 @@ _EXPORTS = {
     "NodeUsage": ".model",
     "Telemetry": ".model",
     "current_telemetry": ".model",
-    "Publication": ".model",
+    "PostProcess": ".model",
+    "PreProcess": ".model",
     "Role": ".model",
     "RootSelection": ".model",
     "SurfaceSelection": ".model",

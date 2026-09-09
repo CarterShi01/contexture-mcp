@@ -1,9 +1,10 @@
-"""The four calls an agent may make, and everything it is told when one fails.
+"""The five calls an agent may make, and everything it is told when one fails.
 
 This is the framework's own API, and the only one an agent ever sees. A
-declaration of any size projects onto exactly these four::
+declaration of any size projects onto exactly these five::
 
     contexture_discover              the roots, one level
+    contexture_inspect               compare refs without activating them
     contexture_open                  one node's detail, plus its members' cards
     contexture_invoke_read_only      run a tool that leaves the world unchanged
     contexture_invoke                run a tool that does not
@@ -29,7 +30,7 @@ never inspects it. It was two seams until ADR 016, which is how a card's schema
 and the check applied to a call could have come from two derivations.
 
 The bootstrap text a host loads before calling anything is not here either. It
-teaches the same four calls, but what fits in one host's instructions field is a
+teaches the same five calls, but what fits in one host's instructions field is a
 fact about that host's release, so it stays in `contexture.server.instructions`.
 """
 
@@ -108,7 +109,8 @@ GATEWAY = (
             "Inspect one or more refs without activating them. The response contains "
             "a fixed evaluation notice, each requested node's routing card, and one "
             "level of routing cards for direct members and declared uses. It never "
-            "returns instructions, Tool execution facets, Publication contracts, or "
+            "returns instructions, Tool execution facets, framework process contracts, "
+            "or "
             "invocation results. Pass 1 through 32 unique refs from existing cards."
         ),
     ),

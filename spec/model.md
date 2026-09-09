@@ -30,7 +30,7 @@ Role, Skill, and Tool are the closed node set.
 
 | Node | Required facts | Meaning |
 | --- | --- | --- |
-| Role | name, description, instructions, members, optional uses refs, optional publication member | A stable responsibility and containment boundary an agent can enter. |
+| Role | name, description, instructions, members, optional uses refs, optional pre-process and post-process members | A stable responsibility and containment boundary an agent can enter. |
 | Skill | name, description, instructions, optional uses refs | Procedural knowledge followed by the model and not executed by Contexture. |
 | Tool | name, description, read-only classification, input contract, invoke body, optional uses refs | A deterministic capability executed by Contexture. |
 
@@ -46,8 +46,8 @@ one level of pure routing cards for direct members, and pure routing cards for
 declared `uses`. ACTIVE contains the type-specific actionable surface.
 
 INSPECT introduces no authored field. It MUST NOT contain Role or Skill
-instructions, Tool execution facets or schemas, Publication designation or
-finishing contracts, content, invocation results, or recursive expansion.
+instructions, Tool execution facets or schemas, process-member designations or
+contracts, content, invocation results, or recursive expansion.
 Batch inspection MUST preserve request order and declaration order, MUST be
 atomic, and MUST enforce the same selection and model-visibility boundary as
 open. Breadth is multiple requested refs; depth is a later explicit inspection
@@ -58,75 +58,67 @@ dependencies and whole-graph facts are available only through an explicitly
 declared introspection Tool; ordinary disclosure does not reveal unentered
 branches.
 
-### Optional Role Publication (0.14 extension)
+### Optional Role process members (0.16 extension)
 
-This is the normative Publication extension accepted for Python 0.14.0 in
-[ADR 021](../docs/adr/021-role-publication-and-instruction-composition.md).
-It does not establish implementation or cross-language parity; the legacy
-fixture/golden inventories remain pinned to 0.12.
+This is the normative process-member extension accepted for Python 0.16.0 in
+[ADR 023](../docs/adr/023-process-members-and-instruction-emphasis.md), which
+supersedes the 0.14 Publication extension. It does not establish implementation
+or cross-language parity; the legacy fixture/golden inventories remain pinned
+to 0.12.
 
-Publication MUST be a specialization of Role, not a fourth node kind. It keeps
-`kind="role"` and `group="roles"` and the same declaration facts: name,
-description, instructions, children, skills, tools, uses, and publication.
-Python exports `Publication` from `contexture` and inherits the Role
-constructor. Its business constructor authors a procedure and may compose
-dedicated capabilities or reference shared Tools through `uses`.
+`PreProcess` and `PostProcess` MUST specialize Role, not add node kinds. Each
+keeps `kind="role"`, `group="roles"`, and the Role constructor. Python exports
+both and removes the framework-level `Publication` name without an alias.
 
-A Role MAY designate one constructed Publication as its optional `publication`
-member. Python spells this `publication: Publication | None = None`; a class
-or a non-Publication node MUST NOT be accepted in that field. Absence MUST
-preserve exact existing ROUTE and ACTIVE output, with no `publication` payload
-field, extra instructions, or publication obligations. There is no enabled
-flag, no no-op member, and no implicit construction for explicit `None`.
+A Role MAY designate one constructed `PreProcess` as `pre_process` and one
+constructed `PostProcess` as `post_process`. A class, an ordinary Role, or the
+opposite process kind MUST be refused. Absence MUST preserve exact existing
+ROUTE and ACTIVE output, with no designation, added instruction, enabled flag,
+no-op member, or implicit construction for explicit `None`.
 
-The designated Publication MUST participate in containment traversal after
-children and before Skills and Tools. Normal name and cross-kind uniqueness,
-shared-instance, cycle, and ref validation MUST apply. It receives its
-canonical path, Channels, and runtime Tool Bindings by the ordinary lifecycle.
-It MUST NOT be added to `branches()` or treated as an alternative work branch.
-Containment MUST NOT implicitly inherit an ancestor's Publication. Ordinary
-business-constructor inheritance may supply fresh defaults, but explicit
-absence disables them. Nodes MUST be fresh per owner and compilation; shared
-services belong in Channels or behind existing `uses` refs.
+Containment traversal MUST order the optional pre-process first, then child
+Roles, then the optional post-process, Skills, and Tools. Both process members
+receive ordinary uniqueness, sharing, cycle, ref, path, Channels, Binding, and
+complete-subtree behavior. Neither joins `branches()` or the alternative-work
+roster. Containment MUST NOT implicitly inherit a process member. Explicit
+nesting is ordinary acyclic containment and adds no semantics of its own.
 
-Business-authored `Role.instructions` MUST remain unchanged. Framework ACTIVE
-compilation (`Role._compile_active` in Python) MUST append framework
-instructions when the Role has a Publication. There are exactly two instruction
-ownership categories: business and framework. The Publication's own procedure
-belongs to the former.
+Business-authored `Role.instructions` MUST remain unchanged. ACTIVE compilation
+MUST compose the pre-process framework contract before that text and the
+post-process framework contract after it. Each designated member MUST appear as
+an ordinary routing card in `roles`; `pre_process` and `post_process` MUST be
+STRING fields equal to the corresponding card's actual view-supplied ref. The
+member's own instructions and capabilities MUST remain hidden until opened.
 
-The ACTIVE owner MUST include the Publication's ordinary routing card in
-`roles`, after child Role cards, and a `publication` STRING equal to that
-card's actual ref. It MUST NOT inline the Publication's instructions, Skills,
-or Tool schemas. The framework instruction MUST reference that real path and
-the existing `contexture_open` gateway (Python's `OPEN_TOOL` constant), require
-opening the Publication before finishing the owner's work, and require
-following its procedure with the work's results and evidence. It MUST make
-clear that opening is not execution or successful publication, and require
-accurate reporting of pending approval, blockers, and failures, without
-inventing success or bypassing approval. ROUTE output MUST NOT gain this
-designation or instruction.
+Every process contract MUST use one fixed framework head and tail, identify its
+kind inside the block, and lift the required open call onto a `>>> REQUIRED:`
+line. It MUST use the existing `contexture_open` gateway and the actual ref.
+The pre-process contract MUST require opening before owner work, distinguish
+opening from execution, and direct the agent to complete the preparation and
+then return to the owner's instructions; blockers and failures MUST be reported
+rather than ignored. The post-process contract MUST require opening before
+finishing, distinguish opening from execution or success, preserve approval
+boundaries, and require truthful blocker, failure, and pending-approval reports.
+ROUTE and INSPECT MUST expose neither designations nor contracts.
 
-Complete-subtree selection includes a selected owner's Publication. Selecting
-the Publication alone MUST expose only its subtree, not its owner or an
-owner-finishing obligation. `uses` MUST NOT widen selection. Prompt-only
-owners MUST NOT leak their Publications through ordinary model disclosure.
-If the current view cannot supply the Publication card, framework instruction
-composition MUST refuse rather than reveal a hidden ref, silently omit the
-contract, or instruct opening an unavailable member.
+Complete-subtree selection includes both process subtrees. Selecting a process
+member alone MUST expose only its subtree. `uses` MUST NOT widen selection, and
+Prompt-only owners and process members MUST remain hidden from ordinary model
+disclosure. If a view cannot supply either designated member's card, composition
+MUST refuse without revealing its ref or emitting a dangling contract.
 
-A Publication MAY explicitly contain another Publication under the same
-acyclic containment rules. Opening a Publication directly MUST NOT introduce
-extra framework obligations merely because of its type; only its own explicit
-`publication` member triggers the same contract as on any Role.
+Python also exports `binding_instruction(source, body, *, action=None)` for an
+application to mark its own hard rules with the same stable shape under its own
+authority. It MUST reject empty sources and sources beginning with
+`contexture`, case-insensitively. The internal framework composer MUST NOT be
+part of the public authoring API.
 
-Publication means durable, reusable results, not public Internet distribution
-or automatic user visibility. It is distinct from Prompt/Resource
-*publications*, which remain exposure pointers rather than nodes.
-The four runtime gateways and Tool-only execution MUST remain unchanged.
-Publication introduces no automatic execution, finish handler, `Role.invoke`,
-hook, destructor, host-specific runtime, or guarantee of external Agent
-compliance. Existing approval and authorization boundaries remain in force.
+A process member is a procedure an agent is instructed to perform, not an
+invariant the framework guarantees. Enforce a guarantee in the Tool that would
+otherwise violate it. Process members introduce no automatic execution, start
+or finish event, hook, `Role.invoke`, host-specific runtime, or guarantee of
+external Agent compliance. The five runtime gateways, Tool-only effects, and
+existing approval and authorization boundaries remain unchanged.
 
 ## Bindings and execution
 
@@ -151,7 +143,7 @@ open/close lifecycle. Successful open is paired with close; a partially failed
 open unwinds resources already acquired. Declaration-only validation does not
 open Channels.
 
-Prompt and Resource are exposure publications, not Publication Roles or nodes.
+Prompt and Resource are exposure publications, not process Roles or nodes.
 Each points to a node already
 held by the canonical Index. A Prompt is user-controlled. A Resource is
 host-controlled, has a stable URI, and may be backed only by an argument-free

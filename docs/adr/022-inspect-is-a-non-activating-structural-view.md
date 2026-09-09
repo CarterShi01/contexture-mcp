@@ -13,7 +13,7 @@ first shortlists Roles from their descriptions, then needs to compare what each
 candidate directly contains before adopting any Role's instructions.
 
 Opening every candidate is incorrect. It places several competing procedures
-in one model context and can introduce framework-owned Publication obligations
+in one model context and can introduce framework-owned process obligations
 for Roles that were merely evaluated. The problem is semantic contamination,
 not Tool execution: opening has always been disclosure-only.
 
@@ -43,7 +43,7 @@ SurfaceSelection boundary as `contexture_open`, then returns:
 
 A pure routing card is exactly `kind`, `name`, `description`, and canonical
 `ref`. INSPECT never includes instructions, Tool schemas, read-only execution
-classification, Publication designation or finishing contract, content,
+classification, process designation or contract, content,
 invocation results, or recursive expansion. Breadth is requested as multiple
 refs; depth is explicit repetition over refs returned by the previous call.
 
@@ -59,4 +59,4 @@ as adoption.
   have no execution surface.
 - Existing ROUTE and ACTIVE payloads remain unchanged.
 - `uses` remains non-recursive and never widens a selected surface.
-- Publications appear only as ordinary Role member cards during inspection.
+- Process members appear only as ordinary Role member cards during inspection.

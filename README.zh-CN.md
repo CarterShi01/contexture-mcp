@@ -37,7 +37,7 @@ uv add contexture-mcp
 # 或：python -m pip install contexture-mcp
 ```
 
-可通过 `contexture-mcp==0.15.0` 固定安装本版本。
+可通过 `contexture-mcp==0.16.0` 固定安装本版本。
 
 ## 五分钟创建应用
 
@@ -114,6 +114,7 @@ uv run contexture serve
 | --- | --- | --- |
 | `Contexture` | 一个应用值 | 惰性的组合根 |
 | `Role` | 子类与构造函数 | 职责和包含关系边界 |
+| `PreProcess` / `PostProcess` | Role 特化与构造函数（0.16.0） | 可选的准备与收尾流程及专属能力 |
 | `Skill` | 子类与构造函数 | 模型遵循的流程知识 |
 | `Tool` | 子类与带类型的 `invoke()` | Contexture 执行的确定性代码 |
 | `Prompt` | 子类与构造函数 | 用户主动触发、指向既有节点的入口 |
@@ -124,18 +125,28 @@ Role、Skill 与 Tool 组成能力图。Prompt 和 Resource 不复制节点，�
 已有 ref 提供另一种协议入口。只允许由用户控制的 Prompt 平面进入的完整树，
 应放在 `prompt_roots` 中。
 
+Python 0.16.0 允许 Role 声明可选的 `pre_process` 与 `post_process`。ACTIVE
+在业务 `Role.instructions` 前后拼接固定、可识别的框架指令块，要求 Agent 在开始或
+结束前打开真实 ref；过程自身的说明与能力仍保持延迟公开，打开不会执行任何 Tool。
+两个字段均缺省时，既有输出与义务不变。业务还可用 `binding_instruction` 以自己的
+权威名称标记无法用代码强制的硬规则。参见
+[编写示例](docs/handbook.zh-CN.md#可选过程成员python-0160)与
+[ADR 023](docs/adr/023-process-members-and-instruction-emphasis.md)。
+
 ## 渐进式公开
 
-MCP Host 始终只看到四个由模型控制的固定工具：
+MCP Host 始终只看到五个由模型控制的固定工具：
 
 ```text
 contexture_discover
+contexture_inspect
 contexture_open
 contexture_invoke_read_only
 contexture_invoke
 ```
 
-`discover` 返回根节点卡片。打开 Role 后，仅返回该 Role 的指令和下一层
+`discover` 返回根节点卡片；`inspect` 在不激活 instructions 的前提下比较候选。
+打开 Role 后，仅返回该 Role 的指令和下一层
 Role、Skill、Tool 卡片。Tool 卡片包含调用所需的 ref、输入 Schema 和只读
 分类。业务 Tool 不会膨胀 MCP 顶层工具列表。
 
