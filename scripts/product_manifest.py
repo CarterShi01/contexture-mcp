@@ -367,6 +367,24 @@ def build_manifest(revision: str = BASELINE) -> dict[str, Any]:
     }
 
 
+def merge_progress(generated: dict[str, Any], existing: dict[str, Any]) -> dict[str, Any]:
+    """Carry reviewed parity evidence onto a freshly generated pinned inventory."""
+
+    verify_manifest(existing, generated["baseline"]["revision"])
+    for collection in ("sourceModules", "testModules", "productAssets"):
+        reviewed = {entry["path"]: entry for entry in existing[collection]}
+        for index, entry in enumerate(generated[collection]):
+            previous = reviewed[entry["path"]]
+            if entry["status"] == "not-applicable":
+                continue
+            if previous["status"] == "not-applicable":
+                raise ValueError(
+                    f"{entry['path']} is no longer in the exact not-applicable scope"
+                )
+            generated[collection][index] = previous
+    return generated
+
+
 def _markdown_rows(entries: Iterable[dict[str, Any]]) -> list[str]:
     rows: list[str] = []
     for entry in entries:
@@ -627,6 +645,8 @@ def main(arguments: list[str] | None = None) -> int:
     try:
         if options.write:
             manifest = build_manifest(options.revision)
+            if MANIFEST_PATH.is_file():
+                manifest = merge_progress(manifest, _load_manifest(MANIFEST_PATH))
             MANIFEST_PATH.write_text(
                 json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",

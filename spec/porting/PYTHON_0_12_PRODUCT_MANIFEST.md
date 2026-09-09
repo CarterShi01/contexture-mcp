@@ -19,56 +19,56 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 
 | Python path | Kind | Public symbols | TypeScript | Go | Status |
 | --- | --- | --- | --- | --- | --- |
-| contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | designed: `src/index.ts` | designed: `facade.go` | missing |
-| contexture/application.py | source | Contexture, RootFactory | designed: `src/application.ts` | designed: `core/model/application.go` | missing |
-| contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | designed: `src/cli/index.ts` | designed: `cmd/contexture/index.go` | missing |
-| contexture/cli/__main__.py | source | — | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
-| contexture/cli/main.py | source | build_parser, main | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
-| contexture/cli/project.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, ProjectConfig, Serving, find_project, load_application, load_channels, load_published, load_roots, resolve_target | designed: `src/cli/project.ts` | designed: `cmd/contexture/project.go` | missing |
-| contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | designed: `src/cli/scaffold.ts` | designed: `cmd/contexture/scaffold.go` | missing |
-| contexture/cli/usage.py | source | UsageError | designed: `src/cli/usage.ts` | designed: `cmd/contexture/usage.go` | missing |
+| contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | verified: `src/index.ts` | verified: `facade.go` | verified |
+| contexture/application.py | source | Contexture, RootFactory | verified: `src/application.ts` | verified: `core/model/application.go` | verified |
+| contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | verified: `src/cli/index.ts` | verified: `cli/application.go` | verified |
+| contexture/cli/__main__.py | source | — | verified: `src/cli/main.ts` | verified: `cmd/contexture/main.go` | verified |
+| contexture/cli/main.py | source | build_parser, main | verified: `src/cli/main.ts` | verified: `cmd/contexture/main.go`, `cli/application.go` | verified |
+| contexture/cli/project.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, ProjectConfig, Serving, find_project, load_application, load_channels, load_published, load_roots, resolve_target | verified: `src/cli/project.ts` | verified: `cmd/contexture/main.go`, `cli/application.go` | verified |
+| contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
+| contexture/cli/usage.py | source | UsageError | verified: `src/cli/usage.ts` | verified: `cli/application.go`, `cmd/contexture/scaffold.go` | verified |
 | contexture/core/__init__.py | source | — | designed: `src/core/index.ts` | designed: `core/model/doc.go` | missing |
-| contexture/core/constants.py | source | — | designed: `src/core/foundation/constants.ts` | designed: `core/foundation/constants.go` | missing |
-| contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | designed: `src/core/foundation/errors.ts` | designed: `core/foundation/errors.go` | missing |
-| contexture/core/mcp_interface/__init__.py | source | Prompt, Resource, TOOLS, ToolPlane, published | designed: `src/core/mcp-interface/index.ts` | designed: `core/mcpinterface/index.go` | missing |
-| contexture/core/mcp_interface/prompt.py | source | Prompt | designed: `src/core/mcp-interface/prompt.ts` | designed: `core/mcpinterface/prompt.go` | missing |
-| contexture/core/mcp_interface/resource.py | source | Resource | designed: `src/core/mcp-interface/resource.ts` | designed: `core/mcpinterface/resource.go` | missing |
-| contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | designed: `src/core/mcp-interface/tool.ts` | designed: `core/mcpinterface/tool.go` | missing |
+| contexture/core/constants.py | source | — | verified: `src/core/foundation/vocabulary.ts` | verified: `core/foundation/constants.go` | verified |
+| contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | verified: `src/core/foundation/errors.ts` | verified: `core/foundation/errors.go` | verified |
+| contexture/core/mcp_interface/__init__.py | source | Prompt, Resource, TOOLS, ToolPlane, published | verified: `src/core/index.ts`, `src/core/foundation/publications.ts`, `src/core/foundation/vocabulary.ts` | verified: `core/mcpinterface/prompt.go`, `core/mcpinterface/resource.go`, `core/mcpinterface/tool.go`, `facade.go` | verified |
+| contexture/core/mcp_interface/prompt.py | source | Prompt | verified: `src/core/mcp-interface/prompt.ts` | verified: `core/mcpinterface/prompt.go` | verified |
+| contexture/core/mcp_interface/resource.py | source | Resource | verified: `src/core/mcp-interface/resource.ts` | verified: `core/mcpinterface/resource.go` | verified |
+| contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | verified: `src/core/mcp-interface/tool.ts` | verified: `core/mcpinterface/tool.go` | verified |
 | contexture/core/model/__init__.py | source | Channels, CompileLevel, CompiledGraph, ContextNode, ControllerManager, InMemoryTelemetry, NodeUsage, Role, RootSelection, Skill, Telemetry, Tool, View, current_graph, current_telemetry, register_root | designed: `src/core/model/doc.ts` | designed: `core/model/doc.go` | missing |
-| contexture/core/model/binding.py | source | Binding, PlainBinding | designed: `src/core/model/binding.ts` | designed: `core/model/binding.go` | missing |
-| contexture/core/model/channels.py | source | Channels, provisioned | designed: `src/core/model/channels.ts` | designed: `core/model/channels.go` | missing |
-| contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | designed: `src/core/model/disclosure.ts` | designed: `core/model/disclosure.go` | missing |
-| contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | designed: `src/core/model/system-api.ts` | designed: `core/model/system_api.go` | missing |
-| contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | designed: `src/core/model/system-api.ts` | designed: `core/model/system_api.go` | missing |
-| contexture/core/model/graph_context.py | source | bound_graph, current_graph | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
-| contexture/core/model/index.py | source | Index | designed: `src/core/model/index.ts` | designed: `core/model/index.go` | missing |
-| contexture/core/model/manager.py | source | ControllerManager, register_root | designed: `src/core/model/manager.ts` | designed: `core/model/manager.go` | missing |
-| contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | designed: `src/core/model/node.ts` | designed: `core/model/node.go` | missing |
-| contexture/core/model/role.py | source | Role | designed: `src/core/model/role.ts` | designed: `core/model/role.go` | missing |
-| contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
-| contexture/core/model/runtime.py | source | ApplicationRuntime | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
-| contexture/core/model/skill.py | source | Skill | designed: `src/core/model/skill.ts` | designed: `core/model/skill.go` | missing |
-| contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | designed: `src/core/model/system_api.ts` | designed: `core/model/system_api.go` | missing |
-| contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | designed: `src/core/model/telemetry.ts` | designed: `core/model/telemetry.go` | missing |
-| contexture/core/model/tool.py | source | Tool | designed: `src/core/model/tool.ts` | designed: `core/model/tool.go` | missing |
-| contexture/core/principal.py | source | Principal, bound, current_principal | designed: `src/core/foundation/principal.ts` | designed: `core/foundation/principal.go` | missing |
-| contexture/core/types.py | source | — | designed: `src/core/foundation/types.ts` | designed: `core/foundation/types.go` | missing |
-| contexture/demo/__init__.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/index.ts` | designed: `demo/index.go` | missing |
-| contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | designed: `src/demo/documents.ts` | designed: `demo/documents.go` | missing |
-| contexture/demo/fixtures.py | source | — | designed: `src/demo/fixtures.ts` | designed: `demo/fixtures.go` | missing |
-| contexture/demo/role.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/role.ts` | designed: `demo/role.go` | missing |
-| contexture/demo/server.py | source | CrashLoopRunbookDocument, RollBackARelease, RollbackPolicyDocument, build, main | designed: `src/demo/server.ts` | designed: `demo/server.go` | missing |
-| contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | designed: `src/demo/skills.ts` | designed: `demo/skills.go` | missing |
+| contexture/core/model/binding.py | source | Binding, PlainBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
+| contexture/core/model/channels.py | source | Channels, provisioned | verified: `src/core/model/channels.ts` | verified: `core/model/channels.go` | verified |
+| contexture/core/model/disclosure.py | source | Disclosure, RootSelection, SEPARATOR, register_root | verified: `src/core/model/disclosure.ts` | verified: `core/model/disclosure.go` | verified |
+| contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/disclosure_api.go` | verified |
+| contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/execution_api.go` | verified |
+| contexture/core/model/graph_context.py | source | bound_graph, current_graph | verified: `src/core/model/graph-context.ts`, `src/core/model/runtime.ts` | verified: `core/model/graph_context.go`, `core/model/runtime.go` | verified |
+| contexture/core/model/index.py | source | Index | verified: `src/core/model/compiler.ts`, `src/core/model/reference-queries.ts` | verified: `core/model/compiler.go`, `core/model/selected_graph.go` | verified |
+| contexture/core/model/manager.py | source | ControllerManager, register_root | verified: `src/core/model/manager.ts` | verified: `core/model/manager.go` | verified |
+| contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
+| contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
+| contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | verified: `src/core/model/root-selection.ts` | verified: `core/model/selection.go`, `core/model/selected_graph.go`, `core/model/graph_context.go` | verified |
+| contexture/core/model/runtime.py | source | ApplicationRuntime | verified: `src/core/model/runtime.ts`, `src/core/model/graph-context.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go` | verified |
+| contexture/core/model/skill.py | source | Skill | verified: `src/core/model/skill.ts` | verified: `core/model/skill.go` | verified |
+| contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | verified: `src/core/model/system-api.ts` | verified: `core/model/gateway.go`, `core/model/disclosure_api.go`, `core/model/execution_api.go` | verified |
+| contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | verified: `src/core/model/telemetry.ts`, `src/core/model/runtime.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go`, `server/application.go` | verified |
+| contexture/core/model/tool.py | source | Tool | verified: `src/core/model/tool.ts`, `src/core/model/binding.ts` | verified: `core/model/tool.go`, `core/model/binding.go` | verified |
+| contexture/core/principal.py | source | Principal, bound, current_principal | verified: `src/core/foundation/principal.ts`, `src/core/model/runtime.ts` | verified: `core/foundation/principal.go`, `core/model/graph_context.go` | verified |
+| contexture/core/types.py | source | — | verified: `src/core/model/binding.ts`, `src/core/model/node.ts`, `src/index.ts` | verified: `core/model/node.go`, `facade.go` | verified |
+| contexture/demo/__init__.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | verified: `src/demo/index.ts` | verified: `demo/role.go`, `demo/server.go` | verified |
+| contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | verified: `src/demo/documents.ts` | verified: `demo/documents.go` | verified |
+| contexture/demo/fixtures.py | source | — | verified: `src/demo/fixtures.ts` | verified: `demo/fixtures.go` | verified |
+| contexture/demo/role.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | verified: `src/demo/role.ts` | verified: `demo/role.go` | verified |
+| contexture/demo/server.py | source | CrashLoopRunbookDocument, RollBackARelease, RollbackPolicyDocument, build, main | verified: `src/demo/server.ts` | verified: `demo/server.go` | verified |
+| contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | verified: `src/demo/skills.ts` | verified: `demo/skills.go` | verified |
 | contexture/demo/tools.py | source | GetPodEvents, GetPodLogs, GetPodStatus, GetRolloutStatus, PodEvent, PodStatus, RollBackDeployment, RolloutStatus | designed: `src/demo/tools.ts` | designed: `demo/tools.go` | missing |
-| contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | designed: `src/inspection.ts` | designed: `inspection/inspection.go` | missing |
-| contexture/server/__init__.py | source | — | designed: `src/server/index.ts` | designed: `server/index.go` | missing |
-| contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | designed: `src/server/application.ts` | designed: `server/application.go` | missing |
-| contexture/server/binding.py | source | TypeHintBinding | designed: `src/server/binding.ts` | designed: `server/binding.go` | missing |
-| contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | designed: `src/server/identity.ts` | designed: `server/identity.go` | missing |
-| contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | designed: `src/server/instructions.ts` | designed: `server/instructions.go` | missing |
-| contexture/server/launch.py | source | Launch, claude_code_config, cli_commands, codex_config, cursor_config | designed: `src/server/launch.ts` | designed: `server/launch.go` | missing |
-| contexture/server/messages.py | source | COMMAND_CLOSING, COMMAND_PREAMBLE, COMPLETION_LIMIT, GOTO_ARGUMENT, GOTO_ARGUMENT_DESCRIPTION, GOTO_DESCRIPTION, GOTO_PROMPT, PREAMBLE, REF_RULE, SIGNPOST_PREAMBLE, command_description, signpost, truncated_completion | designed: `src/server/messages.ts` | designed: `server/messages.go` | missing |
-| contexture/server/options.py | source | ContextureOptions, DEFAULT_HOST, DEFAULT_PATH, DEFAULT_PORT, LOOPBACK, ServeError, Transport, configure_logging | designed: `src/server/options.ts` | designed: `server/options.go` | missing |
+| contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | verified: `src/inspection.ts` | verified: `inspection/inspection.go` | verified |
+| contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
+| contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | verified: `src/server/application.ts` | verified: `server/application.go` | verified |
+| contexture/server/binding.py | source | TypeHintBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
+| contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | verified: `src/server/identity.ts` | verified: `server/identity.go` | verified |
+| contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | verified: `src/server/instructions.ts` | verified: `server/instructions/instructions.go` | verified |
+| contexture/server/launch.py | source | Launch, claude_code_config, cli_commands, codex_config, cursor_config | verified: `src/server/launch.ts` | verified: `server/host_launch.go` | verified |
+| contexture/server/messages.py | source | COMMAND_CLOSING, COMMAND_PREAMBLE, COMPLETION_LIMIT, GOTO_ARGUMENT, GOTO_ARGUMENT_DESCRIPTION, GOTO_DESCRIPTION, GOTO_PROMPT, PREAMBLE, REF_RULE, SIGNPOST_PREAMBLE, command_description, signpost, truncated_completion | verified: `src/server/messages.ts` | verified: `server/messages/messages.go` | verified |
+| contexture/server/options.py | source | ContextureOptions, DEFAULT_HOST, DEFAULT_PATH, DEFAULT_PORT, LOOPBACK, ServeError, Transport, configure_logging | verified: `src/server/options.ts`, `src/server/server.ts`, `src/server/logging.ts` | verified: `server/options.go`, `server/launch.go`, `server/logging.go` | verified |
 | contexture/server/root_selector.py | source | FixedRootSelector, HeaderRootSelector, ROOTS_HEADER, RootCeiling, RootSelectionMiddleware, RootSelector | designed: `src/server/root_selector.ts` | designed: `server/root_selector.go` | missing |
 | contexture/server/server.py | source | ContextureServer | designed: `src/server/server.ts` | designed: `server/server.go` | missing |
 | contexture/server/surface/__init__.py | source | DisclosureSurface, RuntimeSurface, Surface, published_name, translated | designed: `src/server/surface/surface.ts` | designed: `server/surface/surface.go` | missing |
@@ -89,31 +89,31 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/golden.py | test | — | designed: `test/support/golden.ts` | designed: `internal/testsupport/golden.go` | missing |
 | tests/http_fixture.py | test | — | designed: `test/support/http_fixture.ts` | designed: `internal/testsupport/http_fixture.go` | missing |
 | tests/serving.py | test | — | designed: `test/support/serving.ts` | designed: `internal/testsupport/serving.go` | missing |
-| tests/test_application.py | test | — | designed: `test/application.test.ts` | designed: `application_test.go` | missing |
+| tests/test_application.py | test | — | verified: `test/declarations.test.ts`, `test/server-application.test.ts` | verified: `application_test.go` | verified |
 | tests/test_capabilities.py | test | — | designed: `test/capabilities.test.ts` | designed: `capabilities_test.go` | missing |
 | tests/test_channels.py | test | — | designed: `test/channels.test.ts` | designed: `channels_test.go` | missing |
 | tests/test_disclosure.py | test | — | designed: `test/disclosure.test.ts` | designed: `disclosure_test.go` | missing |
-| tests/test_disclosure_application.py | test | — | designed: `test/disclosure_application.test.ts` | designed: `disclosure_application_test.go` | missing |
+| tests/test_disclosure_application.py | test | — | verified: `test/server-application.test.ts`, `test/server.test.ts` | verified: `server/application_test.go`, `server/server_test.go` | verified |
 | tests/test_golden.py | test | — | designed: `test/golden.test.ts` | designed: `golden_test.go` | missing |
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
-| tests/test_identity.py | test | — | designed: `test/identity.test.ts` | designed: `identity_test.go` | missing |
-| tests/test_index.py | test | — | designed: `test/index.test.ts` | designed: `index_test.go` | missing |
-| tests/test_inspection.py | test | — | designed: `test/inspection.test.ts` | designed: `inspection_test.go` | missing |
+| tests/test_identity.py | test | — | verified: `test/identity.test.ts` | verified: `server/identity_test.go`, `principal_test.go`, `server/launch_test.go` | verified |
+| tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
+| tests/test_inspection.py | test | — | verified: `test/inspection.test.ts` | verified: `inspection/inspection_test.go`, `cmd/contexture/main_test.go` | verified |
 | tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |
-| tests/test_manager.py | test | — | designed: `test/manager.test.ts` | designed: `manager_test.go` | missing |
-| tests/test_messages.py | test | — | designed: `test/messages.test.ts` | designed: `messages_test.go` | missing |
+| tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
+| tests/test_messages.py | test | — | verified: `test/messages.test.ts` | verified: `server/messages/messages_test.go`, `server/completion_test.go`, `server/instructions/instructions_test.go` | verified |
 | tests/test_oc_goal_case_study.py | test | — | not-applicable | not-applicable | not-applicable |
 | tests/test_project_channels.py | test | — | designed: `test/project_channels.test.ts` | designed: `project_channels_test.go` | missing |
-| tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | designed: `test/public_api.test.ts` | designed: `public_api_test.go` | missing |
-| tests/test_root_selection.py | test | — | designed: `test/root_selection.test.ts` | designed: `root_selection_test.go` | missing |
-| tests/test_runtime.py | test | — | designed: `test/runtime.test.ts` | designed: `runtime_test.go` | missing |
-| tests/test_scaffold.py | test | — | designed: `test/scaffold.test.ts` | designed: `scaffold_test.go` | missing |
+| tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | verified: `test/public-api.test.ts` | verified: `public_api_test.go` | verified |
+| tests/test_root_selection.py | test | — | verified: `test/root-selection.test.ts`, `test/root-selector.test.ts`, `test/disclosure-prompt-plane.test.ts` | verified: `root_selection_test.go` | verified |
+| tests/test_runtime.py | test | — | verified: `test/runtime.test.ts`, `test/graph-context.test.ts` | verified: `runtime_test.go`, `graph_context_test.go` | verified |
+| tests/test_scaffold.py | test | — | verified: `test/scaffold.test.ts` | verified: `cmd/contexture/scaffold_test.go`, `cmd/contexture/main_test.go` | verified |
 | tests/test_server.py | test | — | designed: `test/server.test.ts` | designed: `server_test.go` | missing |
 | tests/test_spec_fixtures.py | test | test_every_language_neutral_fixture_is_valid_json, test_latest_surface_boundaries_have_fixtures | designed: `test/spec_fixtures.test.ts` | designed: `spec_fixtures_test.go` | missing |
 | tests/test_stdio_server.py | test | — | designed: `test/stdio_server.test.ts` | designed: `stdio_server_test.go` | missing |
 | tests/test_surface.py | test | — | designed: `test/surface.test.ts` | designed: `surface_test.go` | missing |
-| tests/test_system_api.py | test | — | designed: `test/system_api.test.ts` | designed: `system_api_test.go` | missing |
-| tests/test_telemetry.py | test | — | designed: `test/telemetry.test.ts` | designed: `telemetry_test.go` | missing |
+| tests/test_system_api.py | test | — | verified: `test/system-api.test.ts`, `test/gateway-wire.test.ts` | verified: `gateway_test.go`, `gateway_recovery_test.go`, `disclosure_api_test.go`, `execution_api_test.go` | verified |
+| tests/test_telemetry.py | test | — | verified: `test/telemetry.test.ts` | verified: `telemetry_test.go` | verified |
 | tests/test_web.py | test | — | verified: `test/rest.test.ts` | verified: `web/surface_test.go` | verified |
 | tests/typing/consumer.py | test | — | designed: `scripts/verify-package-consumer.mjs` | designed: `internal/releasecheck/module_consumer_test.go` | missing |
 

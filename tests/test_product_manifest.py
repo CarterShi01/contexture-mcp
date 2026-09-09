@@ -77,6 +77,29 @@ def test_verifier_requires_oc_goal_exclusions() -> None:
         product_manifest.verify_manifest(manifest)
 
 
+def test_regeneration_preserves_reviewed_progress() -> None:
+    existing = product_manifest.build_manifest()
+    reviewed = existing["sourceModules"][0]
+    reviewed["status"] = "implemented"
+    for target in reviewed["targets"].values():
+        target["status"] = "implemented"
+        target["tests"] = ["focused.test"]
+        target["reason"] = "Reviewed native implementation."
+
+    regenerated = product_manifest.merge_progress(
+        product_manifest.build_manifest(), copy.deepcopy(existing)
+    )
+
+    assert regenerated["sourceModules"][0] == reviewed
+    excluded = {
+        entry["path"]
+        for collection in ("sourceModules", "testModules", "productAssets")
+        for entry in regenerated[collection]
+        if entry["status"] == "not-applicable"
+    }
+    assert excluded == product_manifest.NOT_APPLICABLE_PATHS
+
+
 def test_verifier_rejects_pinned_source_hash_drift() -> None:
     manifest = product_manifest.build_manifest()
     changed = copy.deepcopy(manifest)
