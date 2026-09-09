@@ -22,7 +22,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/application.py | source | Contexture, RootFactory | verified: `src/application.ts` | verified: `core/model/application.go` | verified |
 | contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | verified: `src/cli/index.ts` | verified: `cli/application.go` | verified |
 | contexture/cli/__main__.py | source | — | verified: `src/cli/main.ts` | verified: `cmd/contexture/main.go` | verified |
-| contexture/cli/main.py | source | build_parser, main | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
+| contexture/cli/main.py | source | build_parser, main | verified: `src/cli/main.ts` | verified: `cmd/contexture/main.go`, `cli/application.go` | verified |
 | contexture/cli/project.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, ProjectConfig, Serving, find_project, load_application, load_channels, load_published, load_roots, resolve_target | verified: `src/cli/project.ts` | verified: `cmd/contexture/main.go`, `cli/application.go` | verified |
 | contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
 | contexture/cli/usage.py | source | UsageError | verified: `src/cli/usage.ts` | verified: `cli/application.go`, `cmd/contexture/scaffold.go` | verified |

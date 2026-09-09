@@ -212,25 +212,26 @@
         "main"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/main.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified new/list/check/call/inspect/serve/demo workflows, project targets, JSON and file input exclusivity, write gate, inspection controls, complete transport options, usage/runtime exit statuses, demo fallback, packed/generated-project consumers, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/main.go"
+            "cmd/contexture/main.go",
+            "cli/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cmd/contexture/main_test.go", "cmd/contexture/scaffold_test.go", "cli/application_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native new/list/check/call/inspect/serve/demo workflows, nearest static project forwarding, JSON/file input, write gate, inspection controls, transport policy parsed before compilation, stderr notices, exit statuses, generated-project workflows, complete race-enabled Go gates, and independent audit."
         }
       }
     },
