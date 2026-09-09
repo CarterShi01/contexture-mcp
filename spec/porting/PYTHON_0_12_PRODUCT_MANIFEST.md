@@ -77,7 +77,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | contexture/server/surface/resources.py | source | Resources | designed: `src/server/surface/resources.ts` | designed: `server/surface/resources.go` | missing |
 | contexture/server/surface/tools.py | source | Tools | designed: `src/server/surface/tools.ts` | designed: `server/surface/tools.go` | missing |
 | contexture/web/__init__.py | source | Authenticator, RestSurface, Route, WebRequest | designed: `src/web/index.ts` | designed: `web/index.go` | missing |
-| contexture/web/route.py | source | Route | designed: `src/web/route.ts` | designed: `web/route.go` | missing |
+| contexture/web/route.py | source | Route | verified: `src/web/route.ts` | verified: `web/route.go` | verified |
 | contexture/web/surface.py | source | Authenticator, RestSurface, WebRequest | designed: `src/web/surface.ts` | designed: `web/surface.go` | missing |
 
 ## Test modules
