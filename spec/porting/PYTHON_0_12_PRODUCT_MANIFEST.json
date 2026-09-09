@@ -478,25 +478,30 @@
         "published"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/mcp-interface/index.ts"
+            "src/core/index.ts",
+            "src/core/foundation/publications.ts",
+            "src/core/foundation/vocabulary.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/foundation-vocabulary.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified SDK-neutral Prompt/Resource declarations and fixed Tool-plane vocabulary through foundation ownership, public facade, layering tests, packed type consumer, complete npm gates, and independent audit; Python published() class normalization is not needed for native object declarations."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/mcpinterface/index.go"
+            "core/mcpinterface/prompt.go",
+            "core/mcpinterface/resource.go",
+            "core/mcpinterface/tool.go",
+            "facade.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["foundation_vocabulary_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified SDK-neutral alias declarations and fixed Tool-plane vocabulary through foundation ownership, public facade, external module consumer, complete race-enabled Go gates, and independent audit; Python published() class normalization is unnecessary for native structs."
         }
       }
     },
@@ -509,25 +514,25 @@
         "Prompt"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/mcp-interface/prompt.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/declarations.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native Prompt shape, immutable snapshots, model-open policy, publication compilation, public type consumer, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/mcpinterface/prompt.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["foundation_vocabulary_test.go", "application_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native Prompt alias shape, defensive snapshots, zero-safe model-open policy, publication compilation, external module consumer, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -540,25 +545,25 @@
         "Resource"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/mcp-interface/resource.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/declarations.test.ts", "test/publications.test.ts", "test/public-api.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native Resource shape, immutable snapshots, read-only argument-free Tool validation, public type consumer, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/mcpinterface/resource.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["foundation_vocabulary_test.go", "publications_test.go", "public_api_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native Resource alias shape, defensive snapshots, read-only argument-free Tool validation, external module consumer, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -576,25 +581,25 @@
         "ToolPlane"
       ],
       "responsibility": "SDK-free MCP primitive declaration surface.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/core/mcp-interface/tool.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/foundation-vocabulary.test.ts", "test/system-api.test.ts", "test/gateway-wire.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified fixed four-name Tool plane, immutable order, foundation ownership, business Tool exclusion from top-level MCP, packed consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "core/mcpinterface/tool.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["foundation_vocabulary_test.go", "gateway_recovery_test.go", "server/gateway_wire_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified fixed typed four-name Tool plane, defensive order, foundation ownership, business Tool exclusion from top-level MCP, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },

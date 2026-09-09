@@ -29,10 +29,10 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/__init__.py | source | — | designed: `src/core/index.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/constants.py | source | — | verified: `src/core/foundation/vocabulary.ts` | verified: `core/foundation/constants.go` | verified |
 | contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | verified: `src/core/foundation/errors.ts` | verified: `core/foundation/errors.go` | verified |
-| contexture/core/mcp_interface/__init__.py | source | Prompt, Resource, TOOLS, ToolPlane, published | designed: `src/core/mcp-interface/index.ts` | designed: `core/mcpinterface/index.go` | missing |
-| contexture/core/mcp_interface/prompt.py | source | Prompt | designed: `src/core/mcp-interface/prompt.ts` | designed: `core/mcpinterface/prompt.go` | missing |
-| contexture/core/mcp_interface/resource.py | source | Resource | designed: `src/core/mcp-interface/resource.ts` | designed: `core/mcpinterface/resource.go` | missing |
-| contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | designed: `src/core/mcp-interface/tool.ts` | designed: `core/mcpinterface/tool.go` | missing |
+| contexture/core/mcp_interface/__init__.py | source | Prompt, Resource, TOOLS, ToolPlane, published | verified: `src/core/index.ts`, `src/core/foundation/publications.ts`, `src/core/foundation/vocabulary.ts` | verified: `core/mcpinterface/prompt.go`, `core/mcpinterface/resource.go`, `core/mcpinterface/tool.go`, `facade.go` | verified |
+| contexture/core/mcp_interface/prompt.py | source | Prompt | verified: `src/core/mcp-interface/prompt.ts` | verified: `core/mcpinterface/prompt.go` | verified |
+| contexture/core/mcp_interface/resource.py | source | Resource | verified: `src/core/mcp-interface/resource.ts` | verified: `core/mcpinterface/resource.go` | verified |
+| contexture/core/mcp_interface/tool.py | source | DISCOVER_TOOL, INVOKE_READ_ONLY_TOOL, INVOKE_TOOL, OPEN_TOOL, TOOLS, ToolPlane | verified: `src/core/mcp-interface/tool.ts` | verified: `core/mcpinterface/tool.go` | verified |
 | contexture/core/model/__init__.py | source | Channels, CompileLevel, CompiledGraph, ContextNode, ControllerManager, InMemoryTelemetry, NodeUsage, Role, RootSelection, Skill, Telemetry, Tool, View, current_graph, current_telemetry, register_root | designed: `src/core/model/doc.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/model/binding.py | source | Binding, PlainBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
 | contexture/core/model/channels.py | source | Channels, provisioned | verified: `src/core/model/channels.ts` | verified: `core/model/channels.go` | verified |
