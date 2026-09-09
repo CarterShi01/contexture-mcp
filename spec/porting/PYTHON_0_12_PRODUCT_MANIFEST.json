@@ -1283,25 +1283,42 @@
         "report"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/model/telemetry.ts"
+            "src/core/model/telemetry.ts",
+            "src/core/model/runtime.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/telemetry.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified immutable usage aggregates, unseen values, Role/Skill and Tool accounting, task-local nested telemetry scopes, fail-fast access, async exporter isolation, payload exclusion, shared compilation collector, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/telemetry.go"
+            "core/model/runtime.go",
+            "core/model/graph_context.go",
+            "server/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "telemetry_test.go",
+            "runtime_test.go",
+            "server/application_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified race-safe usage aggregates, unseen values, Role/Skill and Tool accounting, context-derived nested telemetry scopes, fail-fast access, exporter error and panic isolation, payload exclusion, shared compilation collector, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
@@ -3331,29 +3348,35 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/telemetry.test.ts"
           ],
           "tests": [
             "test/telemetry.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by the focused native telemetry suite covering disclosure isolation, usage reads inside Tools, success/failure aggregation, async concurrency, nested scopes, exporter failures, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "telemetry_test.go"
           ],
           "tests": [
             "telemetry_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by the focused native telemetry suite covering disclosure isolation, Tool access, success/failure aggregation, goroutine concurrency under race detection, nested contexts, exporter failures and panics, and complete Go gates."
         }
       }
     },
