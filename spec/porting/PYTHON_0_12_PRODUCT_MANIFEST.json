@@ -1765,25 +1765,25 @@
         "trace"
       ],
       "responsibility": "Transport-free disclosure inspection API.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/inspection.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/inspection.test.ts", "test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified transport-free honest replay, immutable/computed costs with Python ties-to-even estimates, UTF-8 bytes, connect checks and gateway aside, nested breadth-first refs, readable refusals, opt-in text/binary reads, findings, stable nullable JSON, packed replay consumer, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "inspection/inspection.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["inspection/inspection_test.go", "cmd/contexture/main_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified transport-free honest replay, marshal-computed costs with Python ties-to-even estimates, UTF-8 bytes, connect checks and gateway cost, nested breadth-first refs, readable refusals, opt-in text/binary reads, findings, stable nullable JSON, external replay consumer, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -2950,29 +2950,31 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/inspection.test.ts"
           ],
           "tests": [
             "test/inspection.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by focused inspection and CLI suites covering honest payloads, nested BFS, costs, limits/findings, refusal accounting, read gating, binary summaries, terminal/JSON rendering and packed replay, plus complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "inspection_test.go"
+            "inspection/inspection_test.go",
+            "cmd/contexture/main_test.go"
           ],
           "tests": [
-            "inspection_test.go"
+            "inspection/inspection_test.go",
+            "cmd/contexture/main_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by focused inspection and CLI suites covering honest payloads, nested BFS, computed costs, limits/findings, refusal accounting, read gating, binary summaries, terminal/JSON rendering and external replay, plus complete race-enabled Go gates."
         }
       }
     },

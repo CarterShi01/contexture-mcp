@@ -59,7 +59,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/demo/server.py | source | CrashLoopRunbookDocument, RollBackARelease, RollbackPolicyDocument, build, main | designed: `src/demo/server.ts` | designed: `demo/server.go` | missing |
 | contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | designed: `src/demo/skills.ts` | designed: `demo/skills.go` | missing |
 | contexture/demo/tools.py | source | GetPodEvents, GetPodLogs, GetPodStatus, GetRolloutStatus, PodEvent, PodStatus, RollBackDeployment, RolloutStatus | designed: `src/demo/tools.ts` | designed: `demo/tools.go` | missing |
-| contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | designed: `src/inspection.ts` | designed: `inspection/inspection.go` | missing |
+| contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | verified: `src/inspection.ts` | verified: `inspection/inspection.go` | verified |
 | contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
 | contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | verified: `src/server/application.ts` | verified: `server/application.go` | verified |
 | contexture/server/binding.py | source | TypeHintBinding | verified: `src/core/model/binding.ts` | verified: `core/model/binding.go` | verified |
@@ -97,7 +97,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
 | tests/test_identity.py | test | — | verified: `test/identity.test.ts` | verified: `server/identity_test.go`, `principal_test.go`, `server/launch_test.go` | verified |
 | tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
-| tests/test_inspection.py | test | — | designed: `test/inspection.test.ts` | designed: `inspection_test.go` | missing |
+| tests/test_inspection.py | test | — | verified: `test/inspection.test.ts` | verified: `inspection/inspection_test.go`, `cmd/contexture/main_test.go` | verified |
 | tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |
 | tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
 | tests/test_messages.py | test | — | verified: `test/messages.test.ts` | verified: `server/messages/messages_test.go`, `server/completion_test.go`, `server/instructions/instructions_test.go` | verified |
