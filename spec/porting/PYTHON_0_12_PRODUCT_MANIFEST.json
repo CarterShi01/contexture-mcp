@@ -1969,25 +1969,25 @@
         "neutral"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/instructions.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/instructions.test.ts", "test/server.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified contract-first bootstrap, UTF-8 byte budgets, breadth-first declaration order, whole sibling groups, root and depth truncation recovery, selected surfaces, fixed constants, packed consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/instructions.go"
+            "server/instructions/instructions.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["server/instructions/instructions_test.go", "server/server_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified contract-first bootstrap, UTF-8 byte budgets, breadth-first declaration order, whole sibling groups, root and depth truncation recovery, selected surfaces, fixed constants, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
