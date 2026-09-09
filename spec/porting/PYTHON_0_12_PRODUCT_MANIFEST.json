@@ -254,25 +254,26 @@
         "resolve_target"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/project.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/cli.test.ts", "test/project.test.ts", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified nearest app-only project discovery, config validation, lexical and realpath target confinement, module export validation, packed find/load consumer, generated project workflow, complete npm gates, bilingual docs, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/project.go"
+            "cmd/contexture/main.go",
+            "cli/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cmd/contexture/scaffold_test.go", "cli/application_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified nearest go.mod/static entry boundary, refusal to skip incomplete nested modules, statically linked Application mapping, nested command forwarding, generated project workflow, complete race-enabled Go gates, bilingual docs, and independent audit."
         }
       }
     },
@@ -3294,29 +3295,31 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/scaffold.test.ts"
           ],
           "tests": [
             "test/scaffold.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by name/template, overwrite, nearest project, target safety, config/export, CLI workflow, demo fallback, packed and independent generated-project consumer suites plus complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "scaffold_test.go"
+            "cmd/contexture/scaffold_test.go",
+            "cmd/contexture/main_test.go"
           ],
           "tests": [
-            "scaffold_test.go"
+            "cmd/contexture/scaffold_test.go",
+            "cmd/contexture/main_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by name/template, overwrite, nearest module boundary, generated go mod/build/check/list/inspect/call workflows, nested global command forwarding and demo fallback suites plus complete race-enabled Go gates."
         }
       }
     },
