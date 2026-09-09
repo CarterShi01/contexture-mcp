@@ -45,7 +45,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
 | contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | designed: `src/core/model/root-selection.ts` | designed: `core/model/root_selection.go` | missing |
-| contexture/core/model/runtime.py | source | ApplicationRuntime | designed: `src/core/model/runtime.ts` | designed: `core/model/runtime.go` | missing |
+| contexture/core/model/runtime.py | source | ApplicationRuntime | verified: `src/core/model/runtime.ts`, `src/core/model/graph-context.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go` | verified |
 | contexture/core/model/skill.py | source | Skill | verified: `src/core/model/skill.ts` | verified: `core/model/skill.go` | verified |
 | contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | designed: `src/core/model/system_api.ts` | designed: `core/model/system_api.go` | missing |
 | contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | designed: `src/core/model/telemetry.ts` | designed: `core/model/telemetry.go` | missing |
@@ -105,7 +105,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_project_channels.py | test | — | designed: `test/project_channels.test.ts` | designed: `project_channels_test.go` | missing |
 | tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | designed: `test/public_api.test.ts` | designed: `public_api_test.go` | missing |
 | tests/test_root_selection.py | test | — | designed: `test/root_selection.test.ts` | designed: `root_selection_test.go` | missing |
-| tests/test_runtime.py | test | — | designed: `test/runtime.test.ts` | designed: `runtime_test.go` | missing |
+| tests/test_runtime.py | test | — | verified: `test/runtime.test.ts`, `test/graph-context.test.ts` | verified: `runtime_test.go`, `graph_context_test.go` | verified |
 | tests/test_scaffold.py | test | — | designed: `test/scaffold.test.ts` | designed: `scaffold_test.go` | missing |
 | tests/test_server.py | test | — | designed: `test/server.test.ts` | designed: `server_test.go` | missing |
 | tests/test_spec_fixtures.py | test | test_every_language_neutral_fixture_is_valid_json, test_latest_surface_boundaries_have_fixtures | designed: `test/spec_fixtures.test.ts` | designed: `spec_fixtures_test.go` | missing |

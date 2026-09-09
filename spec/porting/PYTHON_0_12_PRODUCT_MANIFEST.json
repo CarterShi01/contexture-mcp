@@ -1146,25 +1146,41 @@
         "ApplicationRuntime"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/model/runtime.ts"
+            "src/core/model/runtime.ts",
+            "src/core/model/graph-context.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/runtime.test.ts",
+            "test/graph-context.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified bound-index enforcement, read/write invocation doors, principal and graph scoping, concurrent isolation, selection attenuation, telemetry isolation, packed runtime consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/runtime.go"
+            "core/model/runtime.go",
+            "core/model/graph_context.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "runtime_test.go",
+            "graph_context_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified bound-index enforcement, read/write invocation doors, principal and graph scoping, fail-fast request accessors, concurrent isolation, selection attenuation, telemetry isolation, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
@@ -3071,29 +3087,39 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/runtime.test.ts"
+            "test/runtime.test.ts",
+            "test/graph-context.test.ts"
           ],
           "tests": [
-            "test/runtime.test.ts"
+            "test/runtime.test.ts",
+            "test/graph-context.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native Runtime tests covering principal scoping and concurrency, wrong-door facts, graph and telemetry scopes, selection attenuation, execution outcomes, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "runtime_test.go"
+            "runtime_test.go",
+            "graph_context_test.go"
           ],
           "tests": [
-            "runtime_test.go"
+            "runtime_test.go",
+            "graph_context_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native Runtime tests covering principal scoping and concurrency, wrong-door facts, fail-fast graph and telemetry scopes, selection attenuation, execution outcomes, and complete race-enabled Go gates."
         }
       }
     },
