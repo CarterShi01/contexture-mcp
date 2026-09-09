@@ -40,7 +40,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/disclosure_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/disclosure_api.go` | verified |
 | contexture/core/model/execution_api.py | source | EXECUTION_GATEWAY, ExecutionAPI | verified: `src/core/model/system-api.ts` | verified: `core/model/execution_api.go` | verified |
 | contexture/core/model/graph_context.py | source | bound_graph, current_graph | verified: `src/core/model/graph-context.ts`, `src/core/model/runtime.ts` | verified: `core/model/graph_context.go`, `core/model/runtime.go` | verified |
-| contexture/core/model/index.py | source | Index | designed: `src/core/model/index.ts` | designed: `core/model/index.go` | missing |
+| contexture/core/model/index.py | source | Index | verified: `src/core/model/compiler.ts`, `src/core/model/reference-queries.ts` | verified: `core/model/compiler.go`, `core/model/selected_graph.go` | verified |
 | contexture/core/model/manager.py | source | ControllerManager, register_root | verified: `src/core/model/manager.ts` | verified: `core/model/manager.go` | verified |
 | contexture/core/model/node.py | source | CompileLevel, ContextNode, View, group_cards | verified: `src/core/model/node.ts` | verified: `core/model/node.go` | verified |
 | contexture/core/model/role.py | source | Role | verified: `src/core/model/role.ts`, `src/core/model/compiler.ts`, `src/core/model/node.ts` | verified: `core/model/role.go`, `core/model/compiler.go`, `core/model/node.go` | verified |
@@ -96,7 +96,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_golden.py | test | — | designed: `test/golden.test.ts` | designed: `golden_test.go` | missing |
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
 | tests/test_identity.py | test | — | designed: `test/identity.test.ts` | designed: `identity_test.go` | missing |
-| tests/test_index.py | test | — | designed: `test/index.test.ts` | designed: `index_test.go` | missing |
+| tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
 | tests/test_inspection.py | test | — | designed: `test/inspection.test.ts` | designed: `inspection_test.go` | missing |
 | tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |
 | tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |

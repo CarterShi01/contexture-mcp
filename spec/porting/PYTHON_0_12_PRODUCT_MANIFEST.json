@@ -923,25 +923,41 @@
         "Index"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/model/index.ts"
+            "src/core/model/compiler.ts",
+            "src/core/model/reference-queries.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/index-facade.test.ts",
+            "test/compiler.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified immutable compiled snapshots, canonical lookup diagnostics, containment and dependency queries, bindings, traversal order, Python-compatible completion ranking and slicing, packed consumer behavior, complete npm gates, and dedicated independent acceptance audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/index.go"
+            "core/model/compiler.go",
+            "core/model/selected_graph.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "index_query_test.go",
+            "compiler_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified immutable defensive snapshots, canonical lookup diagnostics, containment and dependency queries, bindings, traversal order, Python-compatible completion ranking and slicing, external module consumer behavior, complete race-enabled Go gates, and dedicated independent acceptance audit."
         }
       }
     },
@@ -2738,29 +2754,39 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/index.test.ts"
+            "test/index-facade.test.ts",
+            "test/compiler.test.ts"
           ],
           "tests": [
-            "test/index.test.ts"
+            "test/index-facade.test.ts",
+            "test/compiler.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native Index suites covering canonical addressing and diagnostics, foreign-node queries, kind and containment traversal, immutable snapshots, bindings, Python-compatible matching, signposts, crossings, and disclosure-only isolation, plus complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "index_test.go"
+            "index_query_test.go",
+            "compiler_test.go"
           ],
           "tests": [
-            "index_test.go"
+            "index_query_test.go",
+            "compiler_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified by focused native Index suites covering canonical addressing and diagnostics, foreign-node queries, kind and containment traversal, defensive snapshots, bindings, Python-compatible matching, signposts, crossings, and disclosure-only isolation, plus complete race-enabled Go gates."
         }
       }
     },
