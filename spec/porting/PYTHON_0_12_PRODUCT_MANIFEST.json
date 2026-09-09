@@ -1557,25 +1557,25 @@
         "RollbackPolicy"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/documents.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified complete deterministic CrashLoop runbook and rollback policy document Tools, names, read-only/no-argument behavior, publication reads, golden disclosure, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "demo/documents.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "golden_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified complete deterministic CrashLoop runbook and rollback policy document Tools, names, read-only/no-argument behavior, publication reads, golden disclosure, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -1586,25 +1586,25 @@
       "pythonImport": "contexture.demo.fixtures",
       "publicSymbols": [],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/fixtures.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified deterministic Kubernetes namespace, Pod, Deployment, status, event, log and rollout fixture values through demo and golden tests, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "demo/fixtures.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "golden_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified deterministic Kubernetes namespace, Pod, Deployment, status, event, log and rollout fixture values through demo and golden tests, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -1619,25 +1619,25 @@
         "KubernetesPlatform"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/role.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified KubernetesPlatform, IncidentResponse and DeploymentOps topology, declarations, instructions, member placement, progressive disclosure and golden cards through complete npm gates and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "demo/role.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "golden_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified KubernetesPlatform, IncidentResponse and DeploymentOps topology, declarations, instructions, member placement, progressive disclosure and golden cards through complete race-enabled Go gates and independent audit."
         }
       }
     },
@@ -1687,25 +1687,25 @@
         "RollBackAFailedRelease"
       ],
       "responsibility": "Maintained reference application.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/demo/skills.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/demo.test.ts", "test/golden-disclosure.test.ts"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified diagnosis and rollback Skill names, complete procedures, ordering and evidence constraints, cross-branch DIAGNOSIS uses card, golden disclosure, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "demo/skills.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["demo/demo_test.go", "golden_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified diagnosis and rollback Skill names, complete procedures, ordering and evidence constraints, cross-branch DIAGNOSIS uses card, golden disclosure, complete race-enabled Go gates, and independent audit."
         }
       }
     },

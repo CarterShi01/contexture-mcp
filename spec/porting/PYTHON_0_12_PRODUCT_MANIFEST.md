@@ -53,11 +53,11 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/principal.py | source | Principal, bound, current_principal | verified: `src/core/foundation/principal.ts`, `src/core/model/runtime.ts` | verified: `core/foundation/principal.go`, `core/model/graph_context.go` | verified |
 | contexture/core/types.py | source | — | verified: `src/core/model/binding.ts`, `src/core/model/node.ts`, `src/index.ts` | verified: `core/model/node.go`, `facade.go` | verified |
 | contexture/demo/__init__.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/index.ts` | designed: `demo/index.go` | missing |
-| contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | designed: `src/demo/documents.ts` | designed: `demo/documents.go` | missing |
-| contexture/demo/fixtures.py | source | — | designed: `src/demo/fixtures.ts` | designed: `demo/fixtures.go` | missing |
-| contexture/demo/role.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | designed: `src/demo/role.ts` | designed: `demo/role.go` | missing |
+| contexture/demo/documents.py | source | CrashLoopRunbook, RollbackPolicy | verified: `src/demo/documents.ts` | verified: `demo/documents.go` | verified |
+| contexture/demo/fixtures.py | source | — | verified: `src/demo/fixtures.ts` | verified: `demo/fixtures.go` | verified |
+| contexture/demo/role.py | source | DeploymentOps, IncidentResponse, KubernetesPlatform | verified: `src/demo/role.ts` | verified: `demo/role.go` | verified |
 | contexture/demo/server.py | source | CrashLoopRunbookDocument, RollBackARelease, RollbackPolicyDocument, build, main | designed: `src/demo/server.ts` | designed: `demo/server.go` | missing |
-| contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | designed: `src/demo/skills.ts` | designed: `demo/skills.go` | missing |
+| contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | verified: `src/demo/skills.ts` | verified: `demo/skills.go` | verified |
 | contexture/demo/tools.py | source | GetPodEvents, GetPodLogs, GetPodStatus, GetRolloutStatus, PodEvent, PodStatus, RollBackDeployment, RolloutStatus | designed: `src/demo/tools.ts` | designed: `demo/tools.go` | missing |
 | contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | verified: `src/inspection.ts` | verified: `inspection/inspection.go` | verified |
 | contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
