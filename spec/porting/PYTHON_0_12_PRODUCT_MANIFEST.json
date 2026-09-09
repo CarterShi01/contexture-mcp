@@ -2045,25 +2045,37 @@
         "WebRequest"
       ],
       "responsibility": "Explicit REST/ASGI adapter.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/web/surface.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/rest.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Native Fetch/Node REST surface and the pinned Python web behaviors are verified by focused tests, a packed external consumer, and documented ASGI-to-TypeScript adaptations."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "web/surface.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "web/surface_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Native net/http REST surface and the pinned Python web behaviors are verified by focused tests, an external module consumer, and documented ASGI-to-Go adaptations."
         }
       }
     }
@@ -3065,29 +3077,37 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/web.test.ts"
+            "test/rest.test.ts"
           ],
           "tests": [
-            "test/web.test.ts"
+            "test/rest.test.ts",
+            "scripts/verify-package-consumer.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Native Fetch/Node REST surface and the pinned Python web behaviors are verified by focused tests, a packed external consumer, and documented ASGI-to-TypeScript adaptations."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "web_test.go"
+            "web/surface_test.go"
           ],
           "tests": [
-            "web_test.go"
+            "web/surface_test.go",
+            "internal/releasecheck/module_consumer_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Native net/http REST surface and the pinned Python web behaviors are verified by focused tests, an external module consumer, and documented ASGI-to-Go adaptations."
         }
       }
     },

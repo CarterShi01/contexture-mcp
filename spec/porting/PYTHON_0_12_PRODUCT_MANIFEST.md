@@ -78,7 +78,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | contexture/server/surface/tools.py | source | Tools | designed: `src/server/surface/tools.ts` | designed: `server/surface/tools.go` | missing |
 | contexture/web/__init__.py | source | Authenticator, RestSurface, Route, WebRequest | designed: `src/web/index.ts` | designed: `web/index.go` | missing |
 | contexture/web/route.py | source | Route | verified: `src/web/route.ts` | verified: `web/route.go` | verified |
-| contexture/web/surface.py | source | Authenticator, RestSurface, WebRequest | designed: `src/web/surface.ts` | designed: `web/surface.go` | missing |
+| contexture/web/surface.py | source | Authenticator, RestSurface, WebRequest | verified: `src/web/surface.ts` | verified: `web/surface.go` | verified |
 
 ## Test modules
 
@@ -114,7 +114,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_surface.py | test | — | designed: `test/surface.test.ts` | designed: `surface_test.go` | missing |
 | tests/test_system_api.py | test | — | designed: `test/system_api.test.ts` | designed: `system_api_test.go` | missing |
 | tests/test_telemetry.py | test | — | designed: `test/telemetry.test.ts` | designed: `telemetry_test.go` | missing |
-| tests/test_web.py | test | — | designed: `test/web.test.ts` | designed: `web_test.go` | missing |
+| tests/test_web.py | test | — | verified: `test/rest.test.ts` | verified: `web/surface_test.go` | verified |
 | tests/typing/consumer.py | test | — | designed: `scripts/verify-package-consumer.mjs` | designed: `internal/releasecheck/module_consumer_test.go` | missing |
 
 ## Product assets
