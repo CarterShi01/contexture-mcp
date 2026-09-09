@@ -18,7 +18,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 
 | Python path | Kind | Public symbols | TypeScript | Go | Status |
 | --- | --- | --- | --- | --- | --- |
-| contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | designed: `src/index.ts` | designed: `facade.go` | missing |
+| contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | verified: `src/index.ts` | verified: `facade.go` | verified |
 | contexture/application.py | source | Contexture, RootFactory | verified: `src/application.ts` | verified: `core/model/application.go` | verified |
 | contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | designed: `src/cli/index.ts` | designed: `cmd/contexture/index.go` | missing |
 | contexture/cli/__main__.py | source | — | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
@@ -60,7 +60,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/demo/skills.py | source | DIAGNOSIS, DiagnoseCrashLoopBackOff, RollBackAFailedRelease | designed: `src/demo/skills.ts` | designed: `demo/skills.go` | missing |
 | contexture/demo/tools.py | source | GetPodEvents, GetPodLogs, GetPodStatus, GetRolloutStatus, PodEvent, PodStatus, RollBackDeployment, RolloutStatus | designed: `src/demo/tools.ts` | designed: `demo/tools.go` | missing |
 | contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | designed: `src/inspection.ts` | designed: `inspection/inspection.go` | missing |
-| contexture/server/__init__.py | source | — | designed: `src/server/index.ts` | designed: `server/index.go` | missing |
+| contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
 | contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | designed: `src/server/application.ts` | designed: `server/application.go` | missing |
 | contexture/server/binding.py | source | TypeHintBinding | designed: `src/server/binding.ts` | designed: `server/binding.go` | missing |
 | contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | designed: `src/server/identity.ts` | designed: `server/identity.go` | missing |
@@ -103,7 +103,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_messages.py | test | — | designed: `test/messages.test.ts` | designed: `messages_test.go` | missing |
 | tests/test_oc_goal_case_study.py | test | — | designed: `test/oc_goal_case_study.test.ts` | designed: `oc_goal_case_study_test.go` | missing |
 | tests/test_project_channels.py | test | — | designed: `test/project_channels.test.ts` | designed: `project_channels_test.go` | missing |
-| tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | designed: `test/public_api.test.ts` | designed: `public_api_test.go` | missing |
+| tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | verified: `test/public-api.test.ts` | verified: `public_api_test.go` | verified |
 | tests/test_root_selection.py | test | — | verified: `test/root-selection.test.ts`, `test/root-selector.test.ts`, `test/disclosure-prompt-plane.test.ts` | verified: `root_selection_test.go` | verified |
 | tests/test_runtime.py | test | — | verified: `test/runtime.test.ts`, `test/graph-context.test.ts` | verified: `runtime_test.go`, `graph_context_test.go` | verified |
 | tests/test_scaffold.py | test | — | designed: `test/scaffold.test.ts` | designed: `scaffold_test.go` | missing |
