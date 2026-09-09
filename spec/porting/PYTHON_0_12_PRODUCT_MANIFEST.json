@@ -1843,25 +1843,40 @@
         "serve"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/application.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server-application.test.ts",
+            "test/compiler.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified bound and disclosure-only compiled containers, shared Index/Disclosure/Runtime/Publications/telemetry identities, official two-door structural server assembly, rejection of execution dependencies, fresh lazy compilation, native parts/serve mappings, packed consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "server/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/application_test.go",
+            "application_test.go",
+            "compiler_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified bound and disclosure-only compiled containers, shared Index/Disclosure/Runtime/Publications/telemetry identities, official two-door structural server assembly, rejection of Channels and Resources, fresh lazy compilation, native parts/serve mappings, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -2598,29 +2613,31 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/application.test.ts"
+            "test/declarations.test.ts",
+            "test/server-application.test.ts"
           ],
           "tests": [
-            "test/application.test.ts"
+            "test/declarations.test.ts",
+            "test/server-application.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified lazy declarations, invalid roots, SDK-neutral import layering, fresh forests, prompt-root audiences, shared runtime container, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "application_test.go"
           ],
           "tests": [
             "application_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified lazy declarations, invalid roots, SDK-neutral package layering, fresh forests, prompt-root audiences, shared runtime container, and complete race-enabled Go gates."
         }
       }
     },
@@ -2730,29 +2747,33 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/disclosure_application.test.ts"
+            "test/server-application.test.ts",
+            "test/server.test.ts"
           ],
           "tests": [
-            "test/disclosure_application.test.ts"
+            "test/server-application.test.ts",
+            "test/server.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified unbound/no-runtime isolation, structural Tool cards, official two-door MCP assembly, Prompt support, no Resources, independent Indexes, dependency rejection, packed consumer, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "disclosure_application_test.go"
+            "server/application_test.go",
+            "server/server_test.go"
           ],
           "tests": [
-            "disclosure_application_test.go"
+            "server/application_test.go",
+            "server/server_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified unbound/no-runtime isolation, structural Tool cards, official two-door MCP assembly, Prompt support, no Resources, independent Indexes, dependency rejection, external consumer, and complete race-enabled Go gates."
         }
       }
     },

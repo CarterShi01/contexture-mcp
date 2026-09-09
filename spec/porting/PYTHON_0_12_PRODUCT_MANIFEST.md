@@ -61,7 +61,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/demo/tools.py | source | GetPodEvents, GetPodLogs, GetPodStatus, GetRolloutStatus, PodEvent, PodStatus, RollBackDeployment, RolloutStatus | designed: `src/demo/tools.ts` | designed: `demo/tools.go` | missing |
 | contexture/inspection.py | source | CONNECT, Check, Cost, Step, Trace, as_json, connect_step, discover_step, every_ref, open_step, read_step, render, trace | designed: `src/inspection.ts` | designed: `inspection/inspection.go` | missing |
 | contexture/server/__init__.py | source | — | verified: `src/server/index.ts` | verified: `server/doc.go`, `server/application.go`, `server/launch.go`, `server/options.go`, `server/identity.go`, `server/root_selector.go`, `server/host_launch.go` | verified |
-| contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | designed: `src/server/application.ts` | designed: `server/application.go` | missing |
+| contexture/server/application.py | source | CompiledApplication, CompiledDisclosureApplication, build_server, compile_application, compile_disclosure_application, compile_disclosure_parts, compile_parts, serve | verified: `src/server/application.ts` | verified: `server/application.go` | verified |
 | contexture/server/binding.py | source | TypeHintBinding | designed: `src/server/binding.ts` | designed: `server/binding.go` | missing |
 | contexture/server/identity.py | source | Auth, TokenVerifier, principal_of | designed: `src/server/identity.ts` | designed: `server/identity.go` | missing |
 | contexture/server/instructions.py | source | INSTRUCTIONS_LIMIT, ROSTER_BUDGET, SELF_CONTAINED_PREFIX, build, neutral | designed: `src/server/instructions.ts` | designed: `server/instructions.go` | missing |
@@ -88,11 +88,11 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/golden.py | test | — | designed: `test/support/golden.ts` | designed: `internal/testsupport/golden.go` | missing |
 | tests/http_fixture.py | test | — | designed: `test/support/http_fixture.ts` | designed: `internal/testsupport/http_fixture.go` | missing |
 | tests/serving.py | test | — | designed: `test/support/serving.ts` | designed: `internal/testsupport/serving.go` | missing |
-| tests/test_application.py | test | — | designed: `test/application.test.ts` | designed: `application_test.go` | missing |
+| tests/test_application.py | test | — | verified: `test/declarations.test.ts`, `test/server-application.test.ts` | verified: `application_test.go` | verified |
 | tests/test_capabilities.py | test | — | designed: `test/capabilities.test.ts` | designed: `capabilities_test.go` | missing |
 | tests/test_channels.py | test | — | designed: `test/channels.test.ts` | designed: `channels_test.go` | missing |
 | tests/test_disclosure.py | test | — | designed: `test/disclosure.test.ts` | designed: `disclosure_test.go` | missing |
-| tests/test_disclosure_application.py | test | — | designed: `test/disclosure_application.test.ts` | designed: `disclosure_application_test.go` | missing |
+| tests/test_disclosure_application.py | test | — | verified: `test/server-application.test.ts`, `test/server.test.ts` | verified: `server/application_test.go`, `server/server_test.go` | verified |
 | tests/test_golden.py | test | — | designed: `test/golden.test.ts` | designed: `golden_test.go` | missing |
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
 | tests/test_identity.py | test | — | designed: `test/identity.test.ts` | designed: `identity_test.go` | missing |
