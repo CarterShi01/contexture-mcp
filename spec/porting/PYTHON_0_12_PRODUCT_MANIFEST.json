@@ -151,25 +151,25 @@
         "resolve_target"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/index.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified importable CLI facade for main/version, classifiable usage errors, project discovery and scaffold APIs through focused tests, packed consumer, complete npm gates, and bilingual docs."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/index.go"
+            "cli/application.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cli/application_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified importable Go CLI application runner and classifiable UsageError through focused tests, external module consumer, complete race-enabled Go gates, and bilingual docs."
         }
       }
     },
@@ -180,25 +180,25 @@
       "pythonImport": "contexture.cli.__main__",
       "publicSymbols": [],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/main.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/cli.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified npm executable entrypoint, version, explicit argv/output adaptation, stderr usage diagnostics and status two through focused and installed-package tests."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "cmd/contexture/main.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cmd/contexture/main_test.go", "cmd/contexture/scaffold_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native main/os.Exit entrypoint, version, process argument/output adaptation, usage status two, project forwarding and generated workflows through complete race-enabled Go gates."
         }
       }
     },
@@ -320,25 +320,26 @@
         "UsageError"
       ],
       "responsibility": "Developer CLI, project loading, and scaffolding.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/cli/usage.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/cli.test.ts", "test/scaffold.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified Contexture-classified UsageError, stderr rendering and status two across CLI/scaffold requests, packed consumer behavior and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/usage.go"
+            "cli/application.go",
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["cli/application_test.go", "cmd/contexture/scaffold_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified importable ErrContexture-classified UsageError, command compatibility alias, stderr/status-two behavior, external module consumer and complete race-enabled Go gates."
         }
       }
     },

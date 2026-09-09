@@ -20,12 +20,12 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | --- | --- | --- | --- | --- | --- |
 | contexture/__init__.py | source | Channels, Contexture, ContextureError, DeclarationError, DuplicateNameError, ModelValidationError, NodeNotFoundError, Principal, Prompt, Resource, Role, Skill, Tool, __version__, current_graph, current_principal, current_telemetry | verified: `src/index.ts` | verified: `facade.go` | verified |
 | contexture/application.py | source | Contexture, RootFactory | verified: `src/application.ts` | verified: `core/model/application.go` | verified |
-| contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | designed: `src/cli/index.ts` | designed: `cmd/contexture/index.go` | missing |
-| contexture/cli/__main__.py | source | — | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
+| contexture/cli/__init__.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, Names, ProjectConfig, TEMPLATES, UsageError, available_templates, build_parser, find_project, load_application, load_published, load_roots, main, new_project, render_file, resolve_target | verified: `src/cli/index.ts` | verified: `cli/application.go` | verified |
+| contexture/cli/__main__.py | source | — | verified: `src/cli/main.ts` | verified: `cmd/contexture/main.go` | verified |
 | contexture/cli/main.py | source | build_parser, main | designed: `src/cli/main.ts` | designed: `cmd/contexture/main.go` | missing |
 | contexture/cli/project.py | source | CONFIG_TABLE, DEMO_APP, DEMO_PUBLISH, DEMO_TARGET, ProjectConfig, Serving, find_project, load_application, load_channels, load_published, load_roots, resolve_target | designed: `src/cli/project.ts` | designed: `cmd/contexture/project.go` | missing |
 | contexture/cli/scaffold.py | source | Names, TEMPLATES, available_templates, new_project, render_file | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
-| contexture/cli/usage.py | source | UsageError | designed: `src/cli/usage.ts` | designed: `cmd/contexture/usage.go` | missing |
+| contexture/cli/usage.py | source | UsageError | verified: `src/cli/usage.ts` | verified: `cli/application.go`, `cmd/contexture/scaffold.go` | verified |
 | contexture/core/__init__.py | source | — | designed: `src/core/index.ts` | designed: `core/model/doc.go` | missing |
 | contexture/core/constants.py | source | — | verified: `src/core/foundation/vocabulary.ts` | verified: `core/foundation/constants.go` | verified |
 | contexture/core/errors.py | source | ContextureError, DeclarationError, DuplicateNameError, LookupFailure, ModelValidationError, NodeNotFoundError, WrongDoorError | verified: `src/core/foundation/errors.ts` | verified: `core/foundation/errors.go` | verified |
