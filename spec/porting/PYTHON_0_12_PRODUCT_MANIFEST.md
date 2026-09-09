@@ -47,7 +47,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | contexture/core/model/root_selection.py | source | RootOutsideSelectionError, RootSelection, RootSelectionError, SelectedGraph, bound_root_selection, current_root_selection | verified: `src/core/model/root-selection.ts` | verified: `core/model/selection.go`, `core/model/selected_graph.go`, `core/model/graph_context.go` | verified |
 | contexture/core/model/runtime.py | source | ApplicationRuntime | verified: `src/core/model/runtime.ts`, `src/core/model/graph-context.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go` | verified |
 | contexture/core/model/skill.py | source | Skill | verified: `src/core/model/skill.ts` | verified: `core/model/skill.go` | verified |
-| contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | designed: `src/core/model/system_api.ts` | designed: `core/model/system_api.go` | missing |
+| contexture/core/model/system_api.py | source | DISCLOSURE_GATEWAY, DisclosureAPI, EXECUTION_GATEWAY, ExecutionAPI, GATEWAY, GATEWAY_TOOLS, Refused, SystemAPI, SystemTool, taken_by_a_person, unresolved, wrong_door | verified: `src/core/model/system-api.ts` | verified: `core/model/gateway.go`, `core/model/disclosure_api.go`, `core/model/execution_api.go` | verified |
 | contexture/core/model/telemetry.py | source | InMemoryTelemetry, NodeUsage, Telemetry, bound_telemetry, current_telemetry, report | verified: `src/core/model/telemetry.ts`, `src/core/model/runtime.ts` | verified: `core/model/runtime.go`, `core/model/graph_context.go`, `server/application.go` | verified |
 | contexture/core/model/tool.py | source | Tool | verified: `src/core/model/tool.ts`, `src/core/model/binding.ts` | verified: `core/model/tool.go`, `core/model/binding.go` | verified |
 | contexture/core/principal.py | source | Principal, bound, current_principal | verified: `src/core/foundation/principal.ts`, `src/core/model/runtime.ts` | verified: `core/foundation/principal.go`, `core/model/graph_context.go` | verified |
@@ -111,7 +111,7 @@ no implementation or parity credit has yet been claimed; it is not an exemption.
 | tests/test_spec_fixtures.py | test | test_every_language_neutral_fixture_is_valid_json, test_latest_surface_boundaries_have_fixtures | designed: `test/spec_fixtures.test.ts` | designed: `spec_fixtures_test.go` | missing |
 | tests/test_stdio_server.py | test | — | designed: `test/stdio_server.test.ts` | designed: `stdio_server_test.go` | missing |
 | tests/test_surface.py | test | — | designed: `test/surface.test.ts` | designed: `surface_test.go` | missing |
-| tests/test_system_api.py | test | — | designed: `test/system_api.test.ts` | designed: `system_api_test.go` | missing |
+| tests/test_system_api.py | test | — | verified: `test/system-api.test.ts`, `test/gateway-wire.test.ts` | verified: `gateway_test.go`, `gateway_recovery_test.go`, `disclosure_api_test.go`, `execution_api_test.go` | verified |
 | tests/test_telemetry.py | test | — | verified: `test/telemetry.test.ts` | verified: `telemetry_test.go` | verified |
 | tests/test_web.py | test | — | designed: `test/web.test.ts` | designed: `web_test.go` | missing |
 | tests/typing/consumer.py | test | — | designed: `scripts/verify-package-consumer.mjs` | designed: `internal/releasecheck/module_consumer_test.go` | missing |
