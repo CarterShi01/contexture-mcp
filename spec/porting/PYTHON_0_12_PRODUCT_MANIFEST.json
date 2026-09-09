@@ -2004,25 +2004,25 @@
         "cursor_config"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/launch.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/launch.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified Launch snapshots, safe POSIX quoting, Claude Code/Cursor JSON and Codex TOML rendering, Python-compatible empty and Unicode strings, project-scoped CLI commands with one launch suffix, packed consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/launch.go"
+            "server/host_launch.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["server/host_launch_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["README.md", "README.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified defensive Launch vectors, safe POSIX quoting, Claude Code/Cursor JSON and Codex TOML rendering, Python-compatible empty and Unicode strings, project-scoped CLI commands with one launch suffix, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
