@@ -2047,25 +2047,25 @@
         "truncated_completion"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/messages.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["test/messages.test.ts", "test/completion.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified fixed bootstrap, ref, goto, command, signpost and completion text, SDK-neutral ownership, real completion integration, packed message consumer behavior, complete npm gates, and independent audit."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/messages.go"
+            "server/messages/messages.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": ["server/messages/messages_test.go", "server/completion_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified one public message package owns bootstrap, ref, goto, command, signpost and completion text, instructions reuse the same constants, real completion integration, external module consumer behavior, complete race-enabled Go gates, and independent audit."
         }
       }
     },
@@ -3047,29 +3047,33 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "test/messages.test.ts"
           ],
           "tests": [
             "test/messages.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by direct message, completion, publication, instruction and layering suites plus packed consumer and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "messages_test.go"
+            "server/messages/messages_test.go",
+            "server/completion_test.go",
+            "server/instructions/instructions_test.go"
           ],
           "tests": [
-            "messages_test.go"
+            "server/messages/messages_test.go",
+            "server/completion_test.go",
+            "server/instructions/instructions_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified by direct message, completion and instruction suites plus external module consumer and complete race-enabled Go gates."
         }
       }
     },
