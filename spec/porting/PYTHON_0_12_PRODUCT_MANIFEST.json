@@ -2850,25 +2850,45 @@
         "Tools"
       ],
       "responsibility": "MCP server surface implementation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/surface/tools.ts"
+            "src/server/index.ts",
+            "src/core/model/system-api.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server.test.ts",
+            "test/gateway-wire.test.ts",
+            "test/system-api.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the exact immutable four-gateway Tool plane, read-only annotations, business Tool exclusion, principal and abort context propagation, wrong-door refusal, official SDK calls, packed consumer behavior, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/surface/tools.go"
+            "server/server.go",
+            "core/model/gateway.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/server_test.go",
+            "server/gateway_wire_test.go",
+            "gateway_recovery_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the exact immutable four-gateway Tool plane, read-only annotations, business Tool exclusion, principal and context propagation, wrong-door refusal, official SDK calls, external module consumer behavior, and race-enabled Go gates."
         }
       }
     },
