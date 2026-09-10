@@ -108,7 +108,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_root_selection.py | test | — | verified: `test/root-selection.test.ts`, `test/root-selector.test.ts`, `test/disclosure-prompt-plane.test.ts` | verified: `root_selection_test.go` | verified |
 | tests/test_runtime.py | test | — | verified: `test/runtime.test.ts`, `test/graph-context.test.ts` | verified: `runtime_test.go`, `graph_context_test.go` | verified |
 | tests/test_scaffold.py | test | — | verified: `test/scaffold.test.ts` | verified: `cmd/contexture/scaffold_test.go`, `cmd/contexture/main_test.go` | verified |
-| tests/test_server.py | test | — | designed: `test/server.test.ts` | designed: `server_test.go` | missing |
+| tests/test_server.py | test | — | verified: `test/server.test.ts`, `test/options.test.ts`, `test/server-launch.test.ts` | verified: `server/server_test.go`, `server/options_test.go`, `server/launch_test.go` | verified |
 | tests/test_spec_fixtures.py | test | test_every_language_neutral_fixture_is_valid_json, test_latest_surface_boundaries_have_fixtures | designed: `test/spec_fixtures.test.ts` | designed: `spec_fixtures_test.go` | missing |
 | tests/test_stdio_server.py | test | — | designed: `test/stdio_server.test.ts` | designed: `stdio_server_test.go` | missing |
 | tests/test_surface.py | test | — | designed: `test/surface.test.ts` | designed: `surface_test.go` | missing |
