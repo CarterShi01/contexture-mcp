@@ -183,7 +183,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/case-studies/oc-goal/pyproject.toml | not-applicable | not-applicable | not-applicable |
 | docs/handbook.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/handbook.zh-CN.md | verified: `docs/handbook.zh-CN.md` | verified: `docs/handbook.zh-CN.md` | verified |
-| docs/project-status.md | designed: `docs/project-status.md` | designed: `docs/project-status.md` | missing |
+| docs/project-status.md | verified: `docs/architecture.md`, `README.md` | verified: `docs/architecture.md`, `README.md` | verified |
 | docs/verification/hosts.md | designed: `docs/verification/hosts.md` | designed: `docs/verification/hosts.md` | missing |
 | docs/verification/verify_claude_code.md | designed: `docs/verification/verify_claude_code.md` | designed: `docs/verification/verify_claude_code.md` | missing |
 | docs/verification/verify_codex.md | designed: `docs/verification/verify_codex.md` | designed: `docs/verification/verify_codex.md` | missing |

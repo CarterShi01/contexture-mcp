@@ -6232,25 +6232,21 @@
     {
       "path": "docs/project-status.md",
       "sha256": "f713c057c481e1f4e1b46938f1307af9a0a73d306f1c30923e12fa836e05fae7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/project-status.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "README.md"],
+          "tests": ["scripts/verify-conformance.mjs", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "README.md", "README.zh-CN.md"],
+          "reason": "Verified current native status records all applicable 0.12 source/test and maintained documentation evidence, enumerates implemented product areas, and honestly keeps release closed for Host verification, package metadata and clean-checkout audit."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/project-status.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "README.md"],
+          "tests": ["internal/conformancecheck/main.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "README.md", "README.zh-CN.md"],
+          "reason": "Verified current native status records all applicable 0.12 source/test and maintained documentation evidence, enumerates implemented product areas, and honestly keeps release closed for Host verification, module metadata and clean-checkout audit."
         }
       }
     },
