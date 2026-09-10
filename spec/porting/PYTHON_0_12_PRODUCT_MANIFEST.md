@@ -99,7 +99,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_identity.py | test | — | verified: `test/identity.test.ts` | verified: `server/identity_test.go`, `principal_test.go`, `server/launch_test.go` | verified |
 | tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
 | tests/test_inspection.py | test | — | verified: `test/inspection.test.ts` | verified: `inspection/inspection_test.go`, `cmd/contexture/main_test.go` | verified |
-| tests/test_layering.py | test | — | designed: `test/layering.test.ts` | designed: `layering_test.go` | missing |
+| tests/test_layering.py | test | — | verified: `test/layering.test.ts` | verified: `architecture_test.go`, `facade_test.go` | verified |
 | tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
 | tests/test_messages.py | test | — | verified: `test/messages.test.ts` | verified: `server/messages/messages_test.go`, `server/completion_test.go`, `server/instructions/instructions_test.go` | verified |
 | tests/test_oc_goal_case_study.py | test | — | not-applicable | not-applicable | not-applicable |
