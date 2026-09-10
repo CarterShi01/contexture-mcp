@@ -452,25 +452,42 @@
       "pythonImport": "contexture.core",
       "publicSymbols": [],
       "responsibility": "Shared Contexture core foundation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/index.ts"
+            "src/core/index.ts",
+            "package.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/public-api.test.ts",
+            "test/layering.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the static ESM core export graph as the native lazy-facade equivalent, its Host-free boundary, published subpath, packed external consumer, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/doc.go"
+            "core/model/doc.go",
+            "facade.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "public_api_test.go",
+            "facade_test.go",
+            "architecture_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the compile-time model package and root re-export facade, their Host-free dependency closure, external module consumer, and complete race-enabled Go gates."
         }
       }
     },
@@ -795,25 +812,41 @@
         "register_root"
       ],
       "responsibility": "Contexture kernel object model and runtime behaviour.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/core/model/doc.ts"
+            "src/core/index.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/public-api.test.ts",
+            "test/layering.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified native model declarations, manager registration, graph context, lifecycle, selection and telemetry through the core facade, boundary tests, and packed consumer."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "core/model/doc.go"
+            "core/model/doc.go",
+            "facade.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "public_api_test.go",
+            "facade_test.go",
+            "architecture_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified direct core/model and root-facade access to native declarations, manager registration, graph context, lifecycle, selection and telemetry with external consumer coverage."
         }
       }
     },
