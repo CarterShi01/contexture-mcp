@@ -4515,25 +4515,39 @@
     {
       "path": "CONTRIBUTING.md",
       "sha256": "bbc8164dc2dba4bd47fd291bae13b1d5b83caea2f5d1ed544a6547fb82339650",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "CONTRIBUTING.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "package.json",
+            "scripts/verify-conformance.mjs",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "CONTRIBUTING.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified language-native setup, one complete check command, architecture and golden-fixture contracts, release guard, public API/changelog requirements, pull-request expectations, and private vulnerability reporting."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "CONTRIBUTING.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "go.mod",
+            "internal/conformancecheck/main.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "CONTRIBUTING.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified language-native setup, conformance/race/vet/gofmt checks, architecture and golden-fixture contracts, release guard, public API/changelog requirements, pull-request expectations, and private vulnerability reporting."
         }
       }
     },
