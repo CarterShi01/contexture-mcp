@@ -3356,29 +3356,47 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/channels.test.ts"
+            "test/lifecycle.test.ts",
+            "test/server-launch.test.ts",
+            "test/resource-wire.test.ts"
           ],
           "tests": [
-            "test/channels.test.ts"
+            "test/lifecycle.test.ts",
+            "test/manager.test.ts",
+            "test/server-launch.test.ts",
+            "test/resource-wire.test.ts",
+            "test/tool-parity.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified application-owned dependency identity, per-application isolation, canonical node addresses, lifecycle open/close and reverse cleanup under success/failure/reuse, raw-handle behavior, Tool and Resource access over real transports, and schema isolation."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "channels_test.go"
+            "channels_test.go",
+            "server/launch_test.go",
+            "server/resource_wire_test.go"
           ],
           "tests": [
-            "channels_test.go"
+            "channels_test.go",
+            "manager_test.go",
+            "server/launch_test.go",
+            "server/resource_wire_test.go",
+            "tool_parity_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified application-owned dependency identity, per-application isolation, canonical node addresses, lifecycle open/close and reverse cleanup under success/failure/panic/reuse, raw-handle behavior, Tool and Resource access over real transports, schema isolation, and race safety."
         }
       }
     },
