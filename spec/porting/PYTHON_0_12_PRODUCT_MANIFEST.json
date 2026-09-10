@@ -3213,29 +3213,43 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Shared test fixture support.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/support/serving.ts"
+            "test/manager.test.ts",
+            "test/server-application.test.ts"
           ],
           "tests": [
-            "test/support/serving.ts"
+            "test/manager.test.ts",
+            "test/publications.test.ts",
+            "test/server-application.test.ts",
+            "test/server.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "The Python helper maps to explicit native test setup covering root registration, manager snapshots, bound and structural compilation, Prompt/Resource separation, surface assembly, and sealed server construction; the complete npm suite passes."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "internal/testsupport/serving.go"
+            "manager_test.go",
+            "server/application_test.go"
           ],
           "tests": [
-            "internal/testsupport/serving.go"
+            "manager_test.go",
+            "publications_test.go",
+            "server/application_test.go",
+            "server/server_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "The Python helper maps to explicit native test setup covering root registration, manager snapshots, bound and structural compilation, Prompt/Resource separation, surface assembly, and sealed server construction; race-enabled Go gates pass."
         }
       }
     },
