@@ -19,7 +19,7 @@
       "tree": "265563acf2a39ac1622b35a57ff08056da86d992",
       "previousCommit": "3b274421360d5569a23922bfc72b71d5828cf995",
       "headline": "Path-selected capability surfaces",
-      "status": "pending",
+      "status": "verified",
       "deltaPaths": [
         "M\t.github/workflows/ci.yml", "A\tAGENTS.md", "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md",
         "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/disclosure.py", "M\tcontexture/core/model/root_selection.py", "M\tcontexture/core/model/runtime.py",
@@ -37,9 +37,21 @@
           "productAssets": ["README.md", "README.zh-CN.md", "docs/adr/020-path-selectors-promote-subtrees.md", "docs/handbook.md", "docs/handbook.zh-CN.md", "spec/fixtures/root-selections.json", "spec/model.md"],
           "typescriptTargets": ["src/core/model/root-selection.ts", "src/core/model/disclosure.ts", "src/server/root-selector.ts", "src/server/server.ts"],
           "goTargets": ["core/model/selection.go", "core/model/selected_graph.go", "server/root_selector.go", "server/server.go"],
-          "typescriptEvidence": [],
-          "goEvidence": [],
-          "status": "pending"
+          "typescriptEvidence": [
+            "pushed commit b82aeb9d3a40f4440cf1311ac784fbdbc5153c91",
+            "resolve-before-intersect regressions: test/root-selection.test.ts and test/runtime.test.ts",
+            "promoted initialization surface and JSON-RPC -32602 transport evidence: test/instructions.test.ts and test/server-launch.test.ts",
+            "Unicode code-point selector limit evidence: test/root-selector.test.ts",
+            "full npm run check passed with 217 tests, format, lint, typecheck, build, package consumer, and scaffold consumer"
+          ],
+          "goEvidence": [
+            "pushed commit 98eaea57ad612273e13ae99a85e0a508f02ca2a6",
+            "resolve-before-intersect regressions: root_selection_test.go",
+            "promoted initialization surface and JSON-RPC -32602 transport evidence: server/instructions/instructions_test.go and server/launch_test.go",
+            "Unicode code-point selector limit evidence: server/root_selector_test.go",
+            "full conformancecheck, go test -race ./..., go vet ./..., releasecheck v0.13.0-rc.1, and gofmt cleanliness passed"
+          ],
+          "status": "verified"
         }
       ]
     },
