@@ -163,9 +163,9 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/adr/018-prompt-roots-separate-user-and-model-planes.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/adr/018-separate-disclosure-from-execution.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
 | docs/adr/019-request-selects-complete-root-surfaces.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
-| docs/atlas/check.mjs | designed: `docs/atlas/check.mjs` | designed: `docs/atlas/check.mjs` | missing |
-| docs/atlas/index.html | designed: `docs/atlas/index.html` | designed: `docs/atlas/index.html` | missing |
-| docs/atlas/vendor/mermaid.min.js | designed: `docs/atlas/vendor/mermaid.min.js` | designed: `docs/atlas/vendor/mermaid.min.js` | missing |
+| docs/atlas/check.mjs | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
+| docs/atlas/index.html | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
+| docs/atlas/vendor/mermaid.min.js | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/case-studies/oc-goal/.gitignore | not-applicable | not-applicable | not-applicable |
 | docs/case-studies/oc-goal/DESIGN.md | not-applicable | not-applicable | not-applicable |
 | docs/case-studies/oc-goal/PLAN.md | not-applicable | not-applicable | not-applicable |

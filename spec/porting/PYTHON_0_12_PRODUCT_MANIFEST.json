@@ -5812,75 +5812,63 @@
     {
       "path": "docs/atlas/check.mjs",
       "sha256": "7ff2ed5cdd2ce6fc5ebc235fe9214a557ced6607a165e23774ce29cf20e8aef2",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/check.mjs"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/layering.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "The Python browser-atlas Mermaid parser maps to the native binding's source-backed architecture document and executable dependency-boundary test; there is no separate browser diagram whose syntax could drift."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/check.mjs"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["architecture_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "The Python browser-atlas Mermaid parser maps to the native binding's package-backed architecture document and executable dependency-boundary test; there is no separate browser diagram whose syntax could drift."
         }
       }
     },
     {
       "path": "docs/atlas/index.html",
       "sha256": "ef263763afecf50d8cdd4f39e748c30a3f796c2896a987b11a8c4d543c80f012",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/index.html"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["test/layering.test.ts", "scripts/verify-package-consumer.mjs"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "The Python interactive atlas maps to maintained native bilingual architecture and handbook documents covering dependency direction, public entry points, runtime phases and Host surfaces; layering and installed-package consumers keep that map executable."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/index.html"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["architecture_test.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "The Python interactive atlas maps to maintained native bilingual architecture and handbook documents covering package direction, public packages, runtime phases and Host surfaces; architecture and external-module consumers keep that map executable."
         }
       }
     },
     {
       "path": "docs/atlas/vendor/mermaid.min.js",
       "sha256": "18327bef70d96fb505fe7287d9f6a7362ebf07ff6576ddfaffb1a06f3e1a2954",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/vendor/mermaid.min.js"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/layering.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "The vendored Mermaid runtime exists only to render Python's standalone browser atlas. The native binding deliberately uses portable Markdown/text diagrams plus executable layering checks, so no duplicate browser runtime or third-party bundle is shipped."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/atlas/vendor/mermaid.min.js"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["architecture_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "The vendored Mermaid runtime exists only to render Python's standalone browser atlas. The native binding deliberately uses portable Markdown/text diagrams plus executable package-boundary checks, so no duplicate browser runtime or third-party bundle is shipped."
         }
       }
     },
