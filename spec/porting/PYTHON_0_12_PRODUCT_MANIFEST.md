@@ -135,14 +135,14 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | contexture/cli/templates/project/assistant/skills.py.tmpl | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
 | contexture/cli/templates/project/assistant/tools.py.tmpl | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
 | contexture/cli/templates/project/pyproject.toml.tmpl | verified: `src/cli/scaffold.ts` | verified: `cmd/contexture/scaffold.go` | verified |
-| docs/01-role-object-model.md | designed: `docs/01-role-object-model.md` | designed: `docs/01-role-object-model.md` | missing |
-| docs/02-framework-layers.md | designed: `docs/02-framework-layers.md` | designed: `docs/02-framework-layers.md` | missing |
-| docs/03-application-user-model.md | designed: `docs/03-application-user-model.md` | designed: `docs/03-application-user-model.md` | missing |
-| docs/04-application-user-model-execution-plan.md | designed: `docs/04-application-user-model-execution-plan.md` | designed: `docs/04-application-user-model-execution-plan.md` | missing |
-| docs/05-controller-framework-and-mvc.md | designed: `docs/05-controller-framework-and-mvc.md` | designed: `docs/05-controller-framework-and-mvc.md` | missing |
-| docs/06-multiple-host-surfaces-plan.md | designed: `docs/06-multiple-host-surfaces-plan.md` | designed: `docs/06-multiple-host-surfaces-plan.md` | missing |
-| docs/07-independent-disclosure-application-plan.md | designed: `docs/07-independent-disclosure-application-plan.md` | designed: `docs/07-independent-disclosure-application-plan.md` | missing |
-| docs/08-request-selected-root-surfaces-plan.md | designed: `docs/08-request-selected-root-surfaces-plan.md` | designed: `docs/08-request-selected-root-surfaces-plan.md` | missing |
+| docs/01-role-object-model.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/02-framework-layers.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
+| docs/03-application-user-model.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/04-application-user-model-execution-plan.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
+| docs/05-controller-framework-and-mvc.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
+| docs/06-multiple-host-surfaces-plan.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/07-independent-disclosure-application-plan.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
+| docs/08-request-selected-root-surfaces-plan.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/adr/001-native-mcp-server.md | designed: `docs/adr/001-native-mcp-server.md` | designed: `docs/adr/001-native-mcp-server.md` | missing |
 | docs/adr/002-per-call-context-and-options.md | designed: `docs/adr/002-per-call-context-and-options.md` | designed: `docs/adr/002-per-call-context-and-options.md` | missing |
 | docs/adr/003-remove-the-outbound-half.md | designed: `docs/adr/003-remove-the-outbound-half.md` | designed: `docs/adr/003-remove-the-outbound-half.md` | missing |

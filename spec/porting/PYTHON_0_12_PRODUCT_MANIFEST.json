@@ -5002,200 +5002,314 @@
     {
       "path": "docs/01-role-object-model.md",
       "sha256": "6aeb6d2892176f2a583ca367cbee6bb6311c8910425be36a08b6dfefdda35edd",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/01-role-object-model.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/node-parity.test.ts",
+            "test/declarations.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained bilingual handbook expresses the native Role/Skill/Tool object model, containment and progressive disclosure without duplicating the historical Python design file; focused declaration and node tests enforce it."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/01-role-object-model.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "node_parity_test.go",
+            "manager_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained bilingual handbook expresses the native Role/Skill/Tool object model, containment and progressive disclosure without duplicating the historical Python design file; focused node and manager tests enforce it."
         }
       }
     },
     {
       "path": "docs/02-framework-layers.md",
       "sha256": "cacb5865ba004ec6e50cab3ea3199f455f81c0525d813a06cb09606a5feb59ba",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/02-framework-layers.md"
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/layering.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the bilingual native architecture document owns the current layer map and dependency rules; static layering tests enforce SDK, Host, foundation and model boundaries."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/02-framework-layers.md"
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "architecture_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the bilingual native architecture document owns the current package layer map and dependency rules; static architecture tests enforce SDK, Host, foundation and model boundaries."
         }
       }
     },
     {
       "path": "docs/03-application-user-model.md",
       "sha256": "0085704ad585294172733f75e04cbeb13111aa8d257681aeb8ba1637d560f8e7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/03-application-user-model.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/declarations.test.ts",
+            "test/server-application.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained bilingual handbook documents one lazy native application declaration, roots, publications, Channels and serving boundary; focused application-container tests enforce it."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/03-application-user-model.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "application_test.go",
+            "server/application_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained bilingual handbook documents one lazy native Application declaration, roots, publications, Channels and serving boundary; focused application-container tests enforce it."
         }
       }
     },
     {
       "path": "docs/04-application-user-model-execution-plan.md",
       "sha256": "855c8232b87d0cf3e26a49159efc7189d48680adf971e3a89b68f7a71edf64e2",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/04-application-user-model-execution-plan.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server-application.test.ts",
+            "test/runtime.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the historical execution plan is realized and documented as native declaration normalization, bound compilation, coordinated runtime projections, validated execution and Host serving; focused container/runtime tests enforce it."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/04-application-user-model-execution-plan.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/application_test.go",
+            "runtime_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the historical execution plan is realized and documented as native declaration validation, bound compilation, coordinated runtime projections, typed execution and Host serving; focused container/runtime tests enforce it."
         }
       }
     },
     {
       "path": "docs/05-controller-framework-and-mvc.md",
       "sha256": "9a73227fe34251b409c2b0c32d6e70daf34b7c974b703f2e400c60400d1daaa9",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/05-controller-framework-and-mvc.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/manager.test.ts",
+            "test/index-facade.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained native docs describe explicit declaration ownership, manager registration, immutable compiled Index and separate Host adapters; manager and Index tests enforce the realized controller boundary."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/05-controller-framework-and-mvc.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "manager_test.go",
+            "index_query_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the maintained native docs describe explicit declaration ownership, manager registration, immutable compiled Index and separate Host adapters; manager and Index tests enforce the realized controller boundary."
         }
       }
     },
     {
       "path": "docs/06-multiple-host-surfaces-plan.md",
       "sha256": "8047247d3db2900f90a25d3329196bffc04b045456424ab5067d20684b7b8269",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/06-multiple-host-surfaces-plan.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server.test.ts",
+            "test/rest.test.ts",
+            "test/publications.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the historical multi-Host plan is realized by one runtime Binding projected through MCP gateways, Prompts, Resources and explicit REST routes, as documented bilingually and enforced by focused Host tests."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/06-multiple-host-surfaces-plan.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/server_test.go",
+            "web/surface_test.go",
+            "publications_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the historical multi-Host plan is realized by one typed runtime Binding projected through MCP gateways, Prompts, Resources and explicit REST routes, as documented bilingually and enforced by focused Host tests."
         }
       }
     },
     {
       "path": "docs/07-independent-disclosure-application-plan.md",
       "sha256": "791d909264167ef7c2e6f24c2e38e5dd724eddc57690f1f9dd4b5ac22051f30b",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/07-independent-disclosure-application-plan.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server-application.test.ts",
+            "test/system-api.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the plan is realized by independent structural compilation over an unbound Index with discover/open only, Prompt support, no Runtime or Resources, and a transport-free DisclosureAPI documented in both languages."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/07-independent-disclosure-application-plan.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/application_test.go",
+            "disclosure_api_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the plan is realized by independent structural compilation over an unbound Index with discover/open only, Prompt support, no Runtime or Resources, and a transport-free DisclosureAPI documented in both languages."
         }
       }
     },
     {
       "path": "docs/08-request-selected-root-surfaces-plan.md",
       "sha256": "de093be4ba66c6fc1b36c49f56789d798168a488711d316fc9b0794c23dc1b7d",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/08-request-selected-root-surfaces-plan.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/root-selector.test.ts",
+            "test/server-launch.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the plan is realized and generalized by request-local path-selected surfaces, case-insensitive legacy root headers, identity ceilings and isolated instructions/discovery/publications, documented bilingually and tested over real HTTP."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/08-request-selected-root-surfaces-plan.md"
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/root_selector_test.go",
+            "server/launch_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the plan is realized and generalized by request-local path-selected surfaces, case-insensitive legacy root headers, identity ceilings and isolated instructions/discovery/publications, documented bilingually and tested over real HTTP."
         }
       }
     },
