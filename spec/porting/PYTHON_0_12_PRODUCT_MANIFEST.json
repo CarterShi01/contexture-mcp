@@ -5749,25 +5749,21 @@
     {
       "path": "docs/adr/018-prompt-roots-separate-user-and-model-planes.md",
       "sha256": "770b6721371d6f0cb2bc3a2e0ad613083ed5432c9b6496228ab3e110e92725f7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/018-prompt-roots-separate-user-and-model-planes.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/disclosure-prompt-plane.test.ts", "test/publications.test.ts", "test/system-api.test.ts", "test/server-application.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified promptRoots compile into one canonical Index while model discovery/open/invoke exclude them and person Prompt/goto navigation reaches the same nodes; ordinary applications retain prior behavior and selected ceilings are never widened."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/018-prompt-roots-separate-user-and-model-planes.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["publications_test.go", "disclosure_api_test.go", "gateway_recovery_test.go", "server/application_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified PromptRoots compile into one canonical Index while model discovery/open/invoke exclude them and person Prompt/goto navigation reaches the same nodes; ordinary applications retain prior behavior and selected ceilings are never widened."
         }
       }
     },
