@@ -5,9 +5,13 @@
 > governed by [FULL_PRODUCT_PARITY_PLAN.md](FULL_PRODUCT_PARITY_PLAN.md) and
 > its required Python product manifest.
 
-Status at initialization: Python is the reference implementation. TypeScript
-and Go are guarded scaffolds and truthfully implement rule 1 only. `R#` refers
-to the numbered rule in `../conformance.md`.
+Historical status at initialization: Python was the reference implementation;
+TypeScript and Go were guarded scaffolds that implemented rule 1 only. The
+table's `not-started` cells preserve that starting snapshot and are **not
+current status**. Both bindings now report `conformant` with execution evidence
+for R1–R16, and the full product manifest records every applicable row as
+verified. Public package/module release remains a separate guarded decision.
+`R#` refers to the numbered rule in `../conformance.md`.
 
 | Rule | Deliverable and observable evidence | Depends on | Risk / model | TS | Go |
 | --- | --- | --- | --- | --- | --- |
@@ -28,11 +32,9 @@ to the numbered rule in `../conformance.md`.
 | R15 | Principal, telemetry, graph, and selection are request-local; concurrency tests prove isolation; exporter failure never changes outcomes | R4, R9 | high / Terra high, use brief defaults | not-started | not-started |
 | R16 | Dependency/layering tests prove core has no MCP or HTTP SDK imports | R1 and continuously | low / Terra | not-started | not-started |
 
-“Implemented” requires focused repository tests for every evidence phrase in the
-row, passing full CI, and a manifest entry naming those tests. `in-progress`
-means code may exist but no conformance credit is claimed. Rule 16 is currently
-`not-started` in the manifests because existing scaffold layering tests are not
-yet evidence for the completed port's full core surface.
+These statuses are immutable initialization history. Current per-rule evidence
+is maintained in each binding's `conformance/specification.json`; current
+full-product completion is maintained in the generated Python product manifest.
 
 Risk/model labels select reasoning effort; they do not introduce approval
 pauses. Terra high follows the approved defaults in `PORTING_BRIEF.md` and asks
