@@ -3076,29 +3076,41 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Shared test fixture support.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/support/channels_fixture.ts"
+            "test/lifecycle.test.ts",
+            "test/server-launch.test.ts"
           ],
           "tests": [
-            "test/support/channels_fixture.ts"
+            "test/lifecycle.test.ts",
+            "test/server-launch.test.ts",
+            "test/server-application.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "The Python subprocess fixture maps to native in-process fixtures that prove an application-owned dependency reaches Tools, nominal Channels open before serving and close after active work, raw handles are not lifecycle-managed, and Prompts/Resources share the compiled application."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "internal/testsupport/channels_fixture.go"
+            "channels_test.go",
+            "server/launch_test.go"
           ],
           "tests": [
-            "internal/testsupport/channels_fixture.go"
+            "channels_test.go",
+            "server/launch_test.go",
+            "server/application_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "The Python subprocess fixture maps to native in-process fixtures that prove an application-owned dependency reaches Tools, Channels open before serving and close after active work, raw handles are not lifecycle-managed, and Prompts/Resources share the compiled application."
         }
       }
     },

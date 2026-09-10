@@ -85,7 +85,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | Python path | Kind | Public symbols | TypeScript | Go | Status |
 | --- | --- | --- | --- | --- | --- |
 | tests/__init__.py | test | — | verified: `package.json` | verified: `go.mod` | verified |
-| tests/channels_fixture.py | test | — | designed: `test/support/channels_fixture.ts` | designed: `internal/testsupport/channels_fixture.go` | missing |
+| tests/channels_fixture.py | test | — | verified: `test/lifecycle.test.ts`, `test/server-launch.test.ts` | verified: `channels_test.go`, `server/launch_test.go` | verified |
 | tests/golden.py | test | — | designed: `test/support/golden.ts` | designed: `internal/testsupport/golden.go` | missing |
 | tests/http_fixture.py | test | — | designed: `test/support/http_fixture.ts` | designed: `internal/testsupport/http_fixture.go` | missing |
 | tests/serving.py | test | — | designed: `test/support/serving.ts` | designed: `internal/testsupport/serving.go` | missing |
