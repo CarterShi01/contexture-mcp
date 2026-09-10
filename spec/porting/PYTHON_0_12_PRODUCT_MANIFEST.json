@@ -4743,175 +4743,259 @@
     {
       "path": "contexture/cli/templates/project/.gitignore",
       "sha256": "f88478187cb5c54ae55059302a4d43c74099c7e15c0c255b4e4cea2389aebf06",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/.gitignore"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native inline project template emits a package-appropriate .gitignore, contains no unresolved variables, refuses overwrite, and succeeds through the packed generated-project consumer."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/.gitignore"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native inline project template emits a package-appropriate .gitignore, contains no unresolved variables, refuses overwrite, and succeeds through generated-project and external-module consumers."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/README.md.tmpl",
       "sha256": "288af77c6decd2d892728d253e221f2cb49f5d3810b407bc66dfbb3a5dd8e2f7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/README.md.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the generated native README documents install, check, list, inspect and serve workflows that the packed scaffold consumer executes."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/README.md.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the generated native README documents check, list, inspect, call and serve workflows that generated-project tests execute."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/assistant/__init__.py.tmpl",
       "sha256": "a962b40c3a53b31897471a6d11480434e036e7e390884ea7a49a78edad427cbe",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/assistant/__init__.py.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Python's package initializer maps to the native assistant/app.js composition module in the inline template; generated exports load, compile and run from an installed package."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/assistant/__init__.py.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Python's package initializer maps to the native cmd/assistant/main.go composition module in the inline template; generated declarations compile and run from a separate module."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/assistant/role.py.tmpl",
       "sha256": "f16585152f7a33bc0fccd321dfea9ddb866492fe46fc9af23dd848a69d7c0ab7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/assistant/role.py.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated assistant/app.js template declares the derived root Role and lazy members, and the packed scaffold consumer discovers and opens it."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/assistant/role.py.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated cmd/assistant/main.go template declares the derived root Role and lazy members, and generated-project workflows discover and open it."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/assistant/skills.py.tmpl",
       "sha256": "2a0f0593ab8dbde07579d3fb778523ad5063f5bd581496f9a8f9b7c7165be8c1",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/assistant/skills.py.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated assistant/app.js template declares a procedure Skill with a canonical Tool use, and packed inspection exercises it."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/assistant/skills.py.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated cmd/assistant/main.go template declares a procedure Skill with a canonical Tool use, and generated inspection exercises it."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/assistant/tools.py.tmpl",
       "sha256": "4e2a8c042d840f82934f71289eb64c144d0086537261c131565d642e8059265b",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/assistant/tools.py.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated assistant/app.js template declares a Zod-validated read-only ping Tool and the packed consumer calls it with typed JSON input."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/assistant/tools.py.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the native consolidated cmd/assistant/main.go template declares a typed read-only ping Tool and generated workflows call it with JSON input."
         }
       }
     },
     {
       "path": "contexture/cli/templates/project/pyproject.toml.tmpl",
       "sha256": "9d4d56b48e973879379cd50baf12063b0997094c3df26e967bd2328b40d88160",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/cli/templates/project/pyproject.toml.tmpl"
+            "src/cli/scaffold.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/scaffold.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Python pyproject metadata maps to a generated native package.json with Contexture app target, dependencies and check/list/inspect/serve scripts; installation and all local workflows are verified."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "cmd/contexture/templates/project/pyproject.toml.tmpl"
+            "cmd/contexture/scaffold.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "cmd/contexture/scaffold_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Python pyproject metadata maps to a generated native go.mod and static cmd/assistant entry point; module tidy and all local workflows are verified from a separate generated project."
         }
       }
     },
