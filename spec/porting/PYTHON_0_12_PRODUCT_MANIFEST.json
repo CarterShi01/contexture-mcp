@@ -6190,50 +6190,42 @@
     {
       "path": "docs/handbook.md",
       "sha256": "3a6e3085e67f18b44a6af912d54eb6fd0c752ee85589b9919c9824cbeac7cef9",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/handbook.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["package.json", "scripts/verify-conformance.mjs", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified the comprehensive English native handbook documents declarations, compilation, disclosure, execution, Channels, identity, telemetry, selections, Prompts, Resources, REST, CLI, inspection, demo, Host serving and guarded release workflows; complete checks and both packed consumers exercise them."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/handbook.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["go.mod", "internal/conformancecheck/main.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified the comprehensive English native handbook documents declarations, compilation, disclosure, execution, Channels, identity, telemetry, selections, Prompts, Resources, REST, CLI, inspection, demo, Host serving and guarded release workflows; conformance and external-module gates exercise them."
         }
       }
     },
     {
       "path": "docs/handbook.zh-CN.md",
       "sha256": "c5d274dff6238b232421bae5f28049115d55403421049750b5105bb56e251206",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/handbook.zh-CN.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.zh-CN.md"],
+          "tests": ["package.json", "scripts/verify-conformance.mjs", "scripts/verify-package-consumer.mjs", "scripts/verify-scaffold-consumer.mjs"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified the maintained Simplified Chinese handbook mirrors the comprehensive native authoring, runtime, Host, CLI, demo and release guidance while preserving language-native terminology; complete checks and packed consumers cover the documented product."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/handbook.zh-CN.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.zh-CN.md"],
+          "tests": ["go.mod", "internal/conformancecheck/main.go", "internal/releasecheck/module_consumer_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified the maintained Simplified Chinese handbook mirrors the comprehensive native authoring, runtime, Host, CLI, demo and release guidance while preserving language-native terminology; conformance and external-module gates cover the documented product."
         }
       }
     },
