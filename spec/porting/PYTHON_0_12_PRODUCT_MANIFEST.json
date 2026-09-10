@@ -5707,25 +5707,21 @@
     {
       "path": "docs/adr/016-register-compile-disclose.md",
       "sha256": "9a9baa07948f2d991a79e4dc477d0143bffd6eb6b464d27508d1e1f22542e558",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/016-register-compile-disclose.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["test/manager.test.ts", "test/index-facade.test.ts", "test/disclosure.test.ts", "test/tool-parity.test.ts", "test/server-application.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified explicit registration owns declarations and Channels, compilation produces a fresh immutable Index with canonical addresses, whole-forest validation and one Binding per Tool, and Disclosure owns only request-time presentation over that snapshot."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/016-register-compile-disclose.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["manager_test.go", "index_query_test.go", "disclosure_test.go", "tool_parity_test.go", "server/application_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified explicit registration owns declarations and Channels, compilation produces a fresh immutable Index with canonical addresses, whole-forest validation and one typed Binding per Tool, and Disclosure owns only request-time presentation over that snapshot."
         }
       }
     },
