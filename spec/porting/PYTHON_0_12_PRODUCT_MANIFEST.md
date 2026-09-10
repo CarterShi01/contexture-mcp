@@ -148,11 +148,11 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/adr/003-remove-the-outbound-half.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/adr/005-remove-the-target-adapters.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
-| docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md | designed: `docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md` | designed: `docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md` | missing |
-| docs/adr/007-the-role-axis-is-lazy-too.md | designed: `docs/adr/007-the-role-axis-is-lazy-too.md` | designed: `docs/adr/007-the-role-axis-is-lazy-too.md` | missing |
-| docs/adr/008-who-may-open-a-node.md | designed: `docs/adr/008-who-may-open-a-node.md` | designed: `docs/adr/008-who-may-open-a-node.md` | missing |
-| docs/adr/009-the-protocol-plane-is-not-the-object-model.md | designed: `docs/adr/009-the-protocol-plane-is-not-the-object-model.md` | designed: `docs/adr/009-the-protocol-plane-is-not-the-object-model.md` | missing |
-| docs/adr/010-the-directories-are-the-architecture.md | designed: `docs/adr/010-the-directories-are-the-architecture.md` | designed: `docs/adr/010-the-directories-are-the-architecture.md` | missing |
+| docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/adr/007-the-role-axis-is-lazy-too.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/adr/008-who-may-open-a-node.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/adr/009-the-protocol-plane-is-not-the-object-model.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
+| docs/adr/010-the-directories-are-the-architecture.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/adr/011-identity-is-the-frameworks-permission-is-not.md | designed: `docs/adr/011-identity-is-the-frameworks-permission-is-not.md` | designed: `docs/adr/011-identity-is-the-frameworks-permission-is-not.md` | missing |
 | docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md | designed: `docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md` | designed: `docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md` | missing |
 | docs/adr/013-a-constructor-is-the-declaration.md | designed: `docs/adr/013-a-constructor-is-the-declaration.md` | designed: `docs/adr/013-a-constructor-is-the-declaration.md` | missing |

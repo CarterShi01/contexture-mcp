@@ -5421,125 +5421,105 @@
     {
       "path": "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md",
       "sha256": "ff20fe1a9ba6477797f293ddf7b02899a74546f554687da46fb9726f904a76ae",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/errors.test.ts", "test/gateway-wire.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified one public error vocabulary carries immutable lookup and wrong-door facts while Gateway alone renders agent recovery prose; bilingual handbook and focused error/wire tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["error_vocabulary_test.go", "gateway_recovery_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified one public error/sentinel vocabulary carries typed lookup and wrong-door facts while Gateway alone renders agent recovery prose; bilingual handbook and focused tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/007-the-role-axis-is-lazy-too.md",
       "sha256": "24812a58de296011dfc7a5c5c1810dd2f60a586cbe184e228ce43cfeec23de30",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/007-the-role-axis-is-lazy-too.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/disclosure.test.ts", "test/manager.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified root and nested Role factories remain lazy until compilation and disclosure reveals only one containment level at a time; maintained bilingual docs and focused tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/007-the-role-axis-is-lazy-too.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["disclosure_test.go", "manager_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified root and nested Role factories remain lazy until compilation and disclosure reveals only one containment level at a time; maintained bilingual docs and focused tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/008-who-may-open-a-node.md",
       "sha256": "7f6a4b0ad26d4ef6041ab6b548d926eb1f42143cad224e2226014ec7b571c235",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/008-who-may-open-a-node.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/disclosure-prompt-plane.test.ts", "test/publications.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified Prompt model-open policy separates person and model doors without widening selected surfaces, while ordinary nodes remain available to both; bilingual docs and focused Prompt-plane tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/008-who-may-open-a-node.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["publications_test.go", "disclosure_api_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified Prompt model-open policy separates person and model doors without widening selected surfaces, while ordinary nodes remain available to both; bilingual docs and focused publication tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/009-the-protocol-plane-is-not-the-object-model.md",
       "sha256": "03f9de5c56202c5688b75e1791779d0e8d446fc5303a1285646880e208df3e11",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/009-the-protocol-plane-is-not-the-object-model.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/layering.test.ts", "test/foundation-vocabulary.test.ts", "test/server.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified SDK-free Prompt/Resource/gateway declarations are distinct from Role/Skill/Tool object-model nodes and only server projects them onto MCP primitives; architecture and focused tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/009-the-protocol-plane-is-not-the-object-model.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["architecture_test.go", "foundation_vocabulary_test.go", "server/server_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified SDK-free Prompt/Resource/gateway declarations are distinct from Role/Skill/Tool object-model nodes and only server projects them onto MCP primitives; architecture and focused tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/010-the-directories-are-the-architecture.md",
       "sha256": "398398904a6a30e6cb1df13321d11a6da7be6caa709db8c9e1938fcdad3118e3",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/010-the-directories-are-the-architecture.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/layering.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified the source directory and package-entry structure encode foundation, model, MCP interface, server, web, CLI and demo boundaries; static layering tests enforce the maintained bilingual architecture map."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/010-the-directories-are-the-architecture.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["architecture_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified the package directory structure encodes foundation, model, MCP interface, server, web, CLI and demo boundaries; static architecture tests enforce the maintained bilingual package map."
         }
       }
     },
