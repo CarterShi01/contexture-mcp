@@ -3121,29 +3121,45 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Shared test fixture support.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/support/golden.ts"
+            "conformance/golden/discover.json",
+            "conformance/golden/open.json",
+            "conformance/golden/refusals.json",
+            "conformance/golden/commands.json",
+            "conformance/golden/reads.json"
           ],
           "tests": [
-            "test/support/golden.ts"
+            "test/golden-disclosure.test.ts",
+            "scripts/verify-conformance.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "The Python capture helper maps to the checked-in normative conformance corpus and native golden replay covering gateway inventory, instructions, discovery, opens, refusals, Prompts, Resources, completion and exact demo values; complete npm gates pass."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "internal/testsupport/golden.go"
+            "conformance/golden/discover.json",
+            "conformance/golden/open.json",
+            "conformance/golden/refusals.json",
+            "conformance/golden/commands.json",
+            "conformance/golden/reads.json"
           ],
           "tests": [
-            "internal/testsupport/golden.go"
+            "golden_test.go",
+            "internal/conformancecheck/main.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "The Python capture helper maps to the checked-in normative conformance corpus and native golden replay covering gateway inventory, instructions, discovery, opens, refusals, Prompts, Resources, completion and exact demo values; race-enabled Go gates pass."
         }
       }
     },
