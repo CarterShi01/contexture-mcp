@@ -4590,50 +4590,74 @@
     {
       "path": "README.md",
       "sha256": "a01562b9912fe5c8c02844136953bf9b040cca87b0add7fcc35d37b4718c0966",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "README.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified English onboarding documents status and release guard, native declarations, server/REST boundaries, inspection, project creation, Host configuration, complete checks, public entry points, repository map and license; packed consumers execute the documented surfaces."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "README.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/releasecheck/module_consumer_test.go",
+            "internal/conformancecheck/main.go"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified English onboarding documents status and release guard, native declarations, server/REST boundaries, inspection, project creation, Host configuration, complete checks, public packages, repository map and license; the external module executes documented surfaces."
         }
       }
     },
     {
       "path": "README.zh-CN.md",
       "sha256": "a99e0b6bc98dae8a2ea57c66167a7acbbcdfeb12f05298868f8eeefbf05dfe89",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "README.zh-CN.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the maintained Simplified Chinese onboarding mirrors status, release guard, native declarations, serving and REST boundaries, inspection, project and Host workflows, complete checks, public entry points, repository map and license."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "README.zh-CN.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/releasecheck/module_consumer_test.go",
+            "internal/conformancecheck/main.go"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the maintained Simplified Chinese onboarding mirrors status, release guard, native declarations, serving and REST boundaries, inspection, project and Host workflows, complete checks, public packages, repository map and license."
         }
       }
     },

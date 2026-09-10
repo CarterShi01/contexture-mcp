@@ -124,8 +124,8 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | CHANGELOG.md | verified: `CHANGELOG.md` | verified: `CHANGELOG.md` | verified |
 | CONTRIBUTING.md | verified: `CONTRIBUTING.md` | verified: `CONTRIBUTING.md` | verified |
 | LICENSE | verified: `LICENSE`, `package.json` | verified: `LICENSE` | verified |
-| README.md | designed: `README.md` | designed: `README.md` | missing |
-| README.zh-CN.md | designed: `README.zh-CN.md` | designed: `README.zh-CN.md` | missing |
+| README.md | verified: `README.md` | verified: `README.md` | verified |
+| README.zh-CN.md | verified: `README.zh-CN.md` | verified: `README.zh-CN.md` | verified |
 | RELEASING.md | designed: `RELEASING.md` | designed: `RELEASING.md` | missing |
 | SECURITY.md | designed: `SECURITY.md` | designed: `SECURITY.md` | missing |
 | contexture/cli/templates/project/.gitignore | designed: `src/cli/templates/project/.gitignore` | designed: `cmd/contexture/templates/project/.gitignore` | missing |
