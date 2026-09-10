@@ -5728,25 +5728,21 @@
     {
       "path": "docs/adr/017-application-is-a-lazy-declaration.md",
       "sha256": "7df067fe11aec709a2e751eab4e2920a476aae5d7342dc4dc66c56f65cc690bd",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/017-application-is-a-lazy-declaration.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md", "docs/architecture.md"],
+          "tests": ["test/declarations.test.ts", "test/server-application.test.ts", "test/project.test.ts", "test/cli.test.ts", "test/layering.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md", "docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified defineApplication/Contexture is one lazy SDK-neutral value containing root factories, Channels, Prompts and Resources; each compiler creates a fresh graph, and CLI plus programmatic paths consume the same declaration without import-time construction."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/017-application-is-a-lazy-declaration.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md", "docs/architecture.md"],
+          "tests": ["application_test.go", "server/application_test.go", "cli/application_test.go", "cmd/contexture/main_test.go", "architecture_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md", "docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified ApplicationDeclaration/Contexture is one lazy SDK-neutral typed value containing root factories, Channels, Prompts and Resources; each compiler creates a fresh graph, and CLI plus programmatic paths consume the same declaration without package-init construction."
         }
       }
     },
