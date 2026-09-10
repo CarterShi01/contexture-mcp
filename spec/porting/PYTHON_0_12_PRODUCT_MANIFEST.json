@@ -4198,29 +4198,49 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/stdio_server.test.ts"
+            "test/server-launch.test.ts",
+            "test/gateway-wire.test.ts"
           ],
           "tests": [
-            "test/stdio_server.test.ts"
+            "test/server-launch.test.ts",
+            "test/gateway-wire.test.ts",
+            "test/golden-disclosure.test.ts",
+            "test/completion.test.ts",
+            "test/publications.test.ts",
+            "test/resource-wire.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified official stdio startup and instructions, exact fixed gateway with no business Tools, door classification and refusal, full diagnosis flow, progressive skeleton, lazy Resources, Prompt/goto navigation, ranked completion, script-safe stdout, packed scaffold consumer, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "stdio_server_test.go"
+            "server/launch_test.go",
+            "server/gateway_wire_test.go"
           ],
           "tests": [
-            "stdio_server_test.go"
+            "server/launch_test.go",
+            "server/gateway_wire_test.go",
+            "golden_test.go",
+            "server/completion_test.go",
+            "publications_test.go",
+            "server/resource_wire_test.go",
+            "internal/releasecheck/module_consumer_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified official stdio startup and instructions, exact fixed gateway with no business Tools, door classification and refusal, full diagnosis flow, progressive skeleton, lazy Resources, Prompt/goto navigation, ranked completion, script-safe output, external module consumer, race-enabled Go gates."
         }
       }
     },
