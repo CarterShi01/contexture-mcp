@@ -2700,25 +2700,40 @@
         "NavigationTools"
       ],
       "responsibility": "MCP server surface implementation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/surface/navigation.ts"
+            "src/server/index.ts",
+            "src/server/application.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server-application.test.ts",
+            "test/system-api.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified disclosure-only compilation installs exactly the fixed discover/open gateway over an independent unbound Index, with no invoke doors or Resources, through focused tests, packed consumer behavior, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/surface/navigation.go"
+            "server/application.go",
+            "server/server.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/application_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified disclosure-only compilation installs exactly the fixed discover/open gateway over an independent unbound Index, with no invoke doors or Resources, through focused tests, external module behavior, and race-enabled Go gates."
         }
       }
     },
