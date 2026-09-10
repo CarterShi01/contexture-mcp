@@ -5791,25 +5791,21 @@
     {
       "path": "docs/adr/019-request-selects-complete-root-surfaces.md",
       "sha256": "d7c80d54c48f622181bb644bf41419958e54acfd7c4bfee74cb31da33a587708",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/019-request-selects-complete-root-surfaces.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/root-selector.test.ts", "test/root-selection.test.ts", "test/server-launch.test.ts", "test/publications.test.ts", "test/runtime.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified immutable per-request selection over one canonical Index, compatibility all-surface behavior, exact roots plus generalized path anchors, caller attenuation intersected with authenticated ceilings, and consistent stateless isolation across instructions, gateway, publications, completion and Tool graph context."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/019-request-selects-complete-root-surfaces.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["server/root_selector_test.go", "root_selection_test.go", "server/launch_test.go", "publications_test.go", "runtime_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified immutable per-request selection over one canonical Index, compatibility all-surface behavior, exact roots plus generalized path anchors, caller attenuation intersected with authenticated ceilings, and consistent stateless isolation across instructions, gateway, publications, completion and Tool graph context."
         }
       }
     },
