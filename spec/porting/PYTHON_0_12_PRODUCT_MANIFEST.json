@@ -4664,25 +4664,38 @@
     {
       "path": "RELEASING.md",
       "sha256": "9f90f131ae203f9181975706458e05fbb696cde06b729a311b951ee56fdc182b",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "RELEASING.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "package.json",
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "RELEASING.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified a guarded clean-master candidate flow with version/tag equality, changelog and bilingual docs, complete npm gate, tarball inspection, installed and scaffold consumers, OIDC Trusted Publishing, protected approval, and immutable version tags."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "RELEASING.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/conformancecheck/main.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "RELEASING.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified a guarded clean-master candidate flow with changelog and bilingual docs, conformance/race/vet/gofmt gates, external module consumer, protected annotated tag workflow, public proxy verification, and immutable semantic-version tags."
         }
       }
     },
