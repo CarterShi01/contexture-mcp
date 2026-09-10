@@ -76,7 +76,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | contexture/server/surface/prompts.py | source | Prompts, open_by_name | verified: `src/server/surface/publications.ts`, `src/server/index.ts` | verified: `server/surface/publications.go`, `server/server.go` | verified |
 | contexture/server/surface/resources.py | source | Resources | verified: `src/server/surface/publications.ts`, `src/server/index.ts` | verified: `server/surface/publications.go`, `server/server.go` | verified |
 | contexture/server/surface/tools.py | source | Tools | verified: `src/server/index.ts`, `src/core/model/system-api.ts` | verified: `server/server.go`, `core/model/gateway.go` | verified |
-| contexture/web/__init__.py | source | Authenticator, RestSurface, Route, WebRequest | designed: `src/web/index.ts` | designed: `web/index.go` | missing |
+| contexture/web/__init__.py | source | Authenticator, RestSurface, Route, WebRequest | verified: `src/web/index.ts`, `package.json` | verified: `web/route.go`, `web/surface.go` | verified |
 | contexture/web/route.py | source | Route | verified: `src/web/route.ts` | verified: `web/route.go` | verified |
 | contexture/web/surface.py | source | Authenticator, RestSurface, WebRequest | verified: `src/web/surface.ts` | verified: `web/surface.go` | verified |
 

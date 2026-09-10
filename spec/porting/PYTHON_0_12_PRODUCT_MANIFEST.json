@@ -2904,25 +2904,39 @@
         "WebRequest"
       ],
       "responsibility": "Explicit REST/ASGI adapter.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/web/index.ts"
+            "src/web/index.ts",
+            "package.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/rest.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the @contexture/mcp/web package facade exports native route, authenticator, request, router and surface contracts through focused REST tests, packed external consumer execution, bilingual docs, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "web/index.go"
+            "web/route.go",
+            "web/surface.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "web/surface_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the importable web package facade exports native route, authenticator, request, router and surface contracts through focused REST tests, external module consumer execution, bilingual docs, and race-enabled Go gates."
         }
       }
     },
