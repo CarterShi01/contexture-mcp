@@ -2649,25 +2649,45 @@
         "translated"
       ],
       "responsibility": "MCP server surface implementation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/surface/surface.ts"
+            "src/server/surface/publications.ts",
+            "src/server/index.ts",
+            "package.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/publications.test.ts",
+            "test/server.test.ts",
+            "test/gateway-wire.test.ts",
+            "test/resource-wire.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the prevalidated Publications composite, runtime and disclosure-only variants, public Host-name mapping, selected Prompt/Resource projection, official SDK installation, dedicated packed subpath consumer, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/surface/surface.go"
+            "server/surface/publications.go",
+            "server/application.go",
+            "server/server.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "publications_test.go",
+            "server/server_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the prevalidated Publications composite, runtime and disclosure-only variants, public Host-name mapping, selected Prompt/Resource projection, official SDK installation, external module consumer, and race-enabled Go gates."
         }
       }
     },
