@@ -2547,25 +2547,41 @@
         "RootSelector"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/root_selector.ts"
+            "src/server/root-selector.ts",
+            "src/server/server.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/root-selector.test.ts",
+            "test/server-launch.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified fixed and case-insensitive header selectors, limits, identity ceilings, legacy aliases, generalized path attenuation, request-local adapter and instructions isolation, packed consumer behavior, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/root_selector.go"
+            "server/root_selector.go",
+            "server/launch.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/root_selector_test.go",
+            "server/launch_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified fixed and case-insensitive header selectors, limits, identity ceilings, legacy aliases, generalized path attenuation, authenticated request-local adapter and instructions isolation, external module consumer, and race-enabled Go gates."
         }
       }
     },
