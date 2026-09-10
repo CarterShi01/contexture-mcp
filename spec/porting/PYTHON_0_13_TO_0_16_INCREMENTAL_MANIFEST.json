@@ -129,7 +129,7 @@
       "tree": "3d47fd088581524f4884bf89609df1dc5134bc81",
       "previousCommit": "471d0f75c6be0e5cff104f0d0c61f10957da792a",
       "headline": "Symmetric process members and instruction emphasis",
-      "status": "pending",
+      "status": "verified",
       "deltaPaths": [
         "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/__init__.pyi", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "A\tcontexture/core/emphasis.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/index.py", "M\tcontexture/core/model/role.py", "M\tcontexture/core/model/system_api.py", "M\tcontexture/inspection.py", "M\tdocs/01-role-object-model.md", "A\tdocs/09-process-members-execution-plan.md", "M\tdocs/adr/022-inspect-is-a-non-activating-structural-view.md", "A\tdocs/adr/023-process-members-and-instruction-emphasis.md", "M\tdocs/handbook.md", "M\tdocs/handbook.zh-CN.md", "M\tpyproject.toml", "M\tspec/conformance.md", "M\tspec/golden/tools.json", "M\tspec/model.md", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.json", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.md", "A\ttests/test_process.py", "R054\ttests/test_publication_integration.py\ttests/test_process_integration.py", "M\ttests/test_public_api.py", "D\ttests/test_publication.py", "M\ttests/typing/consumer.py", "A\ttests/typing/process_members.py", "M\tuv.lock"
       ],
@@ -141,9 +141,19 @@
           "productAssets": ["README.md", "README.zh-CN.md", "docs/01-role-object-model.md", "docs/09-process-members-execution-plan.md", "docs/adr/023-process-members-and-instruction-emphasis.md", "docs/handbook.md", "docs/handbook.zh-CN.md", "spec/model.md"],
           "typescriptTargets": ["src/core/foundation/emphasis.ts", "src/core/model/role.ts", "src/core/model/compiler.ts", "src/core/model/system-api.ts", "src/inspection.ts"],
           "goTargets": ["core/foundation/emphasis.go", "core/model/role.go", "core/model/compiler.go", "core/model/gateway.go", "inspection/inspection.go"],
-          "typescriptEvidence": [],
-          "goEvidence": [],
-          "status": "pending"
+          "typescriptEvidence": [
+            "pushed commit 9a601c0f95f96e84346eebc3953d62b37b05f07f",
+            "distinct branded PreProcess and PostProcess declarations, legacy Publication removal, exact containment and branch order, manager snapshots, selection, active instruction composition, inspection, and atomic hidden-card evidence: test/role-process.test.ts and test/role-publication.test.ts",
+            "public bindingInstruction and negative typing plus packed consumer evidence: test/public-api.test.ts, test/declarations.test.ts, and scripts/verify-package-consumer.mjs",
+            "full npm run check passed with conformance, format, lint, typecheck, 236 tests, build, packed package consumer, and scaffold consumer"
+          ],
+          "goEvidence": [
+            "pushed commit 19ee1650a7229407cab63a44913ba5c2b2fa7b0f",
+            "strong PreProcess and PostProcess identities, exact containment and branch order, process roots, manager snapshots, fresh compilation, selection, active instruction composition, inspection, and atomic hidden-card evidence: process_test.go and process_integration_test.go",
+            "public BindingInstruction, strong parent identity, disclosure-only behavior, and external module consumer evidence: public_api_test.go, compiler_test.go, and internal/releasecheck/module_consumer_test.go",
+            "full conformancecheck, go test -race ./..., go vet ./..., releasecheck v0.16.0-rc.1, and gofmt cleanliness passed"
+          ],
+          "status": "verified"
         }
       ]
     }
