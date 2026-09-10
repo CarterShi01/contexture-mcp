@@ -3170,29 +3170,39 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Shared test fixture support.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/support/http_fixture.ts"
+            "test/server-launch.test.ts"
           ],
           "tests": [
-            "test/support/http_fixture.ts"
+            "test/server-launch.test.ts",
+            "test/gateway-wire.test.ts",
+            "test/resource-wire.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "The Python subprocess fixture maps to native real-listener tests covering bearer identity, complete Principal propagation, request-local selected surfaces, generated instructions, fixed gateway calls, Prompts, Resources, shutdown, and HTTP policy."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "internal/testsupport/http_fixture.go"
+            "server/launch_test.go"
           ],
           "tests": [
-            "internal/testsupport/http_fixture.go"
+            "server/launch_test.go",
+            "server/gateway_wire_test.go",
+            "server/resource_wire_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "The Python subprocess fixture maps to native real-listener tests covering bearer identity, complete Principal propagation, request-local selected surfaces, generated instructions, fixed gateway calls, Prompts, Resources, shutdown, and HTTP policy."
         }
       }
     },

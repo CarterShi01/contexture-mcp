@@ -87,7 +87,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/__init__.py | test | — | verified: `package.json` | verified: `go.mod` | verified |
 | tests/channels_fixture.py | test | — | verified: `test/lifecycle.test.ts`, `test/server-launch.test.ts` | verified: `channels_test.go`, `server/launch_test.go` | verified |
 | tests/golden.py | test | — | verified: `conformance/golden/discover.json`, `conformance/golden/open.json`, `conformance/golden/refusals.json`, `conformance/golden/commands.json`, `conformance/golden/reads.json` | verified: `conformance/golden/discover.json`, `conformance/golden/open.json`, `conformance/golden/refusals.json`, `conformance/golden/commands.json`, `conformance/golden/reads.json` | verified |
-| tests/http_fixture.py | test | — | designed: `test/support/http_fixture.ts` | designed: `internal/testsupport/http_fixture.go` | missing |
+| tests/http_fixture.py | test | — | verified: `test/server-launch.test.ts` | verified: `server/launch_test.go` | verified |
 | tests/serving.py | test | — | designed: `test/support/serving.ts` | designed: `internal/testsupport/serving.go` | missing |
 | tests/test_application.py | test | — | verified: `test/declarations.test.ts`, `test/server-application.test.ts` | verified: `application_test.go` | verified |
 | tests/test_capabilities.py | test | — | designed: `test/capabilities.test.ts` | designed: `capabilities_test.go` | missing |
