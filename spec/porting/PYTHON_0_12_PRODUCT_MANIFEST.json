@@ -5639,25 +5639,47 @@
     {
       "path": "docs/adr/014-navigation-is-part-of-the-kernel.md",
       "sha256": "7ace1adfff39ed6ec9278010f48340a2836524435775f9b1f6c84abb96fdf483",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/014-navigation-is-part-of-the-kernel.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/disclosure.test.ts",
+            "test/node-parity.test.ts",
+            "test/system-api.test.ts",
+            "test/layering.test.ts"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified Disclosure, selected graph, node card rendering and fixed Gateway behavior live in the SDK-neutral kernel; nodes own kind-specific payloads, framework gateways are not business Tools, refusals are kernel-owned, and the full navigation trace is tested without a Host SDK."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/014-navigation-is-part-of-the-kernel.md"
+            "docs/architecture.md",
+            "docs/handbook.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "disclosure_test.go",
+            "node_parity_test.go",
+            "gateway_recovery_test.go",
+            "architecture_test.go"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified Disclosure, selected graph, node card rendering and fixed Gateway behavior live in SDK-neutral core/model; nodes own kind-specific payloads, framework gateways are not business Tools, refusals are kernel-owned, and navigation is tested without the MCP SDK."
         }
       }
     },
