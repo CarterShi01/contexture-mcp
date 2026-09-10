@@ -3876,29 +3876,43 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/project_channels.test.ts"
+            "test/project.test.ts",
+            "test/lifecycle.test.ts"
           ],
           "tests": [
-            "test/project_channels.test.ts"
+            "test/project.test.ts",
+            "test/lifecycle.test.ts",
+            "test/cli.test.ts",
+            "scripts/verify-scaffold-consumer.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified one complete native application declaration owns optional Channels, legacy project shapes cannot conflict or escape the project, declared lifecycle opens before calls and closes after serving, and packed scaffold projects exercise the same loader."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "project_channels_test.go"
+            "cli/application_test.go",
+            "cmd/contexture/main_test.go"
           ],
           "tests": [
-            "project_channels_test.go"
+            "cli/application_test.go",
+            "cmd/contexture/main_test.go",
+            "cmd/contexture/scaffold_test.go",
+            "channels_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified the statically linked native Application owns optional Channels, command project boundaries cannot escape the nearest module, lifecycle opens before calls and closes after serving, and generated assistant projects exercise the same runner."
         }
       }
     },

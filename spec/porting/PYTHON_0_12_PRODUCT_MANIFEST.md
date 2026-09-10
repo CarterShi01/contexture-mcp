@@ -103,7 +103,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
 | tests/test_messages.py | test | — | verified: `test/messages.test.ts` | verified: `server/messages/messages_test.go`, `server/completion_test.go`, `server/instructions/instructions_test.go` | verified |
 | tests/test_oc_goal_case_study.py | test | — | not-applicable | not-applicable | not-applicable |
-| tests/test_project_channels.py | test | — | designed: `test/project_channels.test.ts` | designed: `project_channels_test.go` | missing |
+| tests/test_project_channels.py | test | — | verified: `test/project.test.ts`, `test/lifecycle.test.ts` | verified: `cli/application_test.go`, `cmd/contexture/main_test.go` | verified |
 | tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | verified: `test/public-api.test.ts` | verified: `public_api_test.go` | verified |
 | tests/test_root_selection.py | test | — | verified: `test/root-selection.test.ts`, `test/root-selector.test.ts`, `test/disclosure-prompt-plane.test.ts` | verified: `root_selection_test.go` | verified |
 | tests/test_runtime.py | test | — | verified: `test/runtime.test.ts`, `test/graph-context.test.ts` | verified: `runtime_test.go`, `graph_context_test.go` | verified |
