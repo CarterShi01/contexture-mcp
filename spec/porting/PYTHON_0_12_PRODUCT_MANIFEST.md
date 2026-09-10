@@ -143,11 +143,11 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/06-multiple-host-surfaces-plan.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/07-independent-disclosure-application-plan.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
 | docs/08-request-selected-root-surfaces-plan.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
-| docs/adr/001-native-mcp-server.md | designed: `docs/adr/001-native-mcp-server.md` | designed: `docs/adr/001-native-mcp-server.md` | missing |
-| docs/adr/002-per-call-context-and-options.md | designed: `docs/adr/002-per-call-context-and-options.md` | designed: `docs/adr/002-per-call-context-and-options.md` | missing |
-| docs/adr/003-remove-the-outbound-half.md | designed: `docs/adr/003-remove-the-outbound-half.md` | designed: `docs/adr/003-remove-the-outbound-half.md` | missing |
-| docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md | designed: `docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md` | designed: `docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md` | missing |
-| docs/adr/005-remove-the-target-adapters.md | designed: `docs/adr/005-remove-the-target-adapters.md` | designed: `docs/adr/005-remove-the-target-adapters.md` | missing |
+| docs/adr/001-native-mcp-server.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
+| docs/adr/002-per-call-context-and-options.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/adr/003-remove-the-outbound-half.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
+| docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
+| docs/adr/005-remove-the-target-adapters.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md | designed: `docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md` | designed: `docs/adr/006-errors-carry-facts-and-the-contract-is-one-module.md` | missing |
 | docs/adr/007-the-role-axis-is-lazy-too.md | designed: `docs/adr/007-the-role-axis-is-lazy-too.md` | designed: `docs/adr/007-the-role-axis-is-lazy-too.md` | missing |
 | docs/adr/008-who-may-open-a-node.md | designed: `docs/adr/008-who-may-open-a-node.md` | designed: `docs/adr/008-who-may-open-a-node.md` | missing |

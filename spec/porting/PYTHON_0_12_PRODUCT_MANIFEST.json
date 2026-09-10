@@ -5316,125 +5316,105 @@
     {
       "path": "docs/adr/001-native-mcp-server.md",
       "sha256": "c752c42ce32b7fedef0aca1c96e646923f3fce0be501ec94bdcaf44a3dc1bf88",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/001-native-mcp-server.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/server.test.ts", "test/layering.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified native official MCP SDK composition behind an SDK-neutral core, with no SDK subclassing or business Tool registration; maintained bilingual architecture and focused server/layering tests supersede a copied ADR."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/001-native-mcp-server.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["server/server_test.go", "architecture_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified native official MCP Go SDK composition behind SDK-neutral packages, with no SDK embedding in the model or business Tool registration; maintained bilingual architecture and focused tests supersede a copied ADR."
         }
       }
     },
     {
       "path": "docs/adr/002-per-call-context-and-options.md",
       "sha256": "996b0dcd05e9a54e4c8b596a1bbe29f8897d5548fc6f4f3296a89eef7fc52ab7",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/002-per-call-context-and-options.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/runtime.test.ts", "test/options.test.ts", "test/server-launch.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified per-call principal, graph, selection, telemetry, signal and Host facts plus separately validated transport options; native bilingual handbook and runtime/options integration tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/002-per-call-context-and-options.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["runtime_test.go", "server/options_test.go", "server/launch_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified native context.Context carries per-call principal, graph, selection and telemetry while separately validated ContextureOptions owns transport policy; bilingual handbook and integration tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/003-remove-the-outbound-half.md",
       "sha256": "2ad4cd4a20d72f4d4828dac997ff67e2b700cfe732cc527b054e3470b2ccf8ed",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/003-remove-the-outbound-half.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/layering.test.ts", "test/lifecycle.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified the framework has no outbound adapter half: applications own downstream dependencies through Channels while core remains Host-neutral; architecture and lifecycle tests enforce the boundary."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/003-remove-the-outbound-half.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["architecture_test.go", "channels_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified the framework has no outbound adapter half: applications own downstream dependencies through Channels while core packages remain Host-neutral; architecture and lifecycle tests enforce the boundary."
         }
       }
     },
     {
       "path": "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md",
       "sha256": "35294bb8168a7a3d9a0417347a09e399d102d6edcefbcb7353818455e5e686c4",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["test/disclosure.test.ts", "test/node-parity.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified lazy Role factories, constant-cost root discovery and one-level cards with instructions/schemas delivered only on open; bilingual handbook and focused disclosure tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/004-progressive-disclosure-as-a-lazy-role-tree.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md"],
+          "tests": ["disclosure_test.go", "node_parity_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified lazy Role factories, constant-cost root discovery and one-level cards with instructions/schemas delivered only on open; bilingual handbook and focused disclosure tests realize the decision."
         }
       }
     },
     {
       "path": "docs/adr/005-remove-the-target-adapters.md",
       "sha256": "54f6c152a5e0db05878ff1da904ce4f69525915ae7a66b623c2658369a3765c3",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/005-remove-the-target-adapters.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["test/launch.test.ts", "test/project.test.ts", "test/layering.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified Host targets are command/config renderings rather than framework runtime adapters, projects export one native Application, and adapter dependencies remain above core; maintained architecture and tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/005-remove-the-target-adapters.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md"],
+          "tests": ["server/host_launch_test.go", "cli/application_test.go", "architecture_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md"],
+          "reason": "Verified Host targets are command/config renderings rather than framework runtime adapters, projects compile one native Application, and adapter dependencies remain above core; maintained architecture and tests realize the decision."
         }
       }
     },
