@@ -5526,25 +5526,21 @@
     {
       "path": "docs/adr/011-identity-is-the-frameworks-permission-is-not.md",
       "sha256": "81c917f0540f3be371e5c9e02a429d150d4545fdcae1e598d2e4443bf09445e6",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/011-identity-is-the-frameworks-permission-is-not.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md", "SECURITY.md"],
+          "tests": ["test/identity.test.ts", "test/server-launch.test.ts", "test/rest.test.ts"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md", "SECURITY.md"],
+          "reason": "Verified the framework authenticates and carries immutable request identity while application Tools and explicit REST policy own authorization decisions; bilingual handbook/security guidance and focused transport tests realize the decision."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/011-identity-is-the-frameworks-permission-is-not.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/handbook.md", "SECURITY.md"],
+          "tests": ["server/identity_test.go", "server/launch_test.go", "web/surface_test.go"],
+          "documentation": ["docs/handbook.md", "docs/handbook.zh-CN.md", "SECURITY.md"],
+          "reason": "Verified the framework authenticates and carries immutable request identity while application Tools and explicit REST policy own authorization decisions; bilingual handbook/security guidance and focused transport tests realize the decision."
         }
       }
     },
