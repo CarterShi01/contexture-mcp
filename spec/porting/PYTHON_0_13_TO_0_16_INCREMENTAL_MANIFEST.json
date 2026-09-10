@@ -61,7 +61,7 @@
       "tree": "7e7ae7f64d4863096d6fc5f393033a79795c3170",
       "previousCommit": "1deeb6b87be905edf1ba9b83d8d431def0af702c",
       "headline": "Optional Role publications",
-      "status": "pending",
+      "status": "verified",
       "deltaPaths": [
         "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/__init__.pyi", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/index.py", "M\tcontexture/core/model/role.py", "M\tcontexture/inspection.py", "M\tdocs/01-role-object-model.md", "A\tdocs/adr/021-role-publication-and-instruction-composition.md", "M\tdocs/handbook.md", "M\tpyproject.toml", "M\tspec/conformance.md", "M\tspec/model.md", "M\ttests/test_public_api.py", "A\ttests/test_publication.py", "A\ttests/test_publication_integration.py", "M\ttests/typing/consumer.py", "A\ttmp/porting-handoff/PORTING_HANDOFF.md", "A\ttmp/porting-handoff/PORTING_HANDOFF.zh-CN.md", "M\tuv.lock"
       ],
@@ -73,9 +73,19 @@
           "productAssets": ["README.md", "README.zh-CN.md", "docs/01-role-object-model.md", "docs/adr/021-role-publication-and-instruction-composition.md", "docs/handbook.md", "spec/model.md"],
           "typescriptTargets": ["src/core/model/role.ts", "src/core/model/compiler.ts", "src/core/model/system-api.ts", "src/inspection.ts"],
           "goTargets": ["core/model/role.go", "core/model/compiler.go", "core/model/gateway.go", "inspection/inspection.go"],
-          "typescriptEvidence": [],
-          "goEvidence": [],
-          "status": "pending"
+          "typescriptEvidence": [
+            "pushed commit 88f148175235c8bf1e62edf0448362bfdda2bbbc",
+            "declaration brand, containment order, branch exclusion, closing contract, promoted selection, inspection, disclosure-only, and manager snapshot evidence: test/role-publication.test.ts",
+            "packed runtime and declaration consumer evidence: scripts/verify-package-consumer.mjs",
+            "full npm run check passed with conformance, format, lint, typecheck, tests, build, package consumer, and scaffold consumer"
+          ],
+          "goEvidence": [
+            "pushed commit d9acebe23ac31c3e63637f52c3553384045faf92",
+            "strong Publication type, containment order, branch exclusion, closing contract, promoted selection, inspection, disclosure-only, manager snapshot, and root rejection evidence: publication_test.go",
+            "external module consumer evidence: internal/releasecheck/module_consumer_test.go",
+            "full conformancecheck, go test -race ./..., go vet ./..., releasecheck v0.14.0-rc.1, and gofmt cleanliness passed"
+          ],
+          "status": "verified"
         }
       ]
     },
