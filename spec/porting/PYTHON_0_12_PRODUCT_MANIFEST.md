@@ -115,7 +115,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_system_api.py | test | — | verified: `test/system-api.test.ts`, `test/gateway-wire.test.ts` | verified: `gateway_test.go`, `gateway_recovery_test.go`, `disclosure_api_test.go`, `execution_api_test.go` | verified |
 | tests/test_telemetry.py | test | — | verified: `test/telemetry.test.ts` | verified: `telemetry_test.go` | verified |
 | tests/test_web.py | test | — | verified: `test/rest.test.ts` | verified: `web/surface_test.go` | verified |
-| tests/typing/consumer.py | test | — | designed: `scripts/verify-package-consumer.mjs` | designed: `internal/releasecheck/module_consumer_test.go` | missing |
+| tests/typing/consumer.py | test | — | verified: `scripts/verify-package-consumer.mjs` | verified: `internal/releasecheck/module_consumer_test.go` | verified |
 
 ## Product assets
 

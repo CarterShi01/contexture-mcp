@@ -4441,29 +4441,35 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "External installed-package type and runtime consumer contract.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "scripts/verify-package-consumer.mjs"
           ],
           "tests": [
             "scripts/verify-package-consumer.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified an independently created project installs the packed tarball, type-resolves and runtime-imports every public subpath, declares native Role/Skill/Tool/Prompt/Resource applications, compiles, invokes, inspects and exercises server, CLI, demo, REST and surface facades."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "internal/releasecheck/module_consumer_test.go"
           ],
           "tests": [
             "internal/releasecheck/module_consumer_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified a separate temporary Go module imports every public package, compiles native Role/Skill/Tool/Prompt/Resource applications and exercises server, CLI, demo, REST and surface facades under the race-enabled release check."
         }
       }
     }
