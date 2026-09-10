@@ -3037,29 +3037,35 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/support/__init__.ts"
+            "package.json"
           ],
           "tests": [
-            "test/support/__init__.ts"
+            "test/public-api.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Python's test-package marker maps to the native Node test harness rather than an importable support module; the package script, public test entry, complete suite, and bilingual architecture documentation are verified."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "internal/testsupport/__init__.go"
+            "go.mod"
           ],
           "tests": [
-            "internal/testsupport/__init__.go"
+            "public_api_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Python's test-package marker maps to Go's native package test harness rather than a synthetic init module; the module root, public test entry, race-enabled suite, and bilingual architecture documentation are verified."
         }
       }
     },
