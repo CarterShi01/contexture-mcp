@@ -3507,29 +3507,41 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/golden.test.ts"
+            "test/golden-disclosure.test.ts",
+            "conformance/golden/discover.json",
+            "conformance/golden/open.json"
           ],
           "tests": [
-            "test/golden.test.ts"
+            "test/golden-disclosure.test.ts",
+            "scripts/verify-conformance.mjs"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified every checked-in normative golden artifact has an exercised native producer and the maintained demo reproduces exact discovery, open, refusal, Prompt, Resource, completion, instruction and gateway output under complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "golden_test.go"
+            "golden_test.go",
+            "conformance/golden/discover.json",
+            "conformance/golden/open.json"
           ],
           "tests": [
-            "golden_test.go"
+            "golden_test.go",
+            "internal/conformancecheck/main.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified every checked-in normative golden artifact has an exercised native producer and the maintained demo reproduces exact discovery, open, refusal, Prompt, Resource, completion, instruction and gateway output under race-enabled Go gates."
         }
       }
     },

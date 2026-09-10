@@ -94,7 +94,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_channels.py | test | — | verified: `test/lifecycle.test.ts`, `test/server-launch.test.ts`, `test/resource-wire.test.ts` | verified: `channels_test.go`, `server/launch_test.go`, `server/resource_wire_test.go` | verified |
 | tests/test_disclosure.py | test | — | verified: `test/disclosure.test.ts`, `test/index-facade.test.ts`, `test/node-parity.test.ts`, `test/tool-disclosure.test.ts` | verified: `disclosure_test.go`, `index_query_test.go`, `node_parity_test.go`, `role_uses_test.go`, `tool_disclosure_test.go` | verified |
 | tests/test_disclosure_application.py | test | — | verified: `test/server-application.test.ts`, `test/server.test.ts` | verified: `server/application_test.go`, `server/server_test.go` | verified |
-| tests/test_golden.py | test | — | designed: `test/golden.test.ts` | designed: `golden_test.go` | missing |
+| tests/test_golden.py | test | — | verified: `test/golden-disclosure.test.ts`, `conformance/golden/discover.json`, `conformance/golden/open.json` | verified: `golden_test.go`, `conformance/golden/discover.json`, `conformance/golden/open.json` | verified |
 | tests/test_http_server.py | test | — | designed: `test/http_server.test.ts` | designed: `http_server_test.go` | missing |
 | tests/test_identity.py | test | — | verified: `test/identity.test.ts` | verified: `server/identity_test.go`, `principal_test.go`, `server/launch_test.go` | verified |
 | tests/test_index.py | test | — | verified: `test/index-facade.test.ts`, `test/compiler.test.ts` | verified: `index_query_test.go`, `compiler_test.go` | verified |
