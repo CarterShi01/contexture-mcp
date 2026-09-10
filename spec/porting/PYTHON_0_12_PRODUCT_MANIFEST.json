@@ -6253,75 +6253,122 @@
     {
       "path": "docs/verification/hosts.md",
       "sha256": "b673b1fb694ca34d26374af62fa29dbea3043b1c394dc9ff5837203c6709c663",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/hosts.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/gateway-wire.test.ts",
+            "test/server-launch.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/verification/hosts.md",
+            "docs/verification/verify_claude_code.md",
+            "docs/verification/verify_codex.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Recorded a real isolated Claude Code 2.1.133 MCP-only diagnosis against the built TypeScript demo: seven turns, no permission denials, complete status/logs/events/runbook evidence, correct DB_URL/exit-1 diagnosis and safe action. Codex 0.153.0 is honestly blocked before inference because the local account is not logged in."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/hosts.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/gateway_wire_test.go",
+            "server/launch_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/verification/hosts.md",
+            "docs/verification/verify_claude_code.md",
+            "docs/verification/verify_codex.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Recorded a real isolated Claude Code 2.1.133 MCP-only diagnosis against the Go demo after fixing two Host-discovered defects: seven turns, no permission denials, complete evidence and correct diagnosis. Codex 0.153.0 is honestly blocked before inference because the local account is not logged in."
         }
       }
     },
     {
       "path": "docs/verification/verify_claude_code.md",
       "sha256": "faaaf93885b6e0e75c67b149c7c745a0f342512382409344ac3cfd05985857c6",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/verify_claude_code.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/gateway-wire.test.ts",
+            "test/demo.test.ts"
+          ],
+          "documentation": [
+            "docs/verification/verify_claude_code.md",
+            "docs/verification/hosts.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified reproducible isolated MCP configuration, exact four-tool restriction, no built-in tools, diagnosis prompt, pass criteria, successful result metadata, and cleanup for the TypeScript candidate."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/verify_claude_code.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/gateway_wire_test.go",
+            "demo/demo_test.go",
+            "server/options_test.go"
+          ],
+          "documentation": [
+            "docs/verification/verify_claude_code.md",
+            "docs/verification/hosts.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified reproducible isolated MCP configuration, exact four-tool restriction, no built-in tools, diagnosis prompt, pass criteria, Host-discovered fixes, successful result metadata, and cleanup for the Go candidate."
         }
       }
     },
     {
       "path": "docs/verification/verify_codex.md",
       "sha256": "d9aa38b70b9b507092985c02c7546f7b1ec96f4625c331697a94601e682dbff1",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/verify_codex.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/launch.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/verification/verify_codex.md",
+            "docs/verification/hosts.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the Codex reproduction uses the same server and task with native CLI syntax, defines identical pass and cleanup criteria, and records the current external account blocker precisely: CLI 0.153.0 available, not logged in, no inference attempted and no product failure claimed."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "docs/verification/verify_codex.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/host_launch_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/verification/verify_codex.md",
+            "docs/verification/hosts.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the Codex reproduction uses the same server and task with native CLI syntax, defines identical pass and cleanup criteria, and records the current external account blocker precisely: CLI 0.153.0 available, not logged in, no inference attempted and no product failure claimed."
         }
       }
     },
