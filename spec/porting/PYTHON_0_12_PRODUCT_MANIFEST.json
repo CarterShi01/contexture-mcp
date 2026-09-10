@@ -3407,29 +3407,53 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/disclosure.test.ts"
+            "test/disclosure.test.ts",
+            "test/index-facade.test.ts",
+            "test/node-parity.test.ts",
+            "test/tool-disclosure.test.ts"
           ],
           "tests": [
-            "test/disclosure.test.ts"
+            "test/disclosure.test.ts",
+            "test/index-facade.test.ts",
+            "test/node-parity.test.ts",
+            "test/tool-disclosure.test.ts",
+            "test/errors.test.ts",
+            "test/golden-disclosure.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified constant-cost root discovery, one-level progressive cards, canonical refs and typed lookup facts, deterministic breadth/depth traversal, containment cycles, typed accessors, uses overlays and crossings, disclosure-only facts, and normative golden output."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "disclosure_test.go"
+            "disclosure_test.go",
+            "index_query_test.go",
+            "node_parity_test.go",
+            "role_uses_test.go",
+            "tool_disclosure_test.go"
           ],
           "tests": [
-            "disclosure_test.go"
+            "disclosure_test.go",
+            "index_query_test.go",
+            "node_parity_test.go",
+            "role_uses_test.go",
+            "tool_disclosure_test.go",
+            "error_vocabulary_test.go",
+            "golden_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified constant-cost root discovery, one-level progressive cards, canonical refs and typed lookup facts, deterministic breadth/depth traversal, containment cycles, typed accessors, uses overlays and crossings, disclosure-only facts, normative golden output, and race safety."
         }
       }
     },
