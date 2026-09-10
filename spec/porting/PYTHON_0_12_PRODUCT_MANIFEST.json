@@ -5594,25 +5594,45 @@
     {
       "path": "docs/adr/013-a-constructor-is-the-declaration.md",
       "sha256": "e500964de7c6eddb16d0a184be12adfc35532615bded0eeebb5399e6cf52ca3f",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/013-a-constructor-is-the-declaration.md"
+            "docs/handbook.md",
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/declarations.test.ts",
+            "test/manager.test.ts",
+            "test/public-api.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md",
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the native equivalent states name, description, kind and members explicitly in declaration objects returned by zero-argument factories; nothing is inferred from class names, docstrings or attributes, nothing is built at import, and Prompt/Resource use the same declaration style."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/013-a-constructor-is-the-declaration.md"
+            "docs/handbook.md",
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "application_test.go",
+            "manager_test.go",
+            "public_api_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md",
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified the native equivalent states name, description, kind and members explicitly in typed structs returned by factories; nothing is inferred from type names or comments, nothing is built at package import, and Prompt/Resource use the same data-declaration style."
         }
       }
     },
