@@ -127,7 +127,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | README.md | verified: `README.md` | verified: `README.md` | verified |
 | README.zh-CN.md | verified: `README.zh-CN.md` | verified: `README.zh-CN.md` | verified |
 | RELEASING.md | verified: `RELEASING.md` | verified: `RELEASING.md` | verified |
-| SECURITY.md | designed: `SECURITY.md` | designed: `SECURITY.md` | missing |
+| SECURITY.md | verified: `SECURITY.md` | verified: `SECURITY.md` | verified |
 | contexture/cli/templates/project/.gitignore | designed: `src/cli/templates/project/.gitignore` | designed: `cmd/contexture/templates/project/.gitignore` | missing |
 | contexture/cli/templates/project/README.md.tmpl | designed: `src/cli/templates/project/README.md.tmpl` | designed: `cmd/contexture/templates/project/README.md.tmpl` | missing |
 | contexture/cli/templates/project/assistant/__init__.py.tmpl | designed: `src/cli/templates/project/assistant/__init__.py.tmpl` | designed: `cmd/contexture/templates/project/assistant/__init__.py.tmpl` | missing |

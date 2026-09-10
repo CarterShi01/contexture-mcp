@@ -4702,25 +4702,41 @@
     {
       "path": "SECURITY.md",
       "sha256": "0af6d5099f3bf0372b3264a374d65fd3bfdc157c8f37dca140c56793f859ec29",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "SECURITY.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/options.test.ts",
+            "test/server-launch.test.ts",
+            "test/identity.test.ts",
+            "test/rest.test.ts"
+          ],
+          "documentation": [
+            "SECURITY.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified private reporting, supported unreleased line, acknowledgement guidance, progressive-disclosure versus authorization boundary, explicit public HTTP auth/anonymous and Host/Origin policy, REST allowlists, credential hygiene, and upstream advisory handling."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "SECURITY.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/options_test.go",
+            "server/launch_test.go",
+            "server/identity_test.go",
+            "web/surface_test.go"
+          ],
+          "documentation": [
+            "SECURITY.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified private reporting, supported unreleased line, acknowledgement guidance, progressive-disclosure versus authorization boundary, explicit public HTTP auth/anonymous and Host/Origin policy, REST allowlists, credential hygiene, and upstream advisory handling."
         }
       }
     },
