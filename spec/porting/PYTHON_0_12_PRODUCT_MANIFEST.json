@@ -5686,25 +5686,21 @@
     {
       "path": "docs/adr/015-the-server-is-an-object.md",
       "sha256": "979a80c48c5023a83c1dad6809c6176054933fadbab8d04029af4a3440093a5a",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/015-the-server-is-an-object.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["test/server.test.ts", "test/server-application.test.ts", "test/server-launch.test.ts", "test/publications.test.ts", "test/lifecycle.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified ContextureServer seals one compiled application and prevalidated publication surface, exposes no registration method, builds one idempotent SDK adapter, keeps transport options separate, and wraps serving in the application Channels lifecycle."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/015-the-server-is-an-object.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["server/server_test.go", "server/application_test.go", "server/launch_test.go", "publications_test.go", "channels_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified ApplicationServer seals one compiled application and prevalidated publication surface, exposes no registration method, builds one idempotent SDK adapter, keeps transport options separate, and wraps serving in the application Channels lifecycle."
         }
       }
     },
