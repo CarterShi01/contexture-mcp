@@ -4251,29 +4251,57 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/surface.test.ts"
+            "test/gateway-wire.test.ts",
+            "test/publications.test.ts",
+            "test/instructions.test.ts",
+            "test/server.test.ts"
           ],
           "tests": [
-            "test/surface.test.ts"
+            "test/gateway-wire.test.ts",
+            "test/publications.test.ts",
+            "test/resource-wire.test.ts",
+            "test/instructions.test.ts",
+            "test/messages.test.ts",
+            "test/tool-parity.test.ts",
+            "test/server.test.ts",
+            "test/launch.test.ts",
+            "test/golden-disclosure.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified exact four-gateway surface, annotations and business Tool exclusion; progressive schemas, typed/refused calls and validation; lazy Resource and person Prompt doors; stateless answers; derived binding stability; launch renderers; roster budget behavior; and normative golden output."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "surface_test.go"
+            "server/gateway_wire_test.go",
+            "publications_test.go",
+            "server/instructions/instructions_test.go",
+            "server/server_test.go"
           ],
           "tests": [
-            "surface_test.go"
+            "server/gateway_wire_test.go",
+            "publications_test.go",
+            "server/resource_wire_test.go",
+            "server/instructions/instructions_test.go",
+            "server/messages/messages_test.go",
+            "tool_parity_test.go",
+            "server/server_test.go",
+            "server/host_launch_test.go",
+            "golden_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified exact four-gateway surface, annotations and business Tool exclusion; progressive schemas, typed/refused calls and validation; lazy Resource and person Prompt doors; stateless answers; derived binding stability; launch renderers; roster budget behavior; normative golden output; and race safety."
         }
       }
     },
