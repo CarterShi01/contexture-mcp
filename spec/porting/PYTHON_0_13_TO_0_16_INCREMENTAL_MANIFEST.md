@@ -24,7 +24,7 @@ asset introduced by these four releases.
 | 0.12.0rc1 | `3b274421360d5569a23922bfc72b71d5828cf995` | — | Full-product parity baseline | verified |
 | 0.13.0 | `1deeb6b87be905edf1ba9b83d8d431def0af702c` | `265563acf2a39ac1622b35a57ff08056da86d992` | Path-selected capability surfaces | verified |
 | 0.14.0 | `a108b314bb3f37622fb082759f726468bbb09163` | `7e7ae7f64d4863096d6fc5f393033a79795c3170` | Optional Role publications | verified |
-| 0.15.0 | `471d0f75c6be0e5cff104f0d0c61f10957da792a` | `45398b8d4bc50dc68c03b2c4cde8b8e949cadc8e` | Non-activating inspect | pending |
+| 0.15.0 | `471d0f75c6be0e5cff104f0d0c61f10957da792a` | `45398b8d4bc50dc68c03b2c4cde8b8e949cadc8e` | Non-activating inspect | verified |
 | 0.16.0 | `cda2721c7c40128cd0b7eef990e5909edabd3b17` | `3d47fd088581524f4884bf89609df1dc5134bc81` | Symmetric process members and instruction emphasis | pending |
 
 ## Acceptance loop

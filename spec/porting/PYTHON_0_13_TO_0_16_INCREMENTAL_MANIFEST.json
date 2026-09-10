@@ -95,7 +95,7 @@
       "tree": "45398b8d4bc50dc68c03b2c4cde8b8e949cadc8e",
       "previousCommit": "a108b314bb3f37622fb082759f726468bbb09163",
       "headline": "Non-activating inspect",
-      "status": "pending",
+      "status": "verified",
       "deltaPaths": [
         "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/mcp_interface/__init__.py", "M\tcontexture/core/mcp_interface/tool.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/disclosure.py", "M\tcontexture/core/model/node.py", "M\tcontexture/core/model/system_api.py", "M\tcontexture/core/model/telemetry.py", "M\tcontexture/server/surface/__init__.py", "M\tcontexture/server/surface/navigation.py", "M\tcontexture/server/surface/tools.py", "A\tdocs/adr/022-inspect-is-a-non-activating-structural-view.md", "M\tpyproject.toml", "M\tscripts/product_manifest.py", "M\tspec/README.md", "M\tspec/conformance.md", "M\tspec/golden/tools.json", "M\tspec/model.md", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.json", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.md", "M\ttests/golden.py", "M\ttests/test_disclosure.py", "M\ttests/test_disclosure_application.py", "M\ttests/test_messages.py", "M\ttests/test_product_manifest.py", "M\ttests/test_publication.py", "M\ttests/test_publication_integration.py", "M\ttests/test_root_selection.py", "M\ttests/test_surface.py", "M\ttests/test_system_api.py", "M\ttests/test_telemetry.py", "M\tuv.lock"
       ],
@@ -107,9 +107,19 @@
           "productAssets": ["README.md", "README.zh-CN.md", "docs/adr/022-inspect-is-a-non-activating-structural-view.md", "spec/golden/tools.json", "spec/model.md"],
           "typescriptTargets": ["src/core/mcp-interface/tool.ts", "src/core/model/disclosure.ts", "src/core/model/node.ts", "src/core/model/system-api.ts", "src/core/model/telemetry.ts", "src/server/server.ts"],
           "goTargets": ["core/mcpinterface/tool.go", "core/model/disclosure.go", "core/model/node.go", "core/model/gateway.go", "core/model/telemetry.go", "server/server.go"],
-          "typescriptEvidence": [],
-          "goEvidence": [],
-          "status": "pending"
+          "typescriptEvidence": [
+            "pushed commit 941ef29b9e1a89931767ef5d593e1b9498b6ec83",
+            "atomic 1-32 ref validation, pure one-level routing cards, selection and person-reservation safety, non-activation, non-execution, and separate inspection telemetry evidence: test/system-api.test.ts and test/node-parity.test.ts",
+            "official MCP five-gateway inventory and exact inspect wire behavior evidence: test/gateway-wire.test.ts and conformance/golden/tools.json",
+            "full npm run check passed with conformance, format, lint, typecheck, 223 tests, build, packed package consumer, and scaffold consumer"
+          ],
+          "goEvidence": [
+            "pushed commit bba1ee93af628b657c35189b7172bda9a4f64215",
+            "atomic 1-32 ref validation, pure one-level routing cards, selection and intrinsic person-reservation safety, non-activation, non-execution, and separate inspection telemetry evidence: inspect_test.go, disclosure_api_test.go, and server/system_api_test.go",
+            "official MCP five-gateway inventory and exact inspect input/output schema evidence: server/gateway_wire_test.go and conformance/golden/tools.json",
+            "full conformancecheck, go test -race ./..., go vet ./..., releasecheck v0.15.0-rc.1, and gofmt cleanliness passed"
+          ],
+          "status": "verified"
         }
       ]
     },
