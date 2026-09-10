@@ -90,7 +90,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/http_fixture.py | test | — | verified: `test/server-launch.test.ts` | verified: `server/launch_test.go` | verified |
 | tests/serving.py | test | — | verified: `test/manager.test.ts`, `test/server-application.test.ts` | verified: `manager_test.go`, `server/application_test.go` | verified |
 | tests/test_application.py | test | — | verified: `test/declarations.test.ts`, `test/server-application.test.ts` | verified: `application_test.go` | verified |
-| tests/test_capabilities.py | test | — | designed: `test/capabilities.test.ts` | designed: `capabilities_test.go` | missing |
+| tests/test_capabilities.py | test | — | verified: `test/declarations.test.ts`, `test/manager.test.ts`, `test/node-parity.test.ts`, `test/tool-parity.test.ts`, `test/publications.test.ts` | verified: `manager_test.go`, `node_parity_test.go`, `tool_parity_test.go`, `publications_test.go` | verified |
 | tests/test_channels.py | test | — | designed: `test/channels.test.ts` | designed: `channels_test.go` | missing |
 | tests/test_disclosure.py | test | — | designed: `test/disclosure.test.ts` | designed: `disclosure_test.go` | missing |
 | tests/test_disclosure_application.py | test | — | verified: `test/server-application.test.ts`, `test/server.test.ts` | verified: `server/application_test.go`, `server/server_test.go` | verified |

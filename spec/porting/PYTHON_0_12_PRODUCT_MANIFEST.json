@@ -3301,29 +3301,51 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/capabilities.test.ts"
+            "test/declarations.test.ts",
+            "test/manager.test.ts",
+            "test/node-parity.test.ts",
+            "test/tool-parity.test.ts",
+            "test/publications.test.ts"
           ],
           "tests": [
-            "test/capabilities.test.ts"
+            "test/declarations.test.ts",
+            "test/manager.test.ts",
+            "test/node-parity.test.ts",
+            "test/tool-parity.test.ts",
+            "test/publications.test.ts",
+            "test/public-api.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified explicit capability identity, safe Tool defaults and schema validation, Role composition and cross-kind uniqueness, member lookup facts, one-level disclosure, Prompt/Resource declarations, and public facade behavior through the complete npm suite."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "capabilities_test.go"
+            "manager_test.go",
+            "node_parity_test.go",
+            "tool_parity_test.go",
+            "publications_test.go"
           ],
           "tests": [
-            "capabilities_test.go"
+            "manager_test.go",
+            "node_parity_test.go",
+            "tool_parity_test.go",
+            "publications_test.go",
+            "public_api_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified explicit capability identity, safe Tool classification and schema validation, Role composition and cross-kind uniqueness, member lookup facts, one-level disclosure, Prompt/Resource declarations, and public facade behavior through race-enabled Go gates."
         }
       }
     },
