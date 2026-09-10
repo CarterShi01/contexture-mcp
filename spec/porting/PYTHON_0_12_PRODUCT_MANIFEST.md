@@ -73,7 +73,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | contexture/server/server.py | source | ContextureServer | verified: `src/server/server.ts` | verified: `server/server.go`, `server/application.go`, `server/launch.go` | verified |
 | contexture/server/surface/__init__.py | source | DisclosureSurface, RuntimeSurface, Surface, published_name, translated | verified: `src/server/surface/publications.ts`, `src/server/index.ts`, `package.json` | verified: `server/surface/publications.go`, `server/application.go`, `server/server.go` | verified |
 | contexture/server/surface/navigation.py | source | NavigationTools | verified: `src/server/index.ts`, `src/server/application.ts` | verified: `server/application.go`, `server/server.go` | verified |
-| contexture/server/surface/prompts.py | source | Prompts, open_by_name | designed: `src/server/surface/prompts.ts` | designed: `server/surface/prompts.go` | missing |
+| contexture/server/surface/prompts.py | source | Prompts, open_by_name | verified: `src/server/surface/publications.ts`, `src/server/index.ts` | verified: `server/surface/publications.go`, `server/server.go` | verified |
 | contexture/server/surface/resources.py | source | Resources | designed: `src/server/surface/resources.ts` | designed: `server/surface/resources.go` | missing |
 | contexture/server/surface/tools.py | source | Tools | designed: `src/server/surface/tools.ts` | designed: `server/surface/tools.go` | missing |
 | contexture/web/__init__.py | source | Authenticator, RestSurface, Route, WebRequest | designed: `src/web/index.ts` | designed: `web/index.go` | missing |
