@@ -4478,25 +4478,37 @@
     {
       "path": "CHANGELOG.md",
       "sha256": "ed105c1a49ea54b6401265f1edc246b54789619ff1dae11a301a0fb4ccb8982b",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "CHANGELOG.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-conformance.mjs"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the native unreleased changelog records full 0.12 conformance, repository-local golden assets, hardened lifecycle/publication behavior, published facades and demo Tools, while explicitly retaining the guarded first npm release."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "CHANGELOG.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/releasecheck/module_consumer_test.go",
+            "internal/conformancecheck/main.go"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the native unreleased changelog records full 0.12 conformance, repository-local golden assets, defensive Index/lifecycle behavior, public package facades and demo Tools, while retaining the guarded first Go tag."
         }
       }
     },

@@ -121,7 +121,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 
 | Python path | TypeScript | Go | Status |
 | --- | --- | --- | --- |
-| CHANGELOG.md | designed: `CHANGELOG.md` | designed: `CHANGELOG.md` | missing |
+| CHANGELOG.md | verified: `CHANGELOG.md` | verified: `CHANGELOG.md` | verified |
 | CONTRIBUTING.md | designed: `CONTRIBUTING.md` | designed: `CONTRIBUTING.md` | missing |
 | LICENSE | designed: `LICENSE` | designed: `LICENSE` | missing |
 | README.md | designed: `README.md` | designed: `README.md` | missing |
