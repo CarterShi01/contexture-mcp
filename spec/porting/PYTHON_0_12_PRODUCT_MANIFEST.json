@@ -3552,29 +3552,43 @@
       "pythonImport": null,
       "publicSymbols": [],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/http_server.test.ts"
+            "test/server-launch.test.ts"
           ],
           "tests": [
-            "test/http_server.test.ts"
+            "test/server-launch.test.ts",
+            "test/root-selector.test.ts",
+            "test/gateway-wire.test.ts",
+            "test/resource-wire.test.ts",
+            "test/identity.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified real streamable-HTTP gateway navigation and invocation, stateless independent requests, selected discovery/instructions/direct access, bearer rejection and metadata, complete Principal propagation, scope-dependent application responses, shutdown, and HTTP safety policy."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "http_server_test.go"
+            "server/launch_test.go"
           ],
           "tests": [
-            "http_server_test.go"
+            "server/launch_test.go",
+            "server/root_selector_test.go",
+            "server/gateway_wire_test.go",
+            "server/resource_wire_test.go",
+            "server/identity_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified real streamable-HTTP gateway navigation and invocation, stateless independent requests, selected discovery/instructions/direct access, bearer rejection and metadata, complete Principal propagation, scope-dependent application responses, shutdown, HTTP safety policy, and race safety."
         }
       }
     },
