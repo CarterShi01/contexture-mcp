@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "authority": "CarterShi01/contexture-mcp",
+  "base": {
+    "version": "0.12.0rc1",
+    "commit": "3b274421360d5569a23922bfc72b71d5828cf995"
+  },
+  "policy": {
+    "releaseTagsPresent": false,
+    "baselineRule": "The immutable commit that first sets the exact version in pyproject.toml, is descended from the previous baseline, and contains the matching changelog release entry.",
+    "excludedProduct": "docs/case-studies/oc-goal",
+    "excludedReason": "OC Goal remains a Python-only case study by explicit project decision.",
+    "completionRule": "A release is verified only when every capability row has direct TypeScript and Go implementation, focused tests, bilingual documentation where user-facing, full native gates, and pushed commit evidence."
+  },
+  "releases": [
+    {
+      "version": "0.13.0",
+      "commit": "1deeb6b87be905edf1ba9b83d8d431def0af702c",
+      "tree": "265563acf2a39ac1622b35a57ff08056da86d992",
+      "previousCommit": "3b274421360d5569a23922bfc72b71d5828cf995",
+      "headline": "Path-selected capability surfaces",
+      "status": "pending",
+      "deltaPaths": [
+        "M\t.github/workflows/ci.yml", "A\tAGENTS.md", "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md",
+        "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/disclosure.py", "M\tcontexture/core/model/root_selection.py", "M\tcontexture/core/model/runtime.py",
+        "M\tcontexture/server/__init__.py", "M\tcontexture/server/application.py", "M\tcontexture/server/instructions.py", "M\tcontexture/server/root_selector.py", "M\tcontexture/server/server.py",
+        "A\tdocs/adr/020-path-selectors-promote-subtrees.md", "M\tdocs/handbook.md", "M\tdocs/handbook.zh-CN.md", "M\tpyproject.toml",
+        "A\tscripts/product_manifest.py", "A\tscripts/verify_porting_contract.py", "M\tspec/README.md", "M\tspec/README.zh-CN.md", "M\tspec/bindings.md", "A\tspec/conformance-manifest.schema.json", "M\tspec/conformance.md", "M\tspec/fixtures/root-selections.json", "M\tspec/model.md",
+        "A\tspec/porting/CONFORMANCE_MATRIX.md", "A\tspec/porting/FULL_PRODUCT_PARITY_PLAN.md", "A\tspec/porting/FULL_PRODUCT_PARITY_PLAN.zh-CN.md", "A\tspec/porting/PORTING_BRIEF.md", "A\tspec/porting/PYTHON_0_12_CLI_CONTRACT.md", "A\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.json", "A\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.md", "A\tspec/porting/TERRA_GOAL.md", "A\tspec/porting/assets.json",
+        "M\ttests/http_fixture.py", "M\ttests/test_http_server.py", "A\ttests/test_porting_contract.py", "A\ttests/test_product_manifest.py", "M\ttests/test_public_api.py", "M\ttests/test_root_selection.py", "M\tuv.lock"
+      ],
+      "capabilities": [
+        {
+          "id": "surface-selection",
+          "pythonSources": ["contexture/core/model/root_selection.py", "contexture/core/model/disclosure.py", "contexture/server/root_selector.py", "contexture/server/server.py", "contexture/server/instructions.py"],
+          "pythonTests": ["tests/test_root_selection.py", "tests/test_http_server.py"],
+          "productAssets": ["README.md", "README.zh-CN.md", "docs/adr/020-path-selectors-promote-subtrees.md", "docs/handbook.md", "docs/handbook.zh-CN.md", "spec/fixtures/root-selections.json", "spec/model.md"],
+          "typescriptTargets": ["src/core/model/root-selection.ts", "src/core/model/disclosure.ts", "src/server/root-selector.ts", "src/server/server.ts"],
+          "goTargets": ["core/model/selection.go", "core/model/selected_graph.go", "server/root_selector.go", "server/server.go"],
+          "typescriptEvidence": [],
+          "goEvidence": [],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "version": "0.14.0",
+      "commit": "a108b314bb3f37622fb082759f726468bbb09163",
+      "tree": "7e7ae7f64d4863096d6fc5f393033a79795c3170",
+      "previousCommit": "1deeb6b87be905edf1ba9b83d8d431def0af702c",
+      "headline": "Optional Role publications",
+      "status": "pending",
+      "deltaPaths": [
+        "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/__init__.pyi", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/index.py", "M\tcontexture/core/model/role.py", "M\tcontexture/inspection.py", "M\tdocs/01-role-object-model.md", "A\tdocs/adr/021-role-publication-and-instruction-composition.md", "M\tdocs/handbook.md", "M\tpyproject.toml", "M\tspec/conformance.md", "M\tspec/model.md", "M\ttests/test_public_api.py", "A\ttests/test_publication.py", "A\ttests/test_publication_integration.py", "M\ttests/typing/consumer.py", "A\ttmp/porting-handoff/PORTING_HANDOFF.md", "A\ttmp/porting-handoff/PORTING_HANDOFF.zh-CN.md", "M\tuv.lock"
+      ],
+      "capabilities": [
+        {
+          "id": "role-publication",
+          "pythonSources": ["contexture/core/model/role.py", "contexture/core/model/index.py", "contexture/inspection.py"],
+          "pythonTests": ["tests/test_publication.py", "tests/test_publication_integration.py", "tests/test_public_api.py", "tests/typing/consumer.py"],
+          "productAssets": ["README.md", "README.zh-CN.md", "docs/01-role-object-model.md", "docs/adr/021-role-publication-and-instruction-composition.md", "docs/handbook.md", "spec/model.md"],
+          "typescriptTargets": ["src/core/model/role.ts", "src/core/model/compiler.ts", "src/core/model/system-api.ts", "src/inspection.ts"],
+          "goTargets": ["core/model/role.go", "core/model/compiler.go", "core/model/gateway.go", "inspection/inspection.go"],
+          "typescriptEvidence": [],
+          "goEvidence": [],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "version": "0.15.0",
+      "commit": "471d0f75c6be0e5cff104f0d0c61f10957da792a",
+      "tree": "45398b8d4bc50dc68c03b2c4cde8b8e949cadc8e",
+      "previousCommit": "a108b314bb3f37622fb082759f726468bbb09163",
+      "headline": "Non-activating inspect",
+      "status": "pending",
+      "deltaPaths": [
+        "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "M\tcontexture/core/mcp_interface/__init__.py", "M\tcontexture/core/mcp_interface/tool.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/disclosure.py", "M\tcontexture/core/model/node.py", "M\tcontexture/core/model/system_api.py", "M\tcontexture/core/model/telemetry.py", "M\tcontexture/server/surface/__init__.py", "M\tcontexture/server/surface/navigation.py", "M\tcontexture/server/surface/tools.py", "A\tdocs/adr/022-inspect-is-a-non-activating-structural-view.md", "M\tpyproject.toml", "M\tscripts/product_manifest.py", "M\tspec/README.md", "M\tspec/conformance.md", "M\tspec/golden/tools.json", "M\tspec/model.md", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.json", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.md", "M\ttests/golden.py", "M\ttests/test_disclosure.py", "M\ttests/test_disclosure_application.py", "M\ttests/test_messages.py", "M\ttests/test_product_manifest.py", "M\ttests/test_publication.py", "M\ttests/test_publication_integration.py", "M\ttests/test_root_selection.py", "M\ttests/test_surface.py", "M\ttests/test_system_api.py", "M\ttests/test_telemetry.py", "M\tuv.lock"
+      ],
+      "capabilities": [
+        {
+          "id": "inspect-gateway",
+          "pythonSources": ["contexture/core/mcp_interface/tool.py", "contexture/core/model/disclosure.py", "contexture/core/model/node.py", "contexture/core/model/system_api.py", "contexture/core/model/telemetry.py", "contexture/server/surface/navigation.py", "contexture/server/surface/tools.py"],
+          "pythonTests": ["tests/test_disclosure.py", "tests/test_disclosure_application.py", "tests/test_messages.py", "tests/test_surface.py", "tests/test_system_api.py", "tests/test_telemetry.py"],
+          "productAssets": ["README.md", "README.zh-CN.md", "docs/adr/022-inspect-is-a-non-activating-structural-view.md", "spec/golden/tools.json", "spec/model.md"],
+          "typescriptTargets": ["src/core/mcp-interface/tool.ts", "src/core/model/disclosure.ts", "src/core/model/node.ts", "src/core/model/system-api.ts", "src/core/model/telemetry.ts", "src/server/server.ts"],
+          "goTargets": ["core/mcpinterface/tool.go", "core/model/disclosure.go", "core/model/node.go", "core/model/gateway.go", "core/model/telemetry.go", "server/server.go"],
+          "typescriptEvidence": [],
+          "goEvidence": [],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "version": "0.16.0",
+      "commit": "cda2721c7c40128cd0b7eef990e5909edabd3b17",
+      "tree": "3d47fd088581524f4884bf89609df1dc5134bc81",
+      "previousCommit": "471d0f75c6be0e5cff104f0d0c61f10957da792a",
+      "headline": "Symmetric process members and instruction emphasis",
+      "status": "pending",
+      "deltaPaths": [
+        "M\tCHANGELOG.md", "M\tREADME.md", "M\tREADME.zh-CN.md", "M\tcontexture/__init__.py", "M\tcontexture/__init__.pyi", "M\tcontexture/core/__init__.py", "M\tcontexture/core/constants.py", "A\tcontexture/core/emphasis.py", "M\tcontexture/core/model/__init__.py", "M\tcontexture/core/model/index.py", "M\tcontexture/core/model/role.py", "M\tcontexture/core/model/system_api.py", "M\tcontexture/inspection.py", "M\tdocs/01-role-object-model.md", "A\tdocs/09-process-members-execution-plan.md", "M\tdocs/adr/022-inspect-is-a-non-activating-structural-view.md", "A\tdocs/adr/023-process-members-and-instruction-emphasis.md", "M\tdocs/handbook.md", "M\tdocs/handbook.zh-CN.md", "M\tpyproject.toml", "M\tspec/conformance.md", "M\tspec/golden/tools.json", "M\tspec/model.md", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.json", "M\tspec/porting/PYTHON_0_12_PRODUCT_MANIFEST.md", "A\ttests/test_process.py", "R054\ttests/test_publication_integration.py\ttests/test_process_integration.py", "M\ttests/test_public_api.py", "D\ttests/test_publication.py", "M\ttests/typing/consumer.py", "A\ttests/typing/process_members.py", "M\tuv.lock"
+      ],
+      "capabilities": [
+        {
+          "id": "process-members",
+          "pythonSources": ["contexture/core/emphasis.py", "contexture/core/model/role.py", "contexture/core/model/index.py", "contexture/core/model/system_api.py", "contexture/inspection.py"],
+          "pythonTests": ["tests/test_process.py", "tests/test_process_integration.py", "tests/test_public_api.py", "tests/typing/process_members.py"],
+          "productAssets": ["README.md", "README.zh-CN.md", "docs/01-role-object-model.md", "docs/09-process-members-execution-plan.md", "docs/adr/023-process-members-and-instruction-emphasis.md", "docs/handbook.md", "docs/handbook.zh-CN.md", "spec/model.md"],
+          "typescriptTargets": ["src/core/foundation/emphasis.ts", "src/core/model/role.ts", "src/core/model/compiler.ts", "src/core/model/system-api.ts", "src/inspection.ts"],
+          "goTargets": ["core/foundation/emphasis.go", "core/model/role.go", "core/model/compiler.go", "core/model/gateway.go", "inspection/inspection.go"],
+          "typescriptEvidence": [],
+          "goEvidence": [],
+          "status": "pending"
+        }
+      ]
+    }
+  ]
+}
