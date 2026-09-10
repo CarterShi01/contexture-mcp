@@ -42,6 +42,13 @@ codex mcp remove contexture-demo
 
 ## Status
 
-Completed on 2026-09-06 with Codex CLI 0.153.4 against candidate commit
-`16dacc9`: eight MCP calls, zero errors, correct diagnosis. See
-`docs/verification/hosts.md`.
+The binding-candidate attempt on 2026-09-10 used Codex CLI 0.153.0, but
+`codex login status` returned `Not logged in`. It was blocked before inference,
+so no binding pass or product failure is claimed. Repeat after a maintainer
+authenticates directly in the terminal; never store the token in repository
+configuration or verification output.
+
+The completed 2026-09-06 Codex CLI 0.153.4 run against Python candidate commit
+`16dacc9` remains valid historical evidence: eight MCP calls, zero errors, and
+the correct diagnosis. It is not the current TypeScript/Go candidate result.
+See [hosts.md](hosts.md).

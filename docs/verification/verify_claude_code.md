@@ -1,5 +1,22 @@
 # Verify with Claude Code
 
+## Current binding-candidate result
+
+On 2026-09-10, Claude Code 2.1.133 passed this diagnosis against both the
+TypeScript and Go 0.12 candidates. Each run used isolated MCP configuration,
+disabled every built-in tool, allowed only the four current Contexture gateway
+Tools, completed in seven model turns, and returned no permission denial.
+
+Both runs collected status, previous logs, events, and the runbook; identified
+missing `DB_URL`; cited exit code 1 rather than 137; recommended repairing the
+ConfigMap or Secret before rollout; and rejected a blind restart. The Go run
+passed after commit `23cc42f` fixed two defects found by the real Host. See
+[hosts.md](hosts.md) and the binding-specific verification records for exact
+candidate commands.
+
+The revoked-OAuth attempt described below is the archived Python candidate
+record from 2026-09-06, not the current binding result.
+
 ```bash
 uv sync --extra dev
 ```
@@ -55,8 +72,8 @@ repository's source code. Explain the root cause and the next remediation step."
       involved.
 
 Record authentication failures separately from framework failures. The
-2026-09-06 candidate attempt was blocked before inference by a revoked OAuth
-token; it is not a failed navigation run.
+archived 2026-09-06 Python candidate attempt was blocked before inference by a
+revoked OAuth token; it is not a failed navigation run.
 
 ## Clean up
 

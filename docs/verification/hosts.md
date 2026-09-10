@@ -1,6 +1,50 @@
 # Host verification
 
-# 0.12.0rc1 candidate — current four-tool gateway
+# TypeScript and Go 0.12 candidates — current four-tool gateway
+
+Recorded 2026-09-10 with Claude Code 2.1.133. TypeScript was verified against
+commit `dec12f5`; Go passed after the Host-discovered fixes in `23cc42f`.
+
+| Binding | Client | Result |
+| --- | --- | --- |
+| TypeScript | Claude Code 2.1.133 | passed: seven-turn MCP-only diagnosis, zero permission denials |
+| Go | Claude Code 2.1.133 | passed: seven-turn MCP-only diagnosis after two protocol fixes |
+| TypeScript and Go | Codex CLI 0.153.0 | blocked before inference: local account not logged in |
+| TypeScript | Official MCP client 2.0.0 | passed in the automated suite |
+| Go | Official MCP client 1.7.0 | passed in the automated suite |
+
+Both Claude runs used isolated MCP configuration from outside the repository.
+All built-in tools were disabled; only the server's four current Contexture
+gateway Tools were available. Each run collected Pod status, previous logs,
+events, and `crash_loop_runbook`, then identified missing `DB_URL`, cited exit
+code 1 rather than OOM/137, recommended repairing the projected ConfigMap or
+Secret before rollout, and refused a blind restart.
+
+The first Go attempts exposed two real defects before the passing run:
+
+1. revalidating default stdio options treated effective host, port, and path
+  defaults as explicitly stated HTTP fields;
+2. scalar and array Tool values were placed directly in `structuredContent`,
+  where MCP requires an object.
+
+Go commit `23cc42f` made option validation idempotent and normalized structured
+results to objects, with focused official-SDK regression tests. Full
+conformance, race-enabled tests, external-module consumption, and vet passed
+afterward.
+
+Codex CLI was available through the pinned ephemeral npm package, but
+`codex login status` returned `Not logged in`. No Codex model request was made;
+this is an external account blocker, not a product pass or failure. Repeat that
+row only after a maintainer authenticates directly in the terminal.
+
+Binding-specific reproduction records live in each binding repository under
+`docs/verification/`. Request-selected HTTP surfaces and Prompt-only roots
+remain covered by official-client integration tests because this diagnosis is
+a stdio model-navigation scenario.
+
+---
+
+# Archived Python 0.12.0rc1 candidate record
 
 Recorded 2026-09-06 against commit `16dacc9` on branch `release/0.12.0`.
 
