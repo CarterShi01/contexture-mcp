@@ -2799,25 +2799,45 @@
         "Resources"
       ],
       "responsibility": "MCP server surface implementation.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "src/server/surface/resources.ts"
+            "src/server/surface/publications.ts",
+            "src/server/index.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/publications.test.ts",
+            "test/resource-wire.test.ts",
+            "test/golden-disclosure.test.ts",
+            "test/server.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified Resource name and URI validation, read-only argument-free Tool constraints, selected listing, host execution through the validated request context, official SDK reads, packed consumer, normative golden fixtures, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/surface/resources.go"
+            "server/surface/publications.go",
+            "server/server.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "publications_test.go",
+            "server/resource_wire_test.go",
+            "golden_test.go",
+            "server/server_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified Resource name and URI validation, read-only argument-free Tool constraints, selected listing, host execution through the validated request context, official SDK reads, external module consumer, normative golden fixtures, and race-enabled Go gates."
         }
       }
     },
