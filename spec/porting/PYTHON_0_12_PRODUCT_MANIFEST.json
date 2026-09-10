@@ -5547,25 +5547,47 @@
     {
       "path": "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md",
       "sha256": "6040f6ece3afbde8de782583627d503aa8a190a884935e74ebb51b73b989de30",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md"
+            "docs/handbook.md",
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/manager.test.ts",
+            "test/lifecycle.test.ts",
+            "test/resource-wire.test.ts",
+            "test/server-launch.test.ts"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md",
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified ControllerManager constructs and snapshots lazy roots during explicit registration, compilation assigns canonical graph identity, one application-owned Channels handle reaches Tool and Resource doors, and nominal lifecycle opens only while serving; maintained bilingual docs supersede a copied Python ADR."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md"
+            "docs/handbook.md",
+            "docs/architecture.md"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "manager_test.go",
+            "channels_test.go",
+            "server/resource_wire_test.go",
+            "server/launch_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md",
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified ControllerManager constructs and snapshots lazy roots during explicit registration, compilation assigns canonical graph identity, one application-owned Channels handle reaches Tool and Resource doors, and typed lifecycle opens only while serving; maintained bilingual docs supersede a copied Python ADR."
         }
       }
     },

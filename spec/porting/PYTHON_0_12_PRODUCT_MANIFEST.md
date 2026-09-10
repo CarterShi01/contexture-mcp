@@ -154,7 +154,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/adr/009-the-protocol-plane-is-not-the-object-model.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/adr/010-the-directories-are-the-architecture.md | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/adr/011-identity-is-the-frameworks-permission-is-not.md | verified: `docs/handbook.md`, `SECURITY.md` | verified: `docs/handbook.md`, `SECURITY.md` | verified |
-| docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md | designed: `docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md` | designed: `docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md` | missing |
+| docs/adr/012-registration-is-where-a-declaration-becomes-a-capability.md | verified: `docs/handbook.md`, `docs/architecture.md` | verified: `docs/handbook.md`, `docs/architecture.md` | verified |
 | docs/adr/013-a-constructor-is-the-declaration.md | designed: `docs/adr/013-a-constructor-is-the-declaration.md` | designed: `docs/adr/013-a-constructor-is-the-declaration.md` | missing |
 | docs/adr/014-navigation-is-part-of-the-kernel.md | designed: `docs/adr/014-navigation-is-part-of-the-kernel.md` | designed: `docs/adr/014-navigation-is-part-of-the-kernel.md` | missing |
 | docs/adr/015-the-server-is-an-object.md | designed: `docs/adr/015-the-server-is-an-object.md` | designed: `docs/adr/015-the-server-is-an-object.md` | missing |
