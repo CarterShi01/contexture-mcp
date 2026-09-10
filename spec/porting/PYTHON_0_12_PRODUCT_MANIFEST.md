@@ -161,7 +161,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/adr/016-register-compile-disclose.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
 | docs/adr/017-application-is-a-lazy-declaration.md | verified: `docs/handbook.md`, `docs/architecture.md` | verified: `docs/handbook.md`, `docs/architecture.md` | verified |
 | docs/adr/018-prompt-roots-separate-user-and-model-planes.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
-| docs/adr/018-separate-disclosure-from-execution.md | designed: `docs/adr/018-separate-disclosure-from-execution.md` | designed: `docs/adr/018-separate-disclosure-from-execution.md` | missing |
+| docs/adr/018-separate-disclosure-from-execution.md | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
 | docs/adr/019-request-selects-complete-root-surfaces.md | designed: `docs/adr/019-request-selects-complete-root-surfaces.md` | designed: `docs/adr/019-request-selects-complete-root-surfaces.md` | missing |
 | docs/atlas/check.mjs | designed: `docs/atlas/check.mjs` | designed: `docs/atlas/check.mjs` | missing |
 | docs/atlas/index.html | designed: `docs/atlas/index.html` | designed: `docs/atlas/index.html` | missing |

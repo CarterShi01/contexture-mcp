@@ -5770,25 +5770,21 @@
     {
       "path": "docs/adr/018-separate-disclosure-from-execution.md",
       "sha256": "ccc72a0b9323f1b84d27e09a6379a492bbe29ebe98056709d4470576dc6f0e99",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/018-separate-disclosure-from-execution.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["test/server-application.test.ts", "test/system-api.test.ts", "test/lifecycle.test.ts", "test/publications.test.ts"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified runtime and structural declarations compile to independent bound and unbound Indexes; DisclosureAPI and ExecutionAPI are independently usable, navigation-only MCP exposes discover/open plus Prompts, and Resources/Channels/invoke doors cannot enter the structural application."
         },
         "go": {
-          "status": "designed",
-          "paths": [
-            "docs/adr/018-separate-disclosure-from-execution.md"
-          ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "status": "verified",
+          "paths": ["docs/architecture.md", "docs/handbook.md"],
+          "tests": ["server/application_test.go", "disclosure_api_test.go", "execution_api_test.go", "channels_test.go", "publications_test.go"],
+          "documentation": ["docs/architecture.md", "docs/architecture.zh-CN.md", "docs/handbook.md", "docs/handbook.zh-CN.md"],
+          "reason": "Verified runtime and structural declarations compile to independent bound and unbound Indexes; DisclosureAPI and ExecutionAPI are independently usable, navigation-only MCP exposes discover/open plus Prompts, and Resources/Channels/invoke doors cannot enter the structural application."
         }
       }
     },
