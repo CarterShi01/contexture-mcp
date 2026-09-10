@@ -2594,25 +2594,45 @@
         "ContextureServer"
       ],
       "responsibility": "MCP server compilation, identity, launch, and transport integration.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "src/server/server.ts"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "test/server.test.ts",
+            "test/server-launch.test.ts",
+            "test/server-application.test.ts",
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md",
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified a sealed compiled server container with fixed identity and gateway, idempotent official-SDK assembly, generated or explicit instructions, publications, lifecycle-safe stdio/HTTP serving, request-local selection, packed consumer behavior, and complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "server/server.go"
+            "server/server.go",
+            "server/application.go",
+            "server/launch.go"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "server/server_test.go",
+            "server/application_test.go",
+            "server/launch_test.go",
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "docs/handbook.md",
+            "docs/handbook.zh-CN.md"
+          ],
+          "reason": "Verified a sealed compiled ApplicationServer with fixed identity and gateway, idempotent official-SDK assembly, generated or explicit instructions, publications, lifecycle-safe stdio/HTTP serving, authenticated request-local selection, external module consumer, and race-enabled Go gates."
         }
       }
     },
