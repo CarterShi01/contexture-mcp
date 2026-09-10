@@ -6375,25 +6375,44 @@
     {
       "path": "pyproject.toml",
       "sha256": "83522a1e205ea7fa983e07bea617a890c4628fa37fed208f829f6bfc8c0f572d",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "package.json"
+            "package.json",
+            "package-lock.json",
+            "conformance/specification.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "scripts/verify-release.mjs",
+            "scripts/verify-package-consumer.mjs",
+            "scripts/verify-scaffold-consumer.mjs"
+          ],
+          "documentation": [
+            "RELEASING.md",
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified native npm metadata identifies the private 0.12.0-rc.1 candidate, Node/npm requirements, Apache-2.0 license, repository links, dependencies, CLI, files allowlist, typed public exports and provenance settings; conformance is pinned, packed and scaffold consumers pass, and publication remains explicitly guarded by private=true plus tag/version checks."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "go.mod"
+            "go.mod",
+            "conformance/specification.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/releasecheck/main_test.go",
+            "internal/releasecheck/module_consumer_test.go",
+            "internal/conformancecheck/main.go"
+          ],
+          "documentation": [
+            "RELEASING.md",
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified native Go module metadata identifies the canonical module and Go version, pins the official MCP SDK and transitive graph, carries Apache-2.0 at the module root, pins conformance, compiles every public package from an external module, and guards the first immutable v0.12.0-rc.1 tag with semantic-version, module-path and release workflow checks."
         }
       }
     }

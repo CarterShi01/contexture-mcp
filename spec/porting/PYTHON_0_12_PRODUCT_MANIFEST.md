@@ -187,4 +187,4 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/verification/hosts.md | verified: `docs/verification/hosts.md` | verified: `docs/verification/hosts.md` | verified |
 | docs/verification/verify_claude_code.md | verified: `docs/verification/verify_claude_code.md` | verified: `docs/verification/verify_claude_code.md` | verified |
 | docs/verification/verify_codex.md | verified: `docs/verification/verify_codex.md` | verified: `docs/verification/verify_codex.md` | verified |
-| pyproject.toml | designed: `package.json` | designed: `go.mod` | missing |
+| pyproject.toml | verified: `package.json`, `package-lock.json`, `conformance/specification.json` | verified: `go.mod`, `conformance/specification.json` | verified |
