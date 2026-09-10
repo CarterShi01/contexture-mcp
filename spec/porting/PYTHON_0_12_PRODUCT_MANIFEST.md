@@ -123,7 +123,7 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | --- | --- | --- | --- |
 | CHANGELOG.md | verified: `CHANGELOG.md` | verified: `CHANGELOG.md` | verified |
 | CONTRIBUTING.md | verified: `CONTRIBUTING.md` | verified: `CONTRIBUTING.md` | verified |
-| LICENSE | designed: `LICENSE` | designed: `LICENSE` | missing |
+| LICENSE | verified: `LICENSE`, `package.json` | verified: `LICENSE` | verified |
 | README.md | designed: `README.md` | designed: `README.md` | missing |
 | README.zh-CN.md | designed: `README.zh-CN.md` | designed: `README.zh-CN.md` | missing |
 | RELEASING.md | designed: `RELEASING.md` | designed: `RELEASING.md` | missing |

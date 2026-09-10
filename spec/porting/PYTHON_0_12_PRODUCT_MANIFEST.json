@@ -4554,25 +4554,36 @@
     {
       "path": "LICENSE",
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "LICENSE"
+            "LICENSE",
+            "package.json"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "scripts/verify-package-consumer.mjs"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the license is byte-identical to the pinned Apache-2.0 text, package metadata declares Apache-2.0, the npm files allowlist includes LICENSE, and the packed external consumer succeeds."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
             "LICENSE"
           ],
-          "tests": [],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "tests": [
+            "internal/releasecheck/module_consumer_test.go"
+          ],
+          "documentation": [
+            "README.md",
+            "README.zh-CN.md"
+          ],
+          "reason": "Verified the module-root license is byte-identical to the pinned Apache-2.0 text, both READMEs identify it, and an external Go module consumes the source distribution successfully."
         }
       }
     },
