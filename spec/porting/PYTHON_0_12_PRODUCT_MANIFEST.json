@@ -4155,29 +4155,39 @@
         "test_latest_surface_boundaries_have_fixtures"
       ],
       "responsibility": "Focused behavioural or integration test for the Python reference product.",
-      "status": "missing",
+      "status": "verified",
       "targets": {
         "typescript": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "test/spec_fixtures.test.ts"
+            "scripts/verify-conformance.mjs",
+            "conformance/golden/discover.json"
           ],
           "tests": [
-            "test/spec_fixtures.test.ts"
+            "scripts/verify-conformance.mjs",
+            "test/golden-disclosure.test.ts"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified every language-neutral conformance fixture is valid JSON, required current surface boundaries are represented, metadata is pinned, and native producers reproduce the corpus under complete npm gates."
         },
         "go": {
-          "status": "designed",
+          "status": "verified",
           "paths": [
-            "spec_fixtures_test.go"
+            "internal/conformancecheck/main.go",
+            "conformance/golden/discover.json"
           ],
           "tests": [
-            "spec_fixtures_test.go"
+            "internal/conformancecheck/main.go",
+            "golden_test.go"
           ],
-          "documentation": [],
-          "reason": "Phase-0 design mapping only; no product-parity implementation credit is claimed until focused native evidence is recorded."
+          "documentation": [
+            "docs/architecture.md",
+            "docs/architecture.zh-CN.md"
+          ],
+          "reason": "Verified every language-neutral conformance fixture is valid JSON, required current surface boundaries are represented, metadata is pinned, and native producers reproduce the corpus under race-enabled Go gates."
         }
       }
     },
