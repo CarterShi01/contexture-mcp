@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -11,9 +13,15 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
 PORTING = SPEC / "porting"
-RULES = tuple(range(1, 17))
+SPECIFICATION_VERSION = "0.16"
+SPECIFICATION_REVISION = "cda2721c7c40128cd0b7eef990e5909edabd3b17"
+RULES = tuple(range(1, 18))
 STATUSES = {"scaffold", "partial", "conformant"}
 RULE_STATUSES = {"not-started", "in-progress", "implemented"}
+BINDING_DIRECTORIES = {
+    "typescript": "contexture-mcp-typescript",
+    "go": "contexture-mcp-go",
+}
 
 
 def _object(path: Path) -> dict[str, Any]:
@@ -21,6 +29,21 @@ def _object(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{path} must contain a JSON object")
     return value
+
+
+def _immutable_file(revision: str, path: Path) -> bytes:
+    result = subprocess.run(
+        ("git", "show", f"{revision}:{path.as_posix()}"),
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode:
+        raise ValueError(
+            f"cannot read {path.as_posix()} from immutable specification revision "
+            f"{revision}"
+        )
+    return result.stdout
 
 
 def verify_assets() -> dict[str, Any]:
@@ -31,13 +54,26 @@ def verify_assets() -> dict[str, Any]:
         raise ValueError("fixture inventory does not match spec/fixtures")
     if inventory.get("golden") != actual_golden:
         raise ValueError("golden inventory does not match spec/golden")
-    if inventory.get("specificationVersion") != "0.12":
-        raise ValueError("porting inventory must target Specification 0.12")
-    revision = inventory.get("revision")
-    if not isinstance(revision, str) or len(revision) != 40 or any(
-        character not in "0123456789abcdef" for character in revision
+    if inventory.get("specificationVersion") != SPECIFICATION_VERSION:
+        raise ValueError(
+            f"porting inventory must target Specification {SPECIFICATION_VERSION}"
+        )
+    if inventory.get("revision") != SPECIFICATION_REVISION:
+        raise ValueError(
+            "porting inventory must target the reviewed immutable specification revision"
+        )
+    for directory, names in (
+        ("fixtures", actual_fixtures),
+        ("golden", actual_golden),
     ):
-        raise ValueError("porting inventory revision must be a lowercase Git SHA")
+        for name in names:
+            relative = Path("spec") / directory / name
+            if (ROOT / relative).read_bytes() != _immutable_file(
+                SPECIFICATION_REVISION, relative
+            ):
+                raise ValueError(
+                    f"{relative.as_posix()} differs from immutable specification revision"
+                )
     return inventory
 
 
@@ -52,7 +88,23 @@ def verify_schema() -> None:
         raise ValueError("manifest schema required fields changed unexpectedly")
     rule_schema = schema["properties"]["rules"]
     if set(rule_schema.get("required", ())) != {str(rule) for rule in RULES}:
-        raise ValueError("manifest schema must require all 16 conformance rules")
+        raise ValueError(
+            f"manifest schema must require all {len(RULES)} conformance rules"
+        )
+    if rule_schema.get("additionalProperties") is not False or set(
+        rule_schema.get("patternProperties", {})
+    ) != {"^(?:[1-9]|1[0-7])$"}:
+        raise ValueError("manifest schema must allow exactly rules 1 through 17")
+    implemented_schema = schema["properties"]["implementedRules"]
+    if implemented_schema.get("items") != {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": RULES[-1],
+    } or implemented_schema.get("uniqueItems") is not True:
+        raise ValueError("implementedRules schema must allow unique rules 1 through 17")
+    version_schema = schema["properties"]["specificationVersion"]
+    if version_schema.get("const") != SPECIFICATION_VERSION:
+        raise ValueError("manifest schema specification version is not synchronized")
 
 
 def verify_manifest(path: Path, inventory: dict[str, Any]) -> None:
@@ -79,7 +131,7 @@ def verify_manifest(path: Path, inventory: dict[str, Any]) -> None:
 
     rules = manifest["rules"]
     if not isinstance(rules, dict) or set(rules) != {str(rule) for rule in RULES}:
-        raise ValueError(f"{path} must contain exactly rules 1 through 16")
+        raise ValueError(f"{path} must contain exactly rules 1 through {RULES[-1]}")
     derived: list[int] = []
     for number in RULES:
         entry = rules[str(number)]
@@ -102,12 +154,76 @@ def verify_manifest(path: Path, inventory: dict[str, Any]) -> None:
         raise ValueError(f"{path} status must be {expected_status!r} for {derived}")
 
 
-def main() -> int:
+def verify_release_bindings(binding_roots: dict[str, Path] | None = None) -> None:
+    """Verify both binding release manifests against the immutable root contract."""
+
+    roots = binding_roots or {
+        language: ROOT.parent / directory
+        for language, directory in BINDING_DIRECTORIES.items()
+    }
+    if set(roots) != set(BINDING_DIRECTORIES):
+        raise ValueError("release verification requires TypeScript and Go binding roots")
+
+    inventory = verify_assets()
+    verify_schema()
+    root_schema = _object(SPEC / "conformance-manifest.schema.json")
+    for language, root in roots.items():
+        manifest_path = root / "conformance" / "specification.json"
+        verify_manifest(manifest_path, inventory)
+        manifest = _object(manifest_path)
+        if manifest["status"] != "conformant" or manifest["implementedRules"] != list(
+            RULES
+        ):
+            raise ValueError(f"{language} binding is not fully conformant")
+        binding_schema = _object(root / "conformance" / "specification.schema.json")
+        if binding_schema != root_schema:
+            raise ValueError(
+                f"{language} conformance schema is not synchronized with the root schema"
+            )
+        for directory in ("fixtures", "golden"):
+            for name in inventory[directory]:
+                root_asset = SPEC / directory / name
+                binding_asset = root / "conformance" / directory / name
+                if binding_asset.read_bytes() != root_asset.read_bytes():
+                    raise ValueError(
+                        f"{language} {directory}/{name} is not byte-identical to "
+                        "the root specification asset"
+                    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Verify deterministic Contexture porting and release metadata."
+    )
+    parser.add_argument("manifests", nargs="*", type=Path)
+    parser.add_argument(
+        "--release-bindings",
+        action="store_true",
+        help="also verify the TypeScript and Go release manifests",
+    )
+    parser.add_argument(
+        "--typescript-root",
+        type=Path,
+        default=ROOT.parent / BINDING_DIRECTORIES["typescript"],
+    )
+    parser.add_argument(
+        "--go-root",
+        type=Path,
+        default=ROOT.parent / BINDING_DIRECTORIES["go"],
+    )
+    arguments = parser.parse_args(argv)
     try:
         inventory = verify_assets()
         verify_schema()
-        for argument in sys.argv[1:]:
-            verify_manifest(Path(argument), inventory)
+        for manifest in arguments.manifests:
+            verify_manifest(manifest, inventory)
+        if arguments.release_bindings:
+            verify_release_bindings(
+                {
+                    "typescript": arguments.typescript_root,
+                    "go": arguments.go_root,
+                }
+            )
     except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as failure:
         print(f"porting contract invalid: {failure}", file=sys.stderr)
         return 1

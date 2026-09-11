@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import hashlib
 import json
 import subprocess
@@ -41,31 +42,18 @@ PRODUCT_ASSET_PATHS = (
     "RELEASING.md",
     "SECURITY.md",
 )
-NOT_APPLICABLE_PATHS = frozenset(
+COMPACT_PRODUCT_EVIDENCE_PATHS = frozenset(
     {
-        "tests/test_oc_goal_case_study.py",
-        "docs/case-studies/oc-goal/.gitignore",
-        "docs/case-studies/oc-goal/DESIGN.md",
-        "docs/case-studies/oc-goal/PLAN.md",
-        "docs/case-studies/oc-goal/README.md",
-        "docs/case-studies/oc-goal/check.py",
-        "docs/case-studies/oc-goal/oc_goal/__init__.py",
-        "docs/case-studies/oc-goal/oc_goal/db/__init__.py",
-        "docs/case-studies/oc-goal/oc_goal/db/schema.py",
-        "docs/case-studies/oc-goal/oc_goal/models.py",
-        "docs/case-studies/oc-goal/oc_goal/repository.py",
-        "docs/case-studies/oc-goal/oc_goal/role.py",
-        "docs/case-studies/oc-goal/oc_goal/seed.py",
-        "docs/case-studies/oc-goal/oc_goal/skills.py",
-        "docs/case-studies/oc-goal/oc_goal/tools.py",
-        "docs/case-studies/oc-goal/pyproject.toml",
+        *(f"docs/adr/{number:03d}" for number in range(1, 12)),
+        *(f"docs/adr/{number:03d}" for number in range(15, 20)),
+        "docs/atlas/check.mjs",
+        "docs/atlas/index.html",
+        "docs/atlas/vendor/mermaid.min.js",
+        "docs/handbook.md",
+        "docs/handbook.zh-CN.md",
+        "docs/project-status.md",
     }
 )
-NOT_APPLICABLE_REASON = (
-    "Python-only OC Goal case study; explicitly excluded from TypeScript and Go parity scope."
-)
-
-
 @dataclass(frozen=True)
 class GitFile:
     """One tracked file read from the pinned Python baseline."""
@@ -93,6 +81,16 @@ def _paths(revision: str, *prefixes: str) -> list[str]:
     output = _git("ls-tree", "-r", "--name-only", revision, "--", *prefixes)
     assert isinstance(output, str)
     return sorted(path for path in output.splitlines() if path)
+
+
+RETIRED_BASELINE_PATHS = frozenset(
+    [*_paths(BASELINE, "docs/case-studies")]
+    + [
+        path
+        for path in _paths(BASELINE, "tests")
+        if path.startswith("tests/test_") and path.endswith("_case_study.py")
+    ]
+)
 
 
 def _file(revision: str, path: str) -> GitFile:
@@ -290,19 +288,7 @@ def _target_placeholder(language: str, path: str, *, kind: str) -> dict[str, Any
     }
 
 
-def _not_applicable_target() -> dict[str, Any]:
-    return {
-        "status": "not-applicable",
-        "paths": [],
-        "tests": [],
-        "documentation": [],
-        "reason": NOT_APPLICABLE_REASON,
-    }
-
-
 def _targets(path: str, *, kind: str) -> dict[str, dict[str, Any]]:
-    if path in NOT_APPLICABLE_PATHS:
-        return {language: _not_applicable_target() for language in LANGUAGES}
     return {language: _target_placeholder(language, path, kind=kind) for language in LANGUAGES}
 
 
@@ -315,7 +301,7 @@ def _module_entry(source: GitFile, *, kind: str) -> dict[str, Any]:
         "pythonImport": _package_import(source.path) if source.path.endswith(".py") and not is_test else None,
         "publicSymbols": _symbols(source, is_test=is_test) if source.path.endswith(".py") else [],
         "responsibility": _responsibility(source.path, is_test=is_test),
-        "status": "not-applicable" if source.path in NOT_APPLICABLE_PATHS else "missing",
+        "status": "missing",
         "targets": _targets(source.path, kind=kind),
     }
 
@@ -324,7 +310,7 @@ def _asset_entry(source: GitFile) -> dict[str, Any]:
     return {
         "path": source.path,
         "sha256": source.sha256,
-        "status": "not-applicable" if source.path in NOT_APPLICABLE_PATHS else "missing",
+        "status": "missing",
         "targets": _targets(source.path, kind="asset"),
     }
 
@@ -337,14 +323,26 @@ def source_paths(revision: str = BASELINE) -> list[str]:
     ]
 
 
+def _is_retired_baseline_path(path: str, revision: str) -> bool:
+    """Recognize only the immutable validation snapshot retired before 1.0."""
+
+    return revision == BASELINE and path in RETIRED_BASELINE_PATHS
+
+
 def test_paths(revision: str = BASELINE) -> list[str]:
-    return [path for path in _paths(revision, "tests") if path.endswith(".py")]
+    return [
+        path
+        for path in _paths(revision, "tests")
+        if path.endswith(".py") and not _is_retired_baseline_path(path, revision)
+    ]
 
 
 def product_asset_paths(revision: str = BASELINE) -> list[str]:
     paths: set[str] = set(PRODUCT_ASSET_PATHS)
     paths.update(_paths(revision, "contexture/cli/templates", "docs"))
-    return sorted(paths)
+    return sorted(
+        path for path in paths if not _is_retired_baseline_path(path, revision)
+    )
 
 
 def build_manifest(revision: str = BASELINE) -> dict[str, Any]:
@@ -370,17 +368,19 @@ def build_manifest(revision: str = BASELINE) -> dict[str, Any]:
 def merge_progress(generated: dict[str, Any], existing: dict[str, Any]) -> dict[str, Any]:
     """Carry reviewed parity evidence onto a freshly generated pinned inventory."""
 
+    for collection in ("sourceModules", "testModules", "productAssets"):
+        existing[collection] = [
+            entry
+            for entry in existing[collection]
+            if not _is_retired_baseline_path(
+                entry["path"], generated["baseline"]["revision"]
+            )
+        ]
     verify_manifest(existing, generated["baseline"]["revision"])
     for collection in ("sourceModules", "testModules", "productAssets"):
         reviewed = {entry["path"]: entry for entry in existing[collection]}
         for index, entry in enumerate(generated[collection]):
             previous = reviewed[entry["path"]]
-            if entry["status"] == "not-applicable":
-                continue
-            if previous["status"] == "not-applicable":
-                raise ValueError(
-                    f"{entry['path']} is no longer in the exact not-applicable scope"
-                )
             generated[collection][index] = previous
     return generated
 
@@ -428,7 +428,7 @@ def render_markdown(manifest: dict[str, Any]) -> str:
         "",
         "Every applicable row has a planned native target. A target status of designed means",
         "no implementation or parity credit has yet been claimed; it is not an exemption. The",
-        "Python-only OC Goal case-study rows are explicitly marked not-applicable.",
+        "Retired case-study material is outside this product-parity inventory.",
         "",
         "## Source modules",
         "",
@@ -519,10 +519,8 @@ def _verify_entry(entry: Any, expected: GitFile, kind: str) -> None:
         raise ValueError(f"baseline content hash drifted for {expected.path}")
     if entry["status"] not in ENTRY_STATUSES:
         raise ValueError(f"{expected.path} has invalid status")
-    is_excluded = expected.path in NOT_APPLICABLE_PATHS
-    if is_excluded != (entry["status"] == "not-applicable"):
-        expected_status = "not-applicable" if is_excluded else "an applicable status"
-        raise ValueError(f"{expected.path} must have {expected_status}")
+    if entry["status"] == "not-applicable":
+        raise ValueError(f"{expected.path} must have an applicable status")
     if kind != "asset" and entry["kind"] != kind:
         raise ValueError(f"{expected.path} has wrong kind")
     if kind != "asset":
@@ -627,6 +625,42 @@ def _load_manifest(path: Path) -> dict[str, Any]:
     return value
 
 
+def render_json(manifest: dict[str, Any]) -> str:
+    """Render the manifest with compact product-asset evidence lists.
+
+    Later narrative assets have dense, repeated evidence lists.  Keeping those
+    lists on one line preserves the established checked-in representation
+    without reformatting older source, test, or product-asset rows.
+    """
+
+    rendered = copy.deepcopy(manifest)
+    replacements: dict[str, str] = {}
+    compact_index = 0
+    for entry in rendered["productAssets"]:
+        path = entry["path"]
+        compact_evidence = any(
+            path == prefix or path.startswith(f"{prefix}-")
+            for prefix in COMPACT_PRODUCT_EVIDENCE_PATHS
+        )
+        if not compact_evidence:
+            continue
+        for target in entry["targets"].values():
+            for field in ("paths", "tests", "documentation"):
+                token = f"__CONTEXTURE_COMPACT_ARRAY_{compact_index}__"
+                replacements[json.dumps(token)] = json.dumps(
+                    target[field], ensure_ascii=False
+                )
+                target[field] = token
+                compact_index += 1
+
+    text = json.dumps(rendered, ensure_ascii=False, indent=2)
+    for token, replacement in replacements.items():
+        if text.count(token) != 1:
+            raise ValueError("product manifest compact-array token is not unique")
+        text = text.replace(token, replacement)
+    return text + "\n"
+
+
 def main(arguments: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--revision", default=BASELINE, help="pinned Python revision to inventory")
@@ -648,7 +682,7 @@ def main(arguments: list[str] | None = None) -> int:
             if MANIFEST_PATH.is_file():
                 manifest = merge_progress(manifest, _load_manifest(MANIFEST_PATH))
             MANIFEST_PATH.write_text(
-                json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+                render_json(manifest),
                 encoding="utf-8",
             )
             MARKDOWN_PATH.write_text(render_markdown(manifest), encoding="utf-8")

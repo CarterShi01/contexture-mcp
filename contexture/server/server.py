@@ -10,7 +10,7 @@ A project registers its graph, compiles it, and serves it::
 
         server = ContextureServer(
             index,
-            name="oc-goal",
+            name="operations",
             prompts=[RollBackARelease],
             resources=[CrashLoopRunbook, RollbackPolicy],
         )

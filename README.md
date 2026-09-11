@@ -20,7 +20,7 @@ loop, call a model, or replace your business services.
 - MCP stdio and Streamable HTTP
 - Typed and marked with `py.typed`
 - Apache-2.0
-- Beta: public surfaces are snapshotted, but may still change before 1.0
+- Stable 1.0 public API governed by Semantic Versioning
 
 ## Install
 
@@ -38,7 +38,7 @@ uv add contexture-mcp
 # or: python -m pip install contexture-mcp
 ```
 
-To pin this release, request `contexture-mcp==0.16.0`.
+To pin this release, request `contexture-mcp==1.0.0`.
 
 ## Five-minute application
 
@@ -116,7 +116,7 @@ explicit `--allow-write`.
 | --- | --- | --- |
 | `Contexture` | one application value | Lazy composition root |
 | `Role` | subclass + constructor | Responsibility and containment boundary |
-| `PreProcess` / `PostProcess` | specialized Roles + constructors (0.16.0) | Optional preparation and finishing procedures with dedicated capabilities |
+| `PreProcess` / `PostProcess` | specialized Roles + constructors | Optional preparation and finishing procedures with dedicated capabilities |
 | `Skill` | subclass + constructor | Procedure the model follows |
 | `Tool` | subclass + typed `invoke()` | Deterministic code Contexture executes |
 | `Prompt` | subclass + constructor | User-triggered entrance to an existing node |
@@ -127,7 +127,7 @@ Role, Skill, and Tool form the graph. Prompt and Resource provide another
 protocol entrance to a ref the graph already owns. Use `prompt_roots` for
 complete trees that only the user-controlled Prompt plane may enter.
 
-The Python 0.16.0 design lets a Role hold optional `pre_process` and
+The stable 1.0 API lets a Role hold optional `pre_process` and
 `post_process` Roles. ACTIVE composes fixed, recognizable framework instruction
 blocks around unchanged business `Role.instructions`, naming the actual refs to
 open before starting or finishing. Procedures stay hidden until opened; opening

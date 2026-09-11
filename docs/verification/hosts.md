@@ -1,6 +1,6 @@
 # Host verification
 
-# TypeScript and Go 0.12 candidates — current four-tool gateway
+# Historical TypeScript and Go 0.12 candidates — four-tool gateway
 
 Recorded 2026-09-10 with Claude Code 2.1.133. TypeScript was verified against
 commit `dec12f5`; Go passed after the Host-discovered fixes in `23cc42f`.
@@ -14,7 +14,7 @@ commit `dec12f5`; Go passed after the Host-discovered fixes in `23cc42f`.
 | Go | Official MCP client 1.7.0 | passed in the automated suite |
 
 Both Claude runs used isolated MCP configuration from outside the repository.
-All built-in tools were disabled; only the server's four current Contexture
+All built-in tools were disabled; only the server's four then-current Contexture
 gateway Tools were available. Each run collected Pod status, previous logs,
 events, and `crash_loop_runbook`, then identified missing `DB_URL`, cited exit
 code 1 rather than OOM/137, recommended repairing the projected ConfigMap or
@@ -41,6 +41,9 @@ Binding-specific reproduction records live in each binding repository under
 `docs/verification/`. Request-selected HTTP surfaces and Prompt-only roots
 remain covered by official-client integration tests because this diagnosis is
 a stdio model-navigation scenario.
+
+This is historical Host evidence from the recorded candidates, not a v1.0.0
+Host-release verification.
 
 ---
 

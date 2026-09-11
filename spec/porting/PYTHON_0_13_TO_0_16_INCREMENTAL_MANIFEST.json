@@ -8,8 +8,6 @@
   "policy": {
     "releaseTagsPresent": false,
     "baselineRule": "The immutable commit that first sets the exact version in pyproject.toml, is descended from the previous baseline, and contains the matching changelog release entry.",
-    "excludedProduct": "docs/case-studies/oc-goal",
-    "excludedReason": "OC Goal remains a Python-only case study by explicit project decision.",
     "completionRule": "A release is verified only when every capability row has direct TypeScript and Go implementation, focused tests, bilingual documentation where user-facing, full native gates, and pushed commit evidence."
   },
   "releases": [

@@ -29,6 +29,8 @@ uv run --extra dev ruff check contexture tests scripts
 uv run --extra dev validate-pyproject pyproject.toml
 uv run python scripts/verify_porting_contract.py
 uv run python scripts/product_manifest.py --check
+uv run python scripts/incremental_manifest.py
+uv run python scripts/verify_porting_contract.py --release-bindings
 ```
 
 ## Porting work
@@ -60,10 +62,11 @@ uv run python scripts/product_manifest.py --check
 - A rule is implemented only when repository tests contain the evidence named
   in the porting ledger. Copied fixtures, copied golden bytes, or prose do not
   count as execution evidence.
-- TypeScript and Go are incomplete kernel prototypes. Do not claim product
-  equivalence until the product manifest is fully verified. Do not mark a
-  conformance rule implemented until its focused tests and prerequisite rules
-  pass.
+- TypeScript and Go are coordinated v1 release candidates. Claim product
+  equivalence only when the product and incremental manifests, ecosystem
+  metadata and byte-identity gate, current Host evidence, and all release gates
+  are verified. Do not mark a conformance rule implemented until its focused
+  tests and prerequisite rules pass.
 - Do not design a supposedly shared executable runner until the neutral fixture
   format specifies handler behavior and observations. Each binding must produce
   outputs through its own implementation.

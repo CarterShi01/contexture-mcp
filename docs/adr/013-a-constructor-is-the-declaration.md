@@ -110,8 +110,8 @@ an agent reads is written down, in every language this framework runs in.
 
 **Nothing is scanned.** Members are built in the constructor that holds them,
 so there is no filter deciding what an unrecognised class attribute meant — and
-a business can still hang its own contract on a tool, which the oc-goal case
-study does with `target`, `writes` and `precondition`.
+a business can still hang its own `target`, `writes`, or `precondition` contract
+on a tool.
 
 **Nothing exists until it is registered.** A class is a zero-argument factory;
 its members are built by its own constructor. Importing a declaration

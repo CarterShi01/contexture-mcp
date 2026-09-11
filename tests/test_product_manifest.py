@@ -22,7 +22,6 @@ def test_build_manifest_is_self_consistent() -> None:
         entry
         for collection in ("sourceModules", "testModules", "productAssets")
         for entry in manifest[collection]
-        if entry["path"] not in product_manifest.NOT_APPLICABLE_PATHS
     ]
     assert all(
         target["status"] == "designed" and target["paths"]
@@ -31,49 +30,56 @@ def test_build_manifest_is_self_consistent() -> None:
     )
 
 
-def test_oc_goal_exclusion_is_exact_and_generated() -> None:
+def test_retired_baseline_snapshot_is_exactly_outside_the_inventory() -> None:
     manifest = product_manifest.build_manifest()
-    excluded = {
+    inventory_paths = {
         entry["path"]
         for collection in ("sourceModules", "testModules", "productAssets")
         for entry in manifest[collection]
-        if entry["status"] == "not-applicable"
     }
+    baseline_paths = {
+        path
+        for path in product_manifest._paths(product_manifest.BASELINE, "tests")
+        if path.endswith(".py")
+    }
+    baseline_paths.update(product_manifest.PRODUCT_ASSET_PATHS)
+    baseline_paths.update(
+        product_manifest._paths(
+            product_manifest.BASELINE, "contexture/cli/templates", "docs"
+        )
+    )
 
-    assert excluded == product_manifest.NOT_APPLICABLE_PATHS
-    for collection in ("sourceModules", "testModules", "productAssets"):
-        for entry in manifest[collection]:
-            if entry["path"] not in excluded:
-                continue
-            assert all(
-                target == product_manifest._not_applicable_target()
-                for target in entry["targets"].values()
-            )
+    assert baseline_paths - inventory_paths == product_manifest.RETIRED_BASELINE_PATHS
+    assert len(product_manifest.RETIRED_BASELINE_PATHS) == 16
 
 
-def test_verifier_rejects_exclusions_outside_exact_oc_goal_scope() -> None:
+def test_future_case_studies_are_not_generically_exempt() -> None:
+    future_path = "tests/test_future_case_study.py"
+
+    assert not product_manifest._is_retired_baseline_path(
+        future_path, product_manifest.BASELINE
+    )
+    assert not product_manifest._is_retired_baseline_path(
+        next(iter(product_manifest.RETIRED_BASELINE_PATHS)), "future-revision"
+    )
+
+
+def test_verifier_rejects_not_applicable_product_rows() -> None:
     manifest = product_manifest.build_manifest()
     entry = manifest["sourceModules"][0]
     entry["status"] = "not-applicable"
     entry["targets"] = {
-        language: product_manifest._not_applicable_target()
+        language: {
+            "status": "not-applicable",
+            "paths": [],
+            "tests": [],
+            "documentation": [],
+            "reason": "Outside the product contract.",
+        }
         for language in product_manifest.LANGUAGES
     }
 
     with pytest.raises(ValueError, match="must have an applicable status"):
-        product_manifest.verify_manifest(manifest)
-
-
-def test_verifier_requires_oc_goal_exclusions() -> None:
-    manifest = product_manifest.build_manifest()
-    entry = next(
-        entry
-        for entry in manifest["testModules"]
-        if entry["path"] == "tests/test_oc_goal_case_study.py"
-    )
-    entry["status"] = "missing"
-
-    with pytest.raises(ValueError, match="must have not-applicable"):
         product_manifest.verify_manifest(manifest)
 
 
@@ -91,13 +97,11 @@ def test_regeneration_preserves_reviewed_progress() -> None:
     )
 
     assert regenerated["sourceModules"][0] == reviewed
-    excluded = {
-        entry["path"]
+    assert all(
+        entry["status"] != "not-applicable"
         for collection in ("sourceModules", "testModules", "productAssets")
         for entry in regenerated[collection]
-        if entry["status"] == "not-applicable"
-    }
-    assert excluded == product_manifest.NOT_APPLICABLE_PATHS
+    )
 
 
 def test_verifier_rejects_pinned_source_hash_drift() -> None:
@@ -218,3 +222,24 @@ def test_markdown_view_is_deterministic() -> None:
     second = product_manifest.build_manifest()
 
     assert product_manifest.render_markdown(first) == product_manifest.render_markdown(second)
+
+
+def test_json_view_is_deterministic_and_keeps_product_evidence_compact() -> None:
+    manifest = product_manifest.build_manifest()
+
+    first = product_manifest.render_json(manifest)
+    second = product_manifest.render_json(manifest)
+
+    assert first == second
+    assert '          "paths": [\n' in first
+    product_assets = first.split('  "productAssets": [', maxsplit=1)[1]
+    assert '          "paths": [\n' in product_assets
+    first_adr = product_assets.split(
+        '      "path": "docs/adr/001-native-mcp-server.md"', maxsplit=1
+    )[1].split('      "path": "docs/adr/002-per-call-context-and-options.md"', maxsplit=1)[
+        0
+    ]
+    assert '          "paths": [\n' not in first_adr
+    assert (
+        '          "paths": ["docs/adr/001-native-mcp-server.md"]' in first_adr
+    )

@@ -1,6 +1,6 @@
 {
-  "specificationVersion": "0.12",
-  "revision": "e107a81a933c5eb5b4530e762311619be3a7a80f",
+  "specificationVersion": "0.16",
+  "revision": "cda2721c7c40128cd0b7eef990e5909edabd3b17",
   "fixtures": [
     "disclosure-only-application.json",
     "prompt-roots-application.json",

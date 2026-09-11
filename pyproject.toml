@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "contexture-mcp"
-version = "0.16.0"
+version = "1.0.0"
 description = "A Controller framework for agent and human Views: declare once, then publish through MCP and explicit REST routes"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,7 +18,7 @@ maintainers = [
 ]
 keywords = ["agent", "context", "controller", "mcp", "rest", "asgi", "llm", "claude-code", "codex"]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",

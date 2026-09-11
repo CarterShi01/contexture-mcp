@@ -402,7 +402,3 @@ None blocking. Two to revisit with evidence rather than argument:
   immutable, and shared. That is what makes `Dispatch._derived`'s `id()` key
   safe and the server lock-free. A per-connection tree would need a process per
   tenant.
-- **No commands are declared in `examples/oc-goal`.** Its `GoalDomain` is flat
-  — eight tools, one skill, two resources, no child roles — so it does not yet
-  exercise cross-branch composition. It will when `project` / `workitem` land,
-  which its own comment anticipates.

@@ -52,6 +52,34 @@ jobs:
       - run: uv run --extra dev validate-pyproject pyproject.toml
       - run: uv run python scripts/verify_porting_contract.py
       - run: uv run python scripts/product_manifest.py --check
+      - run: uv run python scripts/incremental_manifest.py
+
+  ecosystem-release-metadata:
+    name: Ecosystem release metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          repository: CarterShi01/contexture-mcp-typescript
+          path: .release-bindings/typescript
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          repository: CarterShi01/contexture-mcp-go
+          path: .release-bindings/go
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.14"
+      - name: Verify the unified release contract
+        run: |
+          python scripts/verify_porting_contract.py --release-bindings \
+            --typescript-root .release-bindings/typescript \
+            --go-root .release-bindings/go
 
   distribution:
     name: Build and consume distributions

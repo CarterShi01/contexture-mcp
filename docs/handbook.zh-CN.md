@@ -147,7 +147,7 @@ uv run contexture inspect --all --summary
 
 ref 应来自 `list` 或 `inspect` 返回的卡片，不要靠字符串猜测。
 
-### 可选过程成员（Python 0.16.0）
+### 可选过程成员（Contexture 1.0）
 
 PreProcess 与 PostProcess 都是 Role 的特化，不是新节点类型，也不是会自动执行的
 回调。业务构造函数照常提供 `instructions`、Skill、Tool 与 `uses`：

@@ -85,7 +85,6 @@ MCP Surface         把固定 gateway 和可选 prompt/resource 放到协议上
 
 ### 3.2 本设计明确不包含
 
-- 不处理 `docs/case-studies/oc-goal`。
 - 不恢复或引入 `src/` 目录。
 - 不重写 `ControllerManager → Index → Disclosure`。
 - 不改变四个固定 gateway tool 的协议行为。

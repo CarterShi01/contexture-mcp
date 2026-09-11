@@ -19,7 +19,7 @@ Contexture 属于 Controller 层：它不实现 Agent 循环、不调用模型�
 - 支持 MCP stdio 与 Streamable HTTP
 - 提供类型标注并包含 `py.typed`
 - Apache-2.0 许可证
-- 当前为 Beta：公共入口已有快照测试，但 1.0 前仍可能调整
+- 稳定的 1.0 公共 API，后续兼容性遵循语义化版本规范
 
 ## 安装
 
@@ -37,7 +37,7 @@ uv add contexture-mcp
 # 或：python -m pip install contexture-mcp
 ```
 
-可通过 `contexture-mcp==0.16.0` 固定安装本版本。
+可通过 `contexture-mcp==1.0.0` 固定安装本版本。
 
 ## 五分钟创建应用
 
@@ -114,7 +114,7 @@ uv run contexture serve
 | --- | --- | --- |
 | `Contexture` | 一个应用值 | 惰性的组合根 |
 | `Role` | 子类与构造函数 | 职责和包含关系边界 |
-| `PreProcess` / `PostProcess` | Role 特化与构造函数（0.16.0） | 可选的准备与收尾流程及专属能力 |
+| `PreProcess` / `PostProcess` | Role 特化与构造函数 | 可选的准备与收尾流程及专属能力 |
 | `Skill` | 子类与构造函数 | 模型遵循的流程知识 |
 | `Tool` | 子类与带类型的 `invoke()` | Contexture 执行的确定性代码 |
 | `Prompt` | 子类与构造函数 | 用户主动触发、指向既有节点的入口 |
@@ -125,7 +125,7 @@ Role、Skill 与 Tool 组成能力图。Prompt 和 Resource 不复制节点，�
 已有 ref 提供另一种协议入口。只允许由用户控制的 Prompt 平面进入的完整树，
 应放在 `prompt_roots` 中。
 
-Python 0.16.0 允许 Role 声明可选的 `pre_process` 与 `post_process`。ACTIVE
+稳定的 1.0 API 允许 Role 声明可选的 `pre_process` 与 `post_process`。ACTIVE
 在业务 `Role.instructions` 前后拼接固定、可识别的框架指令块，要求 Agent 在开始或
 结束前打开真实 ref；过程自身的说明与能力仍保持延迟公开，打开不会执行任何 Tool。
 两个字段均缺省时，既有输出与义务不变。业务还可用 `binding_instruction` 以自己的

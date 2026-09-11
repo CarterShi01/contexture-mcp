@@ -169,7 +169,7 @@ uv run contexture inspect --all --summary
 Take refs from `list` or cards returned by `inspect`; do not construct them by
 guessing.
 
-### Optional process members (Python 0.16.0)
+### Optional process members (Contexture 1.0)
 
 PreProcess and PostProcess are preparing and finishing equipment, not new node
 kinds or automatically executed callbacks. Import them from `contexture` and

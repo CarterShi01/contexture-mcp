@@ -13,10 +13,6 @@ therefore the immutable commit that first sets the exact package version in
 matching changelog entry. Tree IDs are recorded so the complete source snapshot
 is independently identifiable.
 
-OC Goal remains excluded as an explicitly Python-only case study. This does not
-exclude any framework capability, test, workflow, documentation, or release
-asset introduced by these four releases.
-
 ## Frozen release chain
 
 | Version | Commit | Tree | Product delta | State |

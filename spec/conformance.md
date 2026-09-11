@@ -57,7 +57,7 @@ The numbered rules above are unchanged by this extension.
 The legacy fixture/golden inventories remain pinned to 0.12; this section adds
 no fixture or golden file and does not upgrade legacy port conformance claims.
 The normative extension is [Optional Role process members](model.md#optional-role-process-members-016-extension).
-It is accepted for Python 0.16.0, not evidence of TypeScript or Go parity.
+It was accepted in Python 0.16.0 and is part of the cross-language 1.0 contract.
 
 Focused Python evidence is in `tests/test_process.py`; runtime and MCP
 integration evidence is in `tests/test_process_integration.py`. A binding

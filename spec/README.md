@@ -49,11 +49,12 @@ against the conformance rules and golden surface. Fixtures describe Tool inputs
 but not Tool bodies: business execution is binding-specific; the public model
 and protocol behavior are not.
 
-The Python package is currently the only shipped binding. The
-[TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript) and
-[Go](https://github.com/CarterShi01/contexture-mcp-go) repositories are guarded
-scaffolds, not installable implementations. The PHP row in `bindings.md`
-remains compatibility guidance only.
+The Python, [TypeScript](https://github.com/CarterShi01/contexture-mcp-typescript),
+and [Go](https://github.com/CarterShi01/contexture-mcp-go) implementations have
+verified the applicable product and conformance evidence through the 1.0
+baseline. Their public registry releases remain guarded until the coordinated
+release workflows complete. The PHP row in `bindings.md` remains compatibility
+guidance only.
 
 Cross-language implementation work starts at
 [`porting/TERRA_GOAL.md`](porting/TERRA_GOAL.md). The adjacent porting brief,

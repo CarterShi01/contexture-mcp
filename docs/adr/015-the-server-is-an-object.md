@@ -101,7 +101,7 @@ def main() -> None:
     tree     = manager.sealed(schema_of=dispatch.schema)
     assembly = Assembly.of(tree, execute=dispatch.execute, published=PUBLISHED)
 
-    server = ContextureServer(assembly, name="oc-goal")
+    server = ContextureServer(assembly, name="operations")
     server.start(build_options(args))
 ```
 

@@ -1,23 +1,18 @@
 # Project status
 
-Updated 2026-09-10 after completion of the TypeScript and Go 0.12 parity
-ledger.
+Updated 2026-09-11 for the coordinated Python, TypeScript, and Go 1.0 release.
 
-Contexture has one shipped implementation: the Python package
-`contexture-mcp`. Its current architecture is register → compile → disclose,
-with an optional shared execution runtime behind MCP and explicit REST Host
-surfaces.
+All three implementations have complete evidence for every applicable Python
+0.12 product-manifest row and the verified 0.13–0.16 incremental capabilities.
+Their native conformance, package-consumer, CLI, MCP, REST, identity, selection,
+lifecycle, inspection, and documentation gates are the release baseline.
 
-The TypeScript and Go repositories now have complete evidence for every
-applicable Python 0.12 product-manifest row. Their conformance metadata is
-`conformant`, all 16 rules have execution evidence, external package/module
-consumers pass, and Claude Code 2.1.133 completed the maintained MCP-only
-diagnosis against both candidates on 2026-09-10. This is a parity statement,
-not publication authorization: the npm package remains private and the Go
-module remains untagged until maintainers approve their separate release
-gates.
+The source trees are prepared as stable 1.0 candidates. This is not a claim
+that registry publication has already happened: PyPI, npm, and the Go module
+tag remain external release operations protected by maintainer accounts and
+repository environments.
 
-## Release candidate scope
+## 1.0 release scope
 
 - Python 3.11–3.14 support and bounded compatible dependencies.
 - A snapshotted top-level authoring API and advanced `contexture.server` API.
@@ -25,41 +20,41 @@ gates.
   request-selected complete root surfaces, and explicit REST routes.
 - English and Simplified Chinese README and onboarding handbook.
 - Language-neutral model, conformance rules, fixtures, and golden MCP outputs.
-- CI, distribution consumption tests, and OIDC Trusted Publishing workflows.
+- CI, external distribution consumers, and guarded registry workflows.
 - Changelog, security policy, contribution guide, and release runbook.
 
-## Required before stable 0.12.0
+## Required before publishing 1.0.0
 
-1. Publish `0.12.0rc1` to TestPyPI through the `testpypi` environment and run
-   the clean-install/scaffold checks in `RELEASING.md`.
-2. Publish the same candidate to PyPI through the protected `pypi` environment;
-   this first successful upload is what reserves `contexture-mcp`.
-3. Re-run and record Claude Code and Codex against the current four-tool
-   gateway, including Prompt-only and selected-root behavior where supported.
-4. Collect candidate feedback, fix with a new immutable candidate version when
-   necessary, then repeat the release gate for `0.12.0`.
+1. Run the complete clean-tree gate in each repository and inspect the exact
+   wheel, npm tarball, and Go module consumer outputs.
+2. Record current real-Host verification from the exact 1.0.0 release artifacts;
+   historical 0.12 Host runs do not satisfy this gate.
+3. Publish `contexture-mcp==1.0.0` to TestPyPI and repeat the clean-install,
+   scaffold, and CLI checks from `RELEASING.md`.
+4. Confirm ownership or creation of the npm `contexture` scope, configure npm
+   Trusted Publishing, and protect all three release environments.
+5. Publish Python and npm from immutable `v1.0.0` tags, then create the Go
+   `v1.0.0` module tag through its guarded workflow.
+6. Resolve every public artifact from its registry or proxy and record the
+   exact version, provenance, package contents, and smoke-test output.
 
 These steps require maintainer accounts or external Host sessions. They are not
 replaced by local unit tests.
 
-For the TypeScript and Go candidates, Claude Code verification is recorded and
-green. Codex CLI 0.153.0 was available but the local account was not logged in,
-so that row remains an external account blocker to repeat after maintainer
-authentication; no inference was attempted and no product failure is claimed.
+Claude Code verification is recorded only for historical 0.12 binding
+candidates. Current 1.0 Host verification, including the Codex row, remains an
+external account-dependent check and must not be inferred from local unit tests.
 
 ## Deliberately deferred
 
-- Publishing TypeScript, Go, and PHP packages. TypeScript and Go 0.12 parity
-  evidence is complete, but their public package/module releases remain
-  separately guarded and unauthorized. PHP remains a documented compatibility
-  target only.
+- A PHP package; PHP remains a documented compatibility target only.
 - A hosted documentation site; repository documentation is the current source.
 - Translation of historical ADRs. ADRs preserve decision history; current user
   paths are bilingual.
 - Full style-only Ruff normalization. Release-blocking correctness rules are
   enabled; broader formatting can move incrementally.
-- A 1.0 stability promise or complex governance process before public candidate
-  feedback exists.
+- A complex governance process beyond the compatibility and security policies
+  required for the 1.x line.
 
 ## Sources of truth
 

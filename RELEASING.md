@@ -24,10 +24,10 @@ creates the project and occupies `contexture-mcp`. The repository owner, name,
 workflow filename, environment, and package metadata must match exactly. No API
 token or repository secret is used.
 
-## Prepare a candidate
+## Prepare the 1.0.0 release
 
 1. Start from current `master` with a clean worktree.
-2. Set the same PEP 440 version in `pyproject.toml` and
+2. Confirm the PEP 440 version is `1.0.0` in both `pyproject.toml` and
    `contexture/core/constants.py`.
 3. Move user-visible changes from Unreleased into a dated changelog section.
 4. Update both READMEs and handbooks for changed user behavior.
@@ -38,8 +38,12 @@ token or repository secret is used.
 uv sync --extra dev
 uv run --extra dev pytest -q
 uv run --extra dev pyright
-uv run --extra dev ruff check contexture tests
+uv run --extra dev ruff check contexture tests scripts
 uv run --extra dev validate-pyproject pyproject.toml
+uv run python scripts/verify_porting_contract.py
+uv run python scripts/product_manifest.py --check
+uv run python scripts/incremental_manifest.py
+uv run python scripts/verify_porting_contract.py --release-bindings
 uv build
 uv run --extra dev twine check --strict dist/*
 ```
@@ -47,7 +51,11 @@ uv run --extra dev twine check --strict dist/*
 Inspect the wheel and source archive and confirm both contain `LICENSE`, typing
 files, templates, and no tests, credentials, caches, or stale build tree.
 
-## Rehearse on TestPyPI
+7. Record current real-Host verification from these exact release artifacts.
+   Historical candidate runs are useful regression evidence but do not satisfy
+   the 1.0.0 Host gate.
+
+## Rehearse 1.0.0 on TestPyPI
 
 After the release changes and workflow exist on GitHub, run **Publish to
 TestPyPI** manually from the intended commit. Approve the `testpypi` environment
@@ -57,7 +65,7 @@ dependencies:
 ```bash
 python -m pip download --no-deps \
   --index-url https://test.pypi.org/simple/ \
-  'contexture-mcp==0.12.0rc1'
+  'contexture-mcp==1.0.0'
 ```
 
 Install that downloaded wheel in a clean environment while resolving runtime
@@ -67,7 +75,7 @@ public API, generate a project, and execute `contexture check`.
 TestPyPI and PyPI are separate. Success on TestPyPI does not occupy the PyPI
 name and does not configure the production publisher.
 
-## Publish to PyPI
+## Publish 1.0.0 to PyPI
 
 Merge the candidate to `master` and require green CI. Create an annotated tag
 whose name exactly matches the package version and push only that tag:
@@ -75,8 +83,8 @@ whose name exactly matches the package version and push only that tag:
 ```bash
 git switch master
 git pull --ff-only
-git tag -a v0.12.0rc1 -m "Contexture 0.12.0rc1"
-git push origin v0.12.0rc1
+git tag -a v1.0.0 -m "Contexture 1.0.0"
+git push origin v1.0.0
 ```
 
 The tag starts `.github/workflows/publish-pypi.yml`. Its build job refuses a
@@ -87,16 +95,24 @@ and uploads with a provenance attestation.
 After approval, verify:
 
 ```bash
-uvx --from 'contexture-mcp==0.12.0rc1' contexture --version
+uvx --from 'contexture-mcp==1.0.0' contexture --version
 ```
 
 Also verify the PyPI metadata, README links, files, classifiers, license, and
-provenance. Run the generated-project path and record host verification before
-promoting a stable release.
+provenance. Run the generated-project path and record host verification.
 
-## Promote stable
+## Verify the coordinated release
 
-Do not rename or mutate the candidate. Change both version locations to
-`0.12.0`, update the changelog, repeat TestPyPI with the new immutable version,
-merge, and tag `v0.12.0`. If a published release is unsafe, yank it and publish
-a fixed version; keep the historical file record intact.
+After the sibling repositories publish the same semantic version, resolve all
+three public artifacts without a source checkout:
+
+```bash
+uvx --from 'contexture-mcp==1.0.0' contexture --version
+npm view '@contexture/mcp@1.0.0' version dist.integrity
+GOPROXY=https://proxy.golang.org go list -m \
+  github.com/CarterShi01/contexture-mcp-go@v1.0.0
+```
+
+Record the three immutable artifact identifiers together. If a published
+release is unsafe, deprecate or yank it where supported and publish a fixed
+version; never move a tag or replace an existing registry file.

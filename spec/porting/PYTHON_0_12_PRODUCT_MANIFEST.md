@@ -8,12 +8,12 @@ Package: contexture-mcp 0.12.0rc1
 ## Inventory
 
 - Source modules: 60
-- Test modules: 32
-- Product assets: 67
+- Test modules: 31
+- Product assets: 52
 
 Every applicable row has a planned native target. A target status of designed means
 no implementation or parity credit has yet been claimed; it is not an exemption. The
-Python-only OC Goal case-study rows are explicitly marked not-applicable.
+Retired case-study material is outside this product-parity inventory.
 
 ## Source modules
 
@@ -102,7 +102,6 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | tests/test_layering.py | test | — | verified: `test/layering.test.ts` | verified: `architecture_test.go`, `facade_test.go` | verified |
 | tests/test_manager.py | test | — | verified: `test/manager.test.ts` | verified: `manager_test.go` | verified |
 | tests/test_messages.py | test | — | verified: `test/messages.test.ts` | verified: `server/messages/messages_test.go`, `server/completion_test.go`, `server/instructions/instructions_test.go` | verified |
-| tests/test_oc_goal_case_study.py | test | — | not-applicable | not-applicable | not-applicable |
 | tests/test_project_channels.py | test | — | verified: `test/project.test.ts`, `test/lifecycle.test.ts` | verified: `cli/application_test.go`, `cmd/contexture/main_test.go` | verified |
 | tests/test_public_api.py | test | test_authoring_api_is_deliberate, test_every_promised_name_resolves, test_server_api_is_deliberate | verified: `test/public-api.test.ts` | verified: `public_api_test.go` | verified |
 | tests/test_root_selection.py | test | — | verified: `test/root-selection.test.ts`, `test/root-selector.test.ts`, `test/disclosure-prompt-plane.test.ts` | verified: `root_selection_test.go` | verified |
@@ -166,21 +165,6 @@ Python-only OC Goal case-study rows are explicitly marked not-applicable.
 | docs/atlas/check.mjs | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
 | docs/atlas/index.html | verified: `docs/architecture.md`, `docs/handbook.md` | verified: `docs/architecture.md`, `docs/handbook.md` | verified |
 | docs/atlas/vendor/mermaid.min.js | verified: `docs/architecture.md` | verified: `docs/architecture.md` | verified |
-| docs/case-studies/oc-goal/.gitignore | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/DESIGN.md | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/PLAN.md | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/README.md | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/check.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/__init__.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/db/__init__.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/db/schema.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/models.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/repository.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/role.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/seed.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/skills.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/oc_goal/tools.py | not-applicable | not-applicable | not-applicable |
-| docs/case-studies/oc-goal/pyproject.toml | not-applicable | not-applicable | not-applicable |
 | docs/handbook.md | verified: `docs/handbook.md` | verified: `docs/handbook.md` | verified |
 | docs/handbook.zh-CN.md | verified: `docs/handbook.zh-CN.md` | verified: `docs/handbook.zh-CN.md` | verified |
 | docs/project-status.md | verified: `docs/architecture.md`, `README.md` | verified: `docs/architecture.md`, `README.md` | verified |

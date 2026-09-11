@@ -13,7 +13,7 @@ copy of the list going quietly out of date.
 """
 
 PACKAGE_NAME = "contexture"
-PACKAGE_VERSION = "0.16.0"
+PACKAGE_VERSION = "1.0.0"
 
 #: Separates one segment of a reference from the next.
 #:

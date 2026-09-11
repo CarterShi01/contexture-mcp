@@ -18,7 +18,6 @@
 4. **新手路径先落地，兼容门随后适配。** 新 scaffold 只讲 app，旧 table 通过 adapter 存活。
 5. **不顺手整理目录。** 除方案明确新增的文件外，不借机移动 core/server 或恢复 src。
 6. **每阶段可独立回退。** 每个阶段保持测试绿、golden 可比、工作树变化可审查。
-7. **`oc-goal` 全程排除。** 不将它作为 fixture、迁移对象或验收项。
 
 ## 2. 目标依赖图
 
@@ -54,7 +53,6 @@ P0–P2 是后续工作的硬依赖。P3 与 P4 可以在 P2 后并行开发，�
 - Channels 的 I/O 只发生在 provisioned lifecycle 中。
 - `read_only=False` 的 Tool 不可被本地 call 隐式执行。
 - 现有源码保持 flat layout。
-- 不读取或修改 `docs/case-studies/oc-goal` 作为实现内容。
 
 ## 4. P0 — 固化基线并修复构建安全
 
@@ -334,7 +332,7 @@ Channels, Prompt, Resource, Principal
 - [ ] 把 Manager/Index/Disclosure 移到 internals 章节。
 - [ ] 将当前“Writing the entry point yourself”改为 app + serve 的短入口；低层组装另列。
 - [ ] 更新 Host verification 文档使用新项目 app。
-- [ ] 更新 HANDOFF A：完成项删除，仍未解决项保留；不触碰 oc-goal 条目。
+- [ ] 更新 HANDOFF A：删除完成项，只保留仍未解决项。
 
 ### 验收
 
@@ -457,7 +455,6 @@ node docs/atlas/check.mjs
 - [ ] 采用 flat-layout `uv_build` 并做隔离 wheel 验证。
 - [ ] legacy config 至少保留一个过渡 release。
 - [ ] TypeScript/Go/PHP 只共享语义和 conformance，不复制 Python 类结构。
-- [ ] 本轮不处理 oc-goal。
 
 ## 14. 完成定义
 

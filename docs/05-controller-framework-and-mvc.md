@@ -171,35 +171,35 @@ Driven adapter      Repository / SQLite / HTTP client
 两种比较并不冲突。MVC 给第一次接触 Contexture 的人一个准确的大轮廓；Ports and
 Adapters 用来约束业务项目内部不能让 Tool、领域模型和数据库实现重新粘成一层。
 
-## 7. oc-goal 的具体映射
+## 7. 业务应用中的具体映射
 
-`docs/case-studies/oc-goal` 把这个边界落实成三层：
+一个典型业务应用可以把这个边界落实成三层：
 
 ```text
 Controller
   Contexture app
-  └── GoalDomain(Role)
-      ├── ReviewAttention(Skill)
+  └── DomainController(Role)
+      ├── ReviewWork(Skill)
       └── query / command / content Tools
 
 Model
-  Area / Goal / Focus / ContextConfig
+  业务实体、值对象与领域规则
 
 Persistence
-  GoalRepository
-  └── SQLite
+  Repository
+  └── 数据库或外部服务
 ```
 
 从 MVC 的宏观尺度看，Repository 和 SQLite 仍属于 Model 一侧：它们保存业务事实。
-从业务代码的内部尺度看，把领域值与持久化机械件分开仍然必要，所以 oc-goal 保留
-`models.py` 与 `repository.py` 两个明确边界。
+从业务代码的内部尺度看，把领域值与持久化机械件分开仍然必要，因此领域模型与
+Repository 应保持明确边界。
 
-例如一次 `upsert-goal`：
+例如一次 `upsert-record`：
 
-1. Contexture 根据 ref 找到 `UpsertGoal` Controller，并按类型签名校验输入。
-2. Tool 的签名根本不接受人类专属的 `status` 字段。
-3. `Goal` Model 校验 slug、horizon、success 和 ContextConfig 的值形状。
-4. `GoalRepository` 检查 Area 当前是否 active，并在事务内执行 CAS。
+1. Contexture 根据 ref 找到 `UpsertRecord` Controller，并按类型签名校验输入。
+2. Tool 的签名只接受该用例允许修改的字段。
+3. 领域 Model 校验标识、状态和值对象的形状。
+4. Repository 检查当前版本，并在事务内执行 CAS。
 5. Host 接收结果并决定怎样向用户呈现。
 
 没有一层需要复制另一层的工作。
@@ -210,7 +210,7 @@ Persistence
 
 | “Model” | 指什么 |
 | --- | --- |
-| MVC Model | 业务状态、规则与持久化，例如 oc-goal 的 Area/Goal/Repository |
+| MVC Model | 业务状态、规则与持久化，例如领域实体与 Repository |
 | `contexture.core.model` | Contexture 用来描述 Controller 的对象模型；包名表示“框架对象模型”，不表示 MVC Model |
 | AI model | 连接 Host 中负责理解、选择、遵循 Skill 的语言模型 |
 

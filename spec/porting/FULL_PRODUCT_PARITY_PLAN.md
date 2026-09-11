@@ -118,6 +118,12 @@ user workflow merely because the old ports do not implement it. CI fails if a
 Python module is unmapped, a mapped binding path is absent, or a verified entry
 lacks named evidence.
 
+The pinned 0.12 inventory also records one exact validation-only case-study
+snapshot that was retired before 1.0. Those frozen paths are omitted rather
+than treated as a product plane. The retirement set is exact and applies only
+to the pinned baseline; no current or future case study, test, documentation,
+workflow, or release asset is generically exempt from parity review.
+
 The manifest must include these groups:
 
 | Python group | Required binding counterpart |
@@ -182,7 +188,7 @@ snapshots, and contract text.
 TypeScript uses explicit schemas and scoped asynchronous context. Go uses typed
 factories, tagged structs, context.Context, defensive copies, and typed errors.
 
-**Exit evidence:** mapped Python model tests, R1–R16 evidence, mutation,
+**Exit evidence:** mapped Python model tests, R1–R17 evidence, mutation,
 concurrency, lifecycle, and error-path tests all pass. No model group is
 unmapped or justified only by copied assets.
 
@@ -285,11 +291,14 @@ evidence.
 Human input is needed only for a product-semantic decision absent from Python,
 registry ownership, credentials, or release authorisation.
 
-## Immediate next slice
+## Current release gate
 
-1. Generate the Python product and test-mapping manifest from 3b27442.
-2. Add its coverage verifier to the reference repository.
-3. Design TS and Go public facades and compatibility policy from the inventory.
-4. Restructure TypeScript first while preserving existing kernel fixes/tests.
-5. Do not push, tag, publish, or call either binding complete before its phase
-   gates pass.
+1. Verify the reviewed product and incremental manifests and the immutable
+   cross-language fixture/golden byte gate.
+2. Run all three package gates and inspect the exact wheel, npm tarball, and Go
+   external-module consumer results.
+3. Record current real-Host evidence from the exact release artifacts.
+4. Confirm registry namespaces, trusted publishers, and protected release
+   environments.
+5. Do not push a release tag, publish, or claim product equivalence before all
+   evidence is green and a maintainer separately authorizes the release.

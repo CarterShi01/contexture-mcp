@@ -1,10 +1,25 @@
 # Changelog
 
 All notable user-facing changes are recorded here. Contexture follows
-[Semantic Versioning](https://semver.org/) while it is pre-1.0: minor releases
-may contain documented breaking changes.
+[Semantic Versioning](https://semver.org/). Beginning with 1.0, incompatible
+public API changes require a new major version.
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-09-11
+
+### Stable release
+
+- Establish the first coordinated stable Contexture release for Python,
+  TypeScript, and Go from the verified 0.16 cross-language baseline.
+- Freeze the documented declaration, inspection, CLI, MCP, REST, identity,
+  selection, lifecycle, and telemetry surfaces as the 1.x compatibility
+  contract.
+- Publish Python as `contexture-mcp`; the sibling release workflows publish
+  `@contexture/mcp` and `github.com/CarterShi01/contexture-mcp-go` at the same
+  semantic version.
+- Remove the retired validation-only case study and its parity-ledger
+  exceptions from the release repository.
 
 ## [0.16.0] - 2026-09-10
 
@@ -163,7 +178,8 @@ may contain documented breaking changes.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v1.0.0
 [0.16.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.13.0...v0.14.0
