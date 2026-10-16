@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="cover-title cover-description"><style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); }
+    svg { display: block; width: 100%; max-width: 1600px; height: auto; margin: 0 auto; }
+    text { font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; fill: var(--cp-text); }
+    .canvas { fill: var(--cp-bg); }
+    .brand-rule { fill: var(--cp-accent); }
+    .headline { font-size: 48px; font-weight: 650; letter-spacing: -1px; }
+    .muted { fill: var(--cp-text-soft); }
+    .accent { fill: var(--cp-accent); }
+    .panel { fill: var(--cp-surface); stroke: var(--cp-border); stroke-width: 2; }
+    .panel-heading { font-size: 29px; font-weight: 650; }
+    .role-shell { fill: var(--cp-surface); stroke: var(--cp-accent); stroke-width: 2.5; }
+    .role-heading { fill: var(--cp-accent-soft); }
+    .role-divider { stroke: var(--cp-accent); stroke-opacity: .25; stroke-width: 1.5; }
+    .guidance { fill: var(--cp-surface-soft); }
+    .member { fill: var(--cp-accent-soft); stroke: var(--cp-accent); stroke-opacity: .45; stroke-width: 1.5; }
+    .node { fill: var(--cp-surface); stroke: var(--cp-border); stroke-width: 2; }
+    .quiet-role { fill: var(--cp-bg-elevated); stroke: var(--cp-border); stroke-width: 2; }
+    .edge { fill: none; stroke: var(--cp-border); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .active-edge { fill: none; stroke: var(--cp-accent); stroke-width: 3.5; stroke-linecap: round; }
+    .composition-arrow { fill: none; stroke: var(--cp-border-strong); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .center { text-anchor: middle; }
+  </style>
+  <title id="cover-title">contexture-mcp — An application-layer framework for MCP services and AI-native applications.</title>
+  <desc id="cover-description">Two complementary views, not a before-and-after comparison. Left: a Role contains local guidance, Skill procedures, Tool actions, and a Child Role with the same recursive structure. Right: an application capability graph expands three Role levels, with Skills and Tools at multiple levels and a branch highlighted for on-demand disclosure. Lines show containment, not execution order or inheritance.</desc>
+  <rect class="canvas" width="1600" height="900"/>
+  <rect class="brand-rule" x="96" y="66" width="8" height="42" rx="4"/>
+  <text x="124" y="99" font-size="36" font-weight="650">contexture-mcp</text>
+  <text x="96" y="193" class="headline">An application-layer framework</text>
+  <text x="96" y="256" class="headline">for MCP services and AI-native applications.</text>
+  <text x="99" y="310" font-size="34" font-weight="600" class="accent">One model for application structure and agent interaction.</text>
+
+  <g id="diagram-pair" transform="translate(0 46)">
+  <rect id="left-panel" class="panel" x="96" y="313" width="556" height="485" rx="16"/>
+  <g data-within="left-panel">
+    <text x="130" y="361" class="panel-heading">Inside a Role</text>
+    <rect id="left-role" class="role-shell" x="130" y="397" width="488" height="375" rx="12"/>
+    <g data-within="left-role">
+      <path class="role-heading" d="M143 399h462q11 0 11 11v42H132v-42q0-11 11-11Z"/>
+      <path class="role-divider" d="M132 452h484"/>
+      <text x="154" y="434" font-size="30" font-weight="650" class="accent">Role</text>
+      <rect class="guidance" x="150" y="470" width="448" height="46" rx="8"/>
+      <text x="374" y="501" font-size="25" class="center">Local guidance</text>
+      <rect class="member" x="150" y="531" width="216" height="48" rx="8"/>
+      <rect class="member" x="382" y="531" width="216" height="48" rx="8"/>
+      <text x="258" y="562" font-size="23" class="center accent">Skill · procedure</text>
+      <text x="490" y="562" font-size="23" class="center accent">Tool · action</text>
+
+      <rect id="left-child-role" class="role-shell" x="150" y="597" width="448" height="155" rx="10"/>
+      <g data-within="left-child-role">
+        <path class="role-heading" d="M162 599h424q10 0 10 10v31H152v-31q0-10 10-10Z"/>
+        <path class="role-divider" d="M152 640h444"/>
+        <text x="168" y="627" font-size="26" font-weight="650" class="accent">Child Role</text>
+        <rect class="guidance" x="166" y="650" width="416" height="36" rx="7"/>
+        <text x="374" y="675" font-size="22" class="center">Local guidance</text>
+        <rect class="member" x="166" y="699" width="128" height="37" rx="7"/>
+        <rect class="member" x="310" y="699" width="128" height="37" rx="7"/>
+        <rect class="node" x="454" y="699" width="128" height="37" rx="7"/>
+        <text x="230" y="725" font-size="22" class="center accent">Skill</text>
+        <text x="374" y="725" font-size="22" class="center accent">Tool</text>
+        <text x="518" y="724" font-size="20" class="center muted">Child Role…</text>
+      </g>
+    </g>
+  </g>
+
+  <rect id="right-panel" class="panel" x="700" y="313" width="804" height="485" rx="16"/>
+  <g data-within="right-panel">
+    <text x="734" y="361" class="panel-heading accent">Application capability graph</text>
+
+    <path class="edge" d="M1107 445v21H823v17m284-17h280v17"/>
+    <path class="active-edge" d="M1107 445v34"/>
+    <rect class="node" x="997" y="399" width="220" height="46" rx="9"/>
+    <text x="1107" y="431" font-size="25" class="center">Application</text>
+
+    <rect class="quiet-role" x="756" y="483" width="134" height="64" rx="10"/>
+    <text x="823" y="523" font-size="26" class="center muted">Role</text>
+    <rect id="graph-parent-role" class="role-shell" x="1002" y="479" width="210" height="76" rx="10"/>
+    <g data-within="graph-parent-role">
+      <text x="1107" y="511" font-size="27" font-weight="650" class="center accent">Role</text>
+      <text x="1107" y="545" font-size="20" class="center muted">Local guidance</text>
+    </g>
+    <rect class="quiet-role" x="1320" y="483" width="134" height="64" rx="10"/>
+    <text x="1387" y="523" font-size="26" class="center muted">Role</text>
+
+    <path class="edge" d="M1107 555v15H816v19m153-19v19"/>
+    <path class="active-edge" d="M1107 555v15h150.5v13"/>
+    <rect class="node" x="750" y="589" width="132" height="44" rx="8"/>
+    <rect class="node" x="903" y="589" width="132" height="44" rx="8"/>
+    <text x="816" y="619" font-size="24" class="center muted">Skill</text>
+    <text x="969" y="619" font-size="24" class="center muted">Tool</text>
+    <rect id="graph-child-role" class="role-shell" x="1130" y="583" width="255" height="76" rx="10"/>
+    <g data-within="graph-child-role">
+      <text x="1257.5" y="615" font-size="27" font-weight="650" class="center accent">Child Role</text>
+      <text x="1257.5" y="647" font-size="20" class="center muted">Local guidance</text>
+    </g>
+
+    <path class="edge" d="M1257.5 659v20H1370v26"/>
+    <path class="active-edge" d="M1257.5 659v20H1006v26m165-26v26"/>
+    <rect class="member" x="940" y="705" width="132" height="44" rx="8"/>
+    <rect class="member" x="1105" y="705" width="132" height="44" rx="8"/>
+    <text x="1006" y="735" font-size="24" font-weight="600" class="center accent">Skill</text>
+    <text x="1171" y="735" font-size="24" font-weight="600" class="center accent">Tool</text>
+    <rect class="quiet-role" x="1280" y="705" width="180" height="44" rx="8"/>
+    <text x="1370" y="735" font-size="23" class="center muted">Child Role…</text>
+    <path class="edge" stroke-dasharray="3 5" d="M1370 749v25"/>
+    <text x="1087" y="781" font-size="23" font-weight="600" class="center accent">Disclose on demand</text>
+  </g>
+  </g>
+</svg>

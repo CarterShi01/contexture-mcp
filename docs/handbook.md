@@ -1,6 +1,9 @@
 # Contexture Handbook
 
-[简体中文](handbook.zh-CN.md) · [Project README](../README.md)
+[简体中文](handbook.zh-CN.md) · [Documentation](README.md) · [Project README](../README.md)
+
+For the motivation and trade-offs, read [the design overview](design.md).
+To explore a ready-made application first, try the [incident demo](../contexture/demo/README.md).
 
 This is the complete onboarding path for a Contexture application. Follow it
 in order the first time:

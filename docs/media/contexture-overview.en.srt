@@ -1,0 +1,111 @@
+1
+00:00:00,392 --> 00:00:05,524
+contexture-mcp connects agent hosts to application services.
+
+2
+00:00:05,958 --> 00:00:09,774
+One model for application structure and agent interaction.
+
+3
+00:00:11,655 --> 00:00:14,655
+MCP exposes tools for agents to call.
+
+4
+00:00:15,076 --> 00:00:20,405
+As applications grow, flat tool lists become harder to navigate and maintain.
+
+5
+00:00:20,826 --> 00:00:24,800
+What if agents could interact with capabilities the way object-oriented
+
+6
+00:00:24,813 --> 00:00:29,865
+programs interact with objects—with a clear responsibility, guidance, and tools?
+
+7
+00:00:31,665 --> 00:00:33,165
+Explore its guidance.
+
+8
+00:00:33,589 --> 00:00:35,115
+Then invoke its tools.
+
+9
+00:00:36,701 --> 00:00:41,977
+Here is how Contexture implements that interaction, illustrated step by step.
+
+10
+00:00:42,372 --> 00:00:44,846
+Discover reveals the starting points.
+
+11
+00:00:45,267 --> 00:00:49,056
+Inspect compares branches without loading their instructions.
+
+12
+00:00:49,451 --> 00:00:53,872
+The agent opens Service Operations, then Incident Response.
+
+13
+00:00:54,293 --> 00:00:56,688
+The selected branch reveals its guidance and
+
+14
+00:00:56,701 --> 00:01:00,938
+tool definitions; unrelated details stay undisclosed.
+
+15
+00:01:01,333 --> 00:01:05,780
+The agent explicitly invokes read tools to check health and release history.
+
+16
+00:01:06,201 --> 00:01:10,714
+Exploring a capability and executing business code remain separate.
+
+17
+00:01:11,109 --> 00:01:13,727
+That is progressive context disclosure.
+
+18
+00:01:15,313 --> 00:01:19,379
+This structure helps developers organize complex applications.
+
+19
+00:01:19,800 --> 00:01:24,945
+Each container combines a responsibility, local instructions, and members.
+
+20
+00:01:25,366 --> 00:01:27,642
+Child containers build the hierarchy.
+
+21
+00:01:28,063 --> 00:01:33,089
+Skills describe procedures; tools connect them to executable code.
+
+22
+00:01:33,510 --> 00:01:36,353
+Compose these objects into a gateway, and the
+
+23
+00:01:36,366 --> 00:01:39,260
+agent can navigate the application by purpose.
+
+24
+00:01:39,682 --> 00:01:43,353
+Business services keep their own logic and authorization.
+
+25
+00:01:43,787 --> 00:01:46,550
+One model connects how the agent explores
+
+26
+00:01:46,563 --> 00:01:48,405
+with how the application is built.
+
+27
+00:01:50,013 --> 00:01:54,421
+Build MCP servers that disclose what matters, when it matters.
+
+28
+00:01:54,842 --> 00:01:57,355
+That's contexture-mcp.

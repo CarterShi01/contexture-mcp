@@ -25,8 +25,11 @@ Before opening a pull request, run:
 ```bash
 uv run --extra dev pytest -q
 uv run --extra dev pyright
-uv run --extra dev ruff check contexture tests
+uv run --extra dev ruff check contexture tests scripts
 uv run --extra dev validate-pyproject pyproject.toml
+uv run python scripts/verify_porting_contract.py
+uv run python scripts/product_manifest.py --check
+uv run python scripts/incremental_manifest.py
 uv build
 uv run --extra dev twine check --strict dist/*
 ```
@@ -41,7 +44,7 @@ built wheel outside the source tree.
 - `core` never imports the MCP SDK or a higher layer. The layering tests enforce
   this at syntax and runtime levels.
 - A Tool binding owns both schema generation and validated invocation.
-- The four MCP gateway tools stay fixed; business capabilities travel in
+- The five MCP gateway tools stay fixed; business capabilities travel in
   progressive-disclosure payloads.
 - Disclosure is not authorization. Identity is framework context; permission
   decisions stay in the application and host.

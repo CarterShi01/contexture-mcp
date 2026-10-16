@@ -1,6 +1,9 @@
 # Contexture 中文手册
 
-[English](handbook.md) · [项目首页](../README.zh-CN.md)
+[English](handbook.md) · [文档导航](README.zh-CN.md) · [项目首页](../README.zh-CN.md)
+
+设计动机与取舍见[设计说明](design.zh-CN.md)。想先体验现成应用，可以从
+[事故 Demo](../contexture/demo/README.zh-CN.md)开始。
 
 这是 Contexture 应用的完整入门路径。第一次使用时建议按顺序完成：
 

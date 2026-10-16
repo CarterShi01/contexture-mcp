@@ -1,5 +1,7 @@
 # Incident demo
 
+[简体中文](README.zh-CN.md) · [Documentation](../../docs/README.md) · [Project](../../README.md)
+
 A Contexture MCP server with one deterministic Kubernetes incident. Claude Code
 and Codex connect to it with the same command and get the same capabilities;
 neither reads a generated `CLAUDE.md`, `AGENTS.md`, or `SKILL.md`.
@@ -21,22 +23,27 @@ kubernetes-platform                              role   the coordinator
     └── rollback_policy                          tool   read-only; also a Resource URI
 ```
 
-Three roles rather than one, because one role is the shape at which a gateway
-surface is a bad trade: a session pays only for the branch it enters, and a
-tree with one branch has nothing to not pay for.
+The two child Roles separate diagnosis from deployment work. They make it
+possible to inspect alternatives and open the relevant branch without loading
+the other branch's guidance and Tool schemas. This small demo illustrates the
+mechanism; it is not evidence that a gateway is more efficient for every application.
 
 ## What a host actually sees
 
-Four tools, and no Kubernetes anywhere in them:
+Five fixed gateway tools, rather than one top-level MCP tool per Kubernetes action:
 
 ```text
-contexture_discover · contexture_open
-contexture_invoke_read_only · contexture_invoke
+contexture_discover
+contexture_inspect
+contexture_open
+contexture_invoke_read_only
+contexture_invoke
 ```
 
-Everything above — every name, description and schema — arrives inside a
-payload, when the role holding it is opened. A session that only diagnoses
-never pays for `deployment-ops`.
+Discovery and inspection return routing cards. Opening a Role reveals local
+guidance and one level of member cards, including its Tools' input schemas;
+opening a Skill reveals its procedure and references. A diagnosis does not
+need to open `deployment-ops` or load that branch's detailed guidance.
 
 The roster is in the server's instructions, so a host knows what this server is
 for before it calls anything.
@@ -52,29 +59,44 @@ could not see.
 
 The incident is fixed: `payments-api-7d9c` in `prod` is in `CrashLoopBackOff`
 with 14 restarts, its logs name a missing `DB_URL`, and its events record exit
-code 1. Nothing contacts a cluster, so a failed run means the framework failed
-rather than the environment.
+code 1. Nothing contacts a cluster. The fixed data removes the need for cluster
+setup; host authentication, configuration, and model behavior still have their
+own failure modes.
 
 The symptom does not reveal the cause. A restart loop looks like a scheduling
-or image problem until something reads the logs — which is what forces the
-traversal this demo exists to show, instead of rewarding a guess.
+or image problem until something reads the logs. The intended diagnosis should
+therefore cite the returned evidence rather than guess from the symptom.
 
 ## Run it
 
+After [installing the CLI](../../README.md#install), inspect the graph without
+a host or model:
+
 ```bash
-uv sync
-uv run contexture demo               # serves MCP over stdio; blocks
+contexture check contexture.demo.role:KubernetesPlatform
+contexture list contexture.demo.role:KubernetesPlatform
+contexture inspect --target contexture.demo.role:KubernetesPlatform kubernetes-platform/incident-response
 ```
+
+`check` reports three Roles, two Skills, and seven Tools. To start the bundled
+MCP server, use `contexture demo`; it serves stdio and waits for a client, so it
+is not a command that prints a diagnosis and exits. When connecting a host,
+let the host start this process instead of running another copy manually.
+From a source checkout, run `uv sync` and prefix these commands with `uv run`.
 
 ## Connect a host
 
+Choose one host. These commands register the globally installed CLI from the
+previous step. Claude Code uses project scope; the Codex command updates its
+user configuration. Remove only the `contexture-demo` entry when finished.
+
 ```bash
-# Claude Code — note that `mcp add` writes to local scope unless told otherwise
-claude mcp add --scope project contexture-demo -- uv run contexture demo
+# Claude Code — run from the project where you will launch Claude Code
+claude mcp add --scope project contexture-demo -- contexture demo
 claude mcp list
 
-# Codex
-codex mcp add contexture-demo -- uv run contexture demo
+# Or Codex
+codex mcp add contexture-demo -- contexture demo
 codex mcp list
 ```
 
@@ -86,6 +108,11 @@ Then ask either one:
 > source code. Explain the root cause and the next remediation step.
 
 ## The trace to expect
+
+One illustrative path is shown below. A host may first use `contexture_discover`
+to find the root, `contexture_open` to enter it, or `contexture_inspect` to
+compare branch cards without loading their instructions. Actual model choices
+can differ; this is not a newly recorded model run.
 
 ```text
 contexture_open(kubernetes-platform/incident-response)
@@ -103,20 +130,22 @@ contexture_invoke_read_only(…/crash_loop_runbook)
                                     → matches row 1 of the cause table
 ```
 
-`contexture_discover` is not in that list, and it is not missing: it answers
-with the **root roles alone** — here a single `kubernetes-platform` card — and
-the bootstrap roster in the server's instructions already names the branch, so
-the recorded run went straight to it. See
-[`docs/verification/hosts.md`](../../docs/verification/hosts.md).
+The bootstrap roster can also help the model locate a branch. The
+[historical Host records](../../docs/verification/hosts.md) document specific
+earlier versions; they do not establish every current host's behavior.
 
-Every step of that trace, and its cost, can be read without a host:
+Inspect the disclosure payloads without a host, using the explicit demo target:
 
 ```bash
-contexture inspect --all --read --summary
+contexture inspect --target contexture.demo.role:KubernetesPlatform --all
+contexture inspect --target contexture.demo.role:KubernetesPlatform --all --summary
 ```
 
-The whole tree, every document included, is about 3,600 estimated tokens. The
-path above is about 1,860 of them; nothing pays for `deployment-ops`.
+The summary estimates the size of generated context. It does not measure an
+LLM session's token usage, latency, bill, or success rate. Inspection is not
+Tool execution; running the diagnosis requires actual read calls. The CLI
+`contexture inspect` replays disclosure, including opening the supplied refs;
+it is distinct from the routing-only MCP tool `contexture_inspect`.
 
 The conclusion: the container is not being killed, it is rejecting its own
 startup state because `DB_URL` is absent, and exit code 1 rather than 137
@@ -124,9 +153,12 @@ separates that from an out-of-memory kill. The remediation is to add the key
 and roll out — *not* to restart the Pod, which the skill and the runbook both
 rule out.
 
-An agent is free to skip the traversal: a ref that was guessed rather than read
-still runs, and nothing here is an authorization boundary. What it cannot do is
-skip ahead and still know what to do. The surface carries four tools and no
-Kubernetes, so the tool names, their schemas, the procedure, the ordering, and
-the "do not restart first" constraint all arrive inside payloads that opening
-delivers. Disclosure controls knowledge, not access.
+An agent may invoke a known ref without first opening it. The gateway does not
+enforce the procedure or guarantee that a model follows the guidance.
+The five-tool surface carries navigation and invocation; branch-specific
+schemas and the "do not restart first" guidance arrive in disclosure payloads.
+Disclosure controls what is returned, not business authorization.
+
+For the broader idea, watch the [two-minute overview](../../docs/overview.md).
+Its service-operations animation explains the same framework, but is not a
+recording of this Kubernetes fixture or a real model run.

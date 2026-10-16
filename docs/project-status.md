@@ -1,5 +1,9 @@
 # Project status
 
+For current user documentation, start at the [documentation map](README.md).
+Planned product directions live in the [roadmap](roadmap.md). The dated record
+below describes release preparation; it is not a live registry-status check.
+
 Updated 2026-09-11 for the coordinated Python, TypeScript, and Go 1.0 release.
 
 All three implementations have complete evidence for every applicable Python

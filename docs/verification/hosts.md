@@ -1,5 +1,10 @@
 # Host verification
 
+These records belong to the versions named in each section; their historical
+tool counts and results are preserved. The current gateway has five tools,
+including `contexture_inspect`; see the [current overview](../../README.md#progressive-disclosure).
+These records are not a new verification of the current release.
+
 # Historical TypeScript and Go 0.12 candidates — four-tool gateway
 
 Recorded 2026-09-10 with Claude Code 2.1.133. TypeScript was verified against
