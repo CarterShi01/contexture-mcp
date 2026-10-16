@@ -4,9 +4,9 @@
 
 **一套模型，连接应用结构与 Agent 交互。**
 
-[![Role 内部结构与递归应用能力图；点击打开介绍视频。](media/contexture-overview.png)](media/contexture-overview.mp4)
+[![Role 内部结构与递归应用能力图；点击打开介绍视频。](media/contexture-overview.png)](media/contexture-overview.mp4?raw=1)
 
-**[打开或下载视频](media/contexture-overview.mp4)**：1 分 59 秒，1080p，约 4.5 MiB。
+**[打开或下载视频](media/contexture-overview.mp4?raw=1)**：1 分 59 秒，1080p，约 4.5 MiB。
 如果 Markdown 阅读器无法播放，可下载后用视频播放器打开。
 提供[英文字幕](media/contexture-overview.en.srt)与[中文字幕](media/contexture-overview.zh-CN.srt)。
 

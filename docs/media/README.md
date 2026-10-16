@@ -7,7 +7,7 @@ included.
 | Asset | Purpose |
 | --- | --- |
 | [PNG](contexture-overview.png) / [editable SVG](contexture-overview.svg) | 1600×900 overview: Role internals and recursive application composition |
-| [MP4](contexture-overview.mp4) | 119-second English overview, 1920×1080, H.264/AAC |
+| [MP4](contexture-overview.mp4?raw=1) | 119-second English overview, 1920×1080, H.264/AAC |
 | [English subtitles](contexture-overview.en.srt) | Phrase-level captions timed to speech boundaries; also burned into the video |
 | [Chinese subtitles](contexture-overview.zh-CN.srt) | Paragraph-level translation track |
 

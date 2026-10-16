@@ -4,9 +4,9 @@
 
 **One model for application structure and agent interaction.**
 
-[![Role internals and the recursive application capability graph. Open the overview video.](media/contexture-overview.png)](media/contexture-overview.mp4)
+[![Role internals and the recursive application capability graph. Open the overview video.](media/contexture-overview.png)](media/contexture-overview.mp4?raw=1)
 
-**[Open or download the video](media/contexture-overview.mp4)** — 1:59, 1080p,
+**[Open or download the video](media/contexture-overview.mp4?raw=1)** — 1:59, 1080p,
 approximately 4.5 MiB. If your Markdown viewer cannot play it, download the MP4
 and open it in a video player. [English captions](media/contexture-overview.en.srt)
 and [Chinese subtitles](media/contexture-overview.zh-CN.srt) are available.
