@@ -1,28 +1,26 @@
-# Contexture in two minutes
+# Video overview
+
+<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video"]}} -->
 
 [简体中文](overview.zh-CN.md) · [Documentation](README.md) · [Project](../README.md)
 
 **One model for application structure and agent interaction.**
 
-[![Role internals and the recursive application capability graph. Open the overview video.](media/contexture-overview.png)](media/contexture-overview.mp4?raw=1)
+<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture overview: application structure and agent interaction.</video>
 
-**[Open or download the video](media/contexture-overview.mp4?raw=1)** — 1:59, 1080p,
-approximately 4.5 MiB. If your Markdown viewer cannot play it, download the MP4
-and open it in a video player. [English captions](media/contexture-overview.en.srt)
-and [Chinese subtitles](media/contexture-overview.zh-CN.srt) are available.
+**1:59 · 1080p.** Play here or on the [project homepage](../README.md).
+[Download the MP4](media/contexture-overview.mp4?raw=1),
+[English captions](media/contexture-overview.en.srt), or
+[Chinese subtitles](media/contexture-overview.zh-CN.srt).
 
 ## What the pictures explain
 
-The cover's left panel shows one Role: local guidance, Skills, Tools, and child
-Roles. Its right panel shows those responsibility boundaries composed into an
-application. These are **a detail view and a whole-application view**, not a
-before/after comparison. Containment is not inheritance or automatic delegation.
-
-The film connects that structure to discovery, inspection, guidance disclosure,
-and explicit Tool execution. It visualizes implemented runtime and architecture;
-it is not an autonomous model-run recording or a performance benchmark.
-Modern MCP frameworks and hosts can also provide modularity and on-demand
-discovery; see [the design discussion](design.md) for the specific choice here.
+The video follows an agent from discovering responsibilities to opening local
+guidance and explicitly invoking Tools, then shows how Roles, Skills, Tools,
+and child Roles compose an application. Its opening frame is the video preview,
+not a separate cover. It visualizes implemented runtime and architecture;
+it is not an autonomous model-run recording. For the design choices and
+alternatives, see [the design discussion](design.md).
 
 ## Try the mechanism
 

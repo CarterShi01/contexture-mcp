@@ -2,33 +2,54 @@
 
 [简体中文](README.zh-CN.md) · [Project README](../README.md)
 
-## Understand and try
+## Start here
 
 | Your question | Start here |
 | --- | --- |
-| What is Contexture? | [Two-minute illustrated overview and transcript](overview.md) |
-| Why one application model? When should I use it? | [Design, alternatives, and trade-offs](design.md) |
+| New to Contexture? | [Quickstart](../README.md#quickstart), then the [application tutorial](handbook.md) |
+| Want to see it first? | [Two-minute video](overview.md) |
 | Can I try it without infrastructure? | [Built-in deterministic incident demo](../contexture/demo/README.md) |
-| How do I build and extend my own app? | [Application handbook](handbook.md) |
-| What is planned next? | [Roadmap](roadmap.md) |
 
-The handbook remains the step-by-step user path; the overview and design pages
-explain the model without creating another competing tutorial. Python is the
-reference implementation in this repository. Links to other implementations
-do not by themselves establish identical versions or validation results.
+## Tutorials — learn by doing
 
-## Reference and contribution
+The [application handbook](handbook.md) is the canonical end-to-end tutorial:
+install → generate → inspect → call → extend → connect a host.
+
+- [Understand the generated application](handbook.md#3-understand-the-generated-application).
+- [Make your first change](handbook.md#5-make-your-first-change).
+- [Add capabilities](handbook.md#6-add-capabilities-in-the-right-place).
+
+## How-to guides — complete a task
+
+- [Authoring](guides/authoring.md): complete Python declaration, vocabulary,
+  development commands, and public API boundaries.
+- [Hosting](guides/hosting.md): Claude Code / Codex, MCP gateways, HTTP, and REST.
+- [External dependencies](handbook.md#7-connect-external-systems-only-when-needed): Channels and lifecycle.
+- [Prompts and resources](handbook.md#8-publish-optional-entrances): additional entrances to existing capabilities.
+- [Safety and troubleshooting](handbook.md#10-local-safety-and-troubleshooting).
+
+## Explanation — understand the choices
+
+- [Design and trade-offs](design.md): responsibility-based composition,
+  progressive disclosure, alternatives, and when to choose Contexture.
+- [Video and transcript](overview.md): the implemented interaction model.
+- [Roadmap](roadmap.md): planned visualization and capability-level evaluation.
+
+## Reference — look up a contract
 
 - [Language-neutral specification](../spec/README.md): normative model,
   conformance rules, fixtures, and golden outputs.
 - [Changelog](../CHANGELOG.md): versioned changes.
+
+## Maintainers and contributors
+
 - [Contribution guide](../CONTRIBUTING.md): boundaries and required checks.
 - [Security policy](../SECURITY.md): private vulnerability reporting.
 - [Release runbook](../RELEASING.md): packaging and publishing procedures.
 - [Project status](project-status.md): dated release preparation record, not a
   substitute for checking the installed package or current release evidence.
 
-## Design history and verification
+### Design history and verification
 
 [ADRs](adr/) and numbered design/execution-plan documents preserve why past
 decisions were made. Read their dates and versions; proposals and old diagrams

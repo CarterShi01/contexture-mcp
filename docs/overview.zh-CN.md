@@ -1,25 +1,23 @@
-# 两分钟了解 Contexture
+# 视频介绍
+
+<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video"]}} -->
 
 [English](overview.md) · [文档导航](README.zh-CN.md) · [项目首页](../README.zh-CN.md)
 
 **一套模型，连接应用结构与 Agent 交互。**
 
-[![Role 内部结构与递归应用能力图；点击打开介绍视频。](media/contexture-overview.png)](media/contexture-overview.mp4?raw=1)
+<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture 介绍：应用结构与 Agent 交互。</video>
 
-**[打开或下载视频](media/contexture-overview.mp4?raw=1)**：1 分 59 秒，1080p，约 4.5 MiB。
-如果 Markdown 阅读器无法播放，可下载后用视频播放器打开。
-提供[英文字幕](media/contexture-overview.en.srt)与[中文字幕](media/contexture-overview.zh-CN.srt)。
+**1 分 59 秒 · 1080p。** 可以直接在这里或[项目首页](../README.zh-CN.md)播放。
+也可下载 [MP4](media/contexture-overview.mp4?raw=1)、
+[英文字幕](media/contexture-overview.en.srt)或[中文字幕](media/contexture-overview.zh-CN.srt)。
 
 ## 图示说明什么
 
-封面左侧展示一个 Role：局部指导、Skill、Tool 和子 Role；右侧展示这些职责边界
-如何组合为应用。两者是**局部与整体视图**，不是改造前后的比较。
-包含关系不代表继承或自动委派。
-
-视频将这种结构连接到发现、检查、指导披露与显式 Tool 执行。
-它以动画解释已经实现的运行时和架构，不是自主模型运行录屏，也不是性能基准。
-现代 MCP 框架和 Host 同样可以提供模块化与按需发现；这里的具体架构选择见
-[设计说明](design.zh-CN.md)。
+视频从 Agent 发现职责、打开局部指导、显式调用 Tool 开始，再展示 Role、Skill、
+Tool 与子 Role 如何组合为应用。视频开场画面就是播放器预览，不再使用独立封面。
+它以动画解释已经实现的运行时和架构，不是自主模型运行录屏。架构选择与其他方案
+见[设计说明](design.zh-CN.md)。
 
 ## 亲手体验
 
