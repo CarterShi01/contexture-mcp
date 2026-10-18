@@ -1,12 +1,10 @@
 # 视频介绍
 
-<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video"]}} -->
-
 [English](overview.md) · [文档导航](README.zh-CN.md) · [项目首页](../README.zh-CN.md)
 
 **一套模型，连接应用结构与 Agent 交互。**
 
-<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture 介绍：应用结构与 Agent 交互。</video>
+https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 **1 分 59 秒 · 1080p。** 可以直接在这里或[项目首页](../README.zh-CN.md)播放。
 也可下载 [MP4](media/contexture-overview.mp4?raw=1)、

@@ -4,12 +4,11 @@ The two-minute video and supporting artwork. These are documentation
 assets, not runtime dependencies; no submission records or rendering caches are
 included.
 
-The project READMEs and overview pages use a native video player, with the
-video's opening frame as its preview. The source URL is pinned to immutable
-commit `894cb4f1032f7411fb3faa791a3b9c3782a58a71`, where the identical MP4 is stored;
-the small time fragment loads the opening image rather than a separate poster.
-GitHub strips custom `poster` attributes, so no hand-written cover image is
-used as a substitute for playback. Local Markdown readers can use the download link.
+The project READMEs and overview pages use a GitHub video attachment, which
+GitHub renders as an inline player. A standalone attachment URL is used instead
+of a hand-written HTML `video` element, which the repository view filters out.
+The video itself supplies the preview rather than a separate cover image.
+The original MP4 remains in this directory for download and local Markdown readers.
 
 | Asset | Purpose |
 | --- | --- |

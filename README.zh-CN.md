@@ -1,6 +1,6 @@
 # Contexture
 
-<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video", "a", "details", "summary", "strong"]}} -->
+<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["a", "details", "summary", "strong"]}} -->
 
 **一套模型，连接应用结构与 Agent 交互。**
 
@@ -15,7 +15,7 @@ Contexture（`contexture-mcp`）是用于构建 MCP 服务与 AI 原生应用的
 [![Python 3.11–3.14](https://img.shields.io/badge/python-3.11%E2%80%933.14-blue)](pyproject.toml)
 [![Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture 介绍：应用结构与 Agent 交互。</video>
+https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 *1 分 59 秒 · 以动画解释已实现的架构。[文字稿与字幕](docs/overview.zh-CN.md)
 · [下载视频](docs/media/contexture-overview.mp4?raw=1)。*

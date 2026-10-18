@@ -1,12 +1,10 @@
 # Video overview
 
-<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video"]}} -->
-
 [简体中文](overview.zh-CN.md) · [Documentation](README.md) · [Project](../README.md)
 
 **One model for application structure and agent interaction.**
 
-<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture overview: application structure and agent interaction.</video>
+https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 **1:59 · 1080p.** Play here or on the [project homepage](../README.md).
 [Download the MP4](media/contexture-overview.mp4?raw=1),

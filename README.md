@@ -1,6 +1,6 @@
 # Contexture
 
-<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["video", "a", "details", "summary", "strong"]}} -->
+<!-- markdownlint-configure-file {"MD033": {"allowed_elements": ["a", "details", "summary", "strong"]}} -->
 
 **One model for application structure and agent interaction.**
 
@@ -16,7 +16,7 @@ your application and generate the interface agents navigate.
 [![Python 3.11–3.14](https://img.shields.io/badge/python-3.11%E2%80%933.14-blue)](pyproject.toml)
 [![Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-<video src="https://raw.githubusercontent.com/CarterShi01/contexture-mcp/894cb4f1032f7411fb3faa791a3b9c3782a58a71/docs/media/contexture-overview.mp4#t=0.1" controls width="960">Contexture overview: application structure and agent interaction.</video>
+https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 *1:59 · Implemented architecture, illustrated. [Transcript and subtitles](docs/overview.md)
 · [Download video](docs/media/contexture-overview.mp4?raw=1).*
