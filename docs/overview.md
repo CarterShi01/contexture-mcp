@@ -4,6 +4,8 @@
 
 **One model for application structure and agent interaction.**
 
+<!-- GitHub expands this standalone attachment URL into an inline video player. -->
+<!-- markdownlint-disable-next-line MD034 -->
 https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 **1:59 · 1080p.** Play here or on the [project homepage](../README.md).

@@ -15,6 +15,8 @@ Contexture（`contexture-mcp`）是用于构建 MCP 服务与 AI 原生应用的
 [![Python 3.11–3.14](https://img.shields.io/badge/python-3.11%E2%80%933.14-blue)](pyproject.toml)
 [![Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
+<!-- GitHub expands this standalone attachment URL into an inline video player. -->
+<!-- markdownlint-disable-next-line MD034 -->
 https://github.com/user-attachments/assets/0fe9b212-5353-4dc4-bba4-7271927f5a01
 
 *1 分 59 秒 · 以动画解释已实现的架构。[文字稿与字幕](docs/overview.zh-CN.md)
