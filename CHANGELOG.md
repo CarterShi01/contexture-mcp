@@ -6,6 +6,29 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-04
+
+### Added
+
+- Added SDK-independent `Presentation` and `GatewayPresentation` declarations
+  for a human server title/description and five application-specific gateway
+  titles.
+- Added `NodePresentation` and `PresentationCatalog` for localized routing
+  cards. Locale resolution uses exact tag, parent tag, then explicit default;
+  all configured node refs are validated during compilation.
+- When explicitly configured, MCP publishes gateway titles in both standard
+  Tool `title` and compatibility `annotations.title` fields while preserving
+  every machine name, schema, description, and read-only classification.
+- Applications that omit Presentation retain the exact 1.0 MCP Tool metadata.
+
+### Documentation
+
+- Accepted [ADR 024](docs/adr/024-machine-identity-and-human-presentation.md),
+  including the static-per-surface and Host-rendering boundaries.
+- Accepted [ADR 025](docs/adr/025-localized-node-presentation.md), defining
+  per-server locale selection and the boundary between presentation copy and
+  semantic instructions.
+
 ## [1.0.0] - 2026-09-11
 
 ### Stable release
@@ -178,7 +201,8 @@ public API changes require a new major version.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/CarterShi01/contexture-mcp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v1.0.0
 [0.16.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.14.0...v0.15.0

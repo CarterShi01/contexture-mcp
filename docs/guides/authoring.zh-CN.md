@@ -69,6 +69,60 @@ Contexture 不从类名或 docstring 推导公开名称与描述。Tool 的 `inv
 Role、Skill、Tool 构成能力图。Prompt 和 Resource 为已有 ref 提供另一种协议入口，
 不复制节点。只允许用户控制的 Prompt 平面进入的完整树，应放在 `prompt_roots` 中。
 
+## 本地化展示
+
+机器身份与面向人的文案具有不同兼容规则。应用名、网关 Tool 名、节点名和 canonical
+ref 保持稳定；Server、网关和路由卡片的展示文案单独声明：
+
+```python
+from contexture import (
+    GatewayPresentation,
+    NodePresentation,
+    Presentation,
+    PresentationCatalog,
+)
+
+
+presentation = PresentationCatalog(
+    default_locale="zh-CN",
+    locales={
+        "zh-CN": Presentation(
+            title="服务运维",
+            gateway=GatewayPresentation(discover="浏览运维能力"),
+            nodes={
+                "operations": NodePresentation(
+                    title="运维",
+                    description="处理服务运维任务。",
+                ),
+            },
+        ),
+        "en": Presentation(
+            title="Service Operations",
+            gateway=GatewayPresentation(discover="Browse operations"),
+            nodes={
+                "operations": NodePresentation(
+                    title="Operations",
+                    description="Handle service operations.",
+                ),
+            },
+        ),
+    },
+)
+
+app = Contexture(
+    name="service-operations",
+    roots=(Operations,),
+    presentation=presentation,
+)
+```
+
+构建 Server 时选择 locale，例如
+`compile_application(app).server(locale="en-US")`。解析依次尝试规范化后的完整
+tag、父语言（`en-US` 到 `en`）和显式默认语言。编译会校验所有语言中的节点 ref。
+一个 Server 实例只保持一种解析后的 locale；展示层不改变 Schema、调用目标或带
+行为语义的 instructions。详见 [ADR 024](../adr/024-machine-identity-and-human-presentation.md)
+与 [ADR 025](../adr/025-localized-node-presentation.md)。
+
 稳定的 1.0 API 允许 Role 声明 `pre_process` 与 `post_process`。ACTIVE 在不改变
 业务 `Role.instructions` 的前提下组合可识别的框架指令块，指出开始或结束前要打开
 的 ref。它们是单独披露的过程，不是自动执行的回调。`binding_instruction` 标记

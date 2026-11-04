@@ -41,6 +41,7 @@ from ...core.mcp_interface.resource import Resource
 from ...core.model.disclosure import SEPARATOR, Disclosure
 from ...core.model.system_api import DisclosureAPI, SystemAPI
 from ...core.model.telemetry import InMemoryTelemetry, Telemetry
+from ...core.presentation import GatewayPresentation
 
 
 def published_name(entry: Prompt | Resource) -> str:
@@ -97,6 +98,10 @@ class Surface:
     prompts: tuple[Prompt, ...] = ()
     resources: tuple[Resource, ...] = ()
 
+    #: Human-readable labels for the fixed tool plane. Machine names and all
+    #: behavioural metadata remain framework-owned.
+    presentation: GatewayPresentation | None = None
+
     _doors: tuple[Any, ...] = field(default=(), repr=False)
 
     @classmethod
@@ -107,6 +112,7 @@ class Surface:
         prompts: Sequence[Any] = (),
         resources: Sequence[Any] = (),
         telemetry: Telemetry | None = None,
+        presentation: GatewayPresentation | None = None,
     ) -> "Surface":
         """Build every door over one view, validating as each is constructed.
 
@@ -119,6 +125,12 @@ class Surface:
 
         prompt_entries = tuple(_as(Prompt, entry) for entry in prompts)
         resource_entries = tuple(_as(Resource, entry) for entry in resources)
+        if presentation is not None and not isinstance(
+            presentation, GatewayPresentation
+        ):
+            raise ModelValidationError(
+                "A Surface presentation must be None or a GatewayPresentation."
+            )
         for entry in (*prompt_entries, *resource_entries):
             _require_resolvable(tree, entry.opens, entry.kind)
 
@@ -134,12 +146,15 @@ class Surface:
         # Constructed here, all three, before anything is installed: a door
         # checks its own declarations in its constructor, so a refusal leaves
         # nothing half-registered on an SDK server that does not yet exist.
-        doors = _runtime_doors(api, tree, prompt_entries, resource_entries)
+        doors = _runtime_doors(
+            api, tree, prompt_entries, resource_entries, presentation
+        )
         return cls(
             tree=tree,
             api=api,
             prompts=prompt_entries,
             resources=resource_entries,
+            presentation=presentation,
             _doors=doors,
         )
 
@@ -175,6 +190,7 @@ class DisclosureSurface:
     api: DisclosureAPI
     prompts: tuple[Prompt, ...] = ()
     resources: tuple[Resource, ...] = ()
+    presentation: GatewayPresentation | None = None
     _doors: tuple[Any, ...] = field(default=(), repr=False)
 
     @classmethod
@@ -185,6 +201,7 @@ class DisclosureSurface:
         prompts: Sequence[Any] = (),
         resources: Sequence[Any] = (),
         telemetry: Telemetry | None = None,
+        presentation: GatewayPresentation | None = None,
     ) -> "DisclosureSurface":
         if tree.index.is_bound:
             raise ModelValidationError(
@@ -196,6 +213,13 @@ class DisclosureSurface:
                 "DisclosureSurface cannot publish Resources: reading a "
                 "Resource executes a read-only Tool. Use a Prompt or disclose "
                 "the content as ContextNodes instead."
+            )
+        if presentation is not None and not isinstance(
+            presentation, GatewayPresentation
+        ):
+            raise ModelValidationError(
+                "A DisclosureSurface presentation must be None or a "
+                "GatewayPresentation."
             )
 
         prompt_entries = tuple(_as(Prompt, entry) for entry in prompts)
@@ -209,8 +233,14 @@ class DisclosureSurface:
             reserved=reserved,
             telemetry=telemetry if telemetry is not None else InMemoryTelemetry(),
         )
-        doors = _disclosure_doors(api, prompt_entries)
-        return cls(tree=tree, api=api, prompts=prompt_entries, _doors=doors)
+        doors = _disclosure_doors(api, prompt_entries, presentation)
+        return cls(
+            tree=tree,
+            api=api,
+            prompts=prompt_entries,
+            presentation=presentation,
+            _doors=doors,
+        )
 
     @property
     def published(self) -> tuple[Prompt, ...]:
@@ -226,6 +256,7 @@ def _runtime_doors(
     tree: Disclosure,
     prompt_entries: tuple[Prompt, ...],
     resource_entries: tuple[Resource, ...],
+    presentation: GatewayPresentation | None,
 ) -> tuple[Any, ...]:
     """Import protocol doors after this package's shared names exist."""
 
@@ -234,7 +265,7 @@ def _runtime_doors(
     from .tools import Tools
 
     return (
-        Tools(api.disclosure, api.execution),
+        Tools(api.disclosure, api.execution, presentation),
         Prompts(api.disclosure, prompt_entries),
         Resources(tree, api.execution, resource_entries),
     )
@@ -243,13 +274,14 @@ def _runtime_doors(
 def _disclosure_doors(
     api: DisclosureAPI,
     prompt_entries: tuple[Prompt, ...],
+    presentation: GatewayPresentation | None,
 ) -> tuple[Any, ...]:
     """Build the two non-executing protocol doors without an import cycle."""
 
     from .navigation import NavigationTools
     from .prompts import Prompts
 
-    return (NavigationTools(api), Prompts(api, prompt_entries))
+    return (NavigationTools(api, presentation), Prompts(api, prompt_entries))
 
 
 def _as(kind: type, entry: Any) -> Any:

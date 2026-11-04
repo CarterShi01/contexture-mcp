@@ -6,7 +6,16 @@ import asyncio
 import json
 import unittest
 
-from contexture import Channels, Contexture, Prompt, Resource, Role, Tool
+from contexture import (
+    Channels,
+    Contexture,
+    GatewayPresentation,
+    Presentation,
+    Prompt,
+    Resource,
+    Role,
+    Tool,
+)
 from contexture.core.constants import DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL
 from contexture.core.errors import ModelValidationError
 from contexture.core.model.runtime import ApplicationRuntime
@@ -89,6 +98,14 @@ class DisclosureApplicationTests(unittest.TestCase):
                 name="architecture",
                 roots=(ArchitectureRoot,),
                 prompts=(ReviewArchitecture,),
+                presentation=Presentation(
+                    title="Architecture",
+                    gateway=GatewayPresentation(
+                        discover="Browse architecture",
+                        inspect="Compare architecture",
+                        open="Open architecture",
+                    ),
+                ),
             )
         )
 
@@ -121,6 +138,11 @@ class DisclosureApplicationTests(unittest.TestCase):
             tuple(tool.name for tool in asyncio.run(wire.list_tools())),
             (DISCOVER_TOOL, INSPECT_TOOL, OPEN_TOOL),
         )
+        self.assertEqual(
+            tuple(tool.title for tool in asyncio.run(wire.list_tools())),
+            ("Browse architecture", "Compare architecture", "Open architecture"),
+        )
+        self.assertEqual(wire._lowlevel_server.title, "Architecture")
         inspected = json.loads(wire_result_text(asyncio.run(
             wire.call_tool(INSPECT_TOOL, {"refs": ["architecture"]})
         )))

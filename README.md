@@ -65,7 +65,7 @@ example.test: reachable (placeholder)
 Next, follow the [tutorial](docs/handbook.md) to inspect and extend the
 generated app, or try the [Kubernetes demo](contexture/demo/README.md).
 Already have a project? Add the package with `uv add contexture-mcp`.
-To pin the current 1.0 release, use `contexture-mcp==1.0.0`.
+To pin the current 1.1 release, use `contexture-mcp==1.1.0`.
 
 <a id="connect-an-mcp-host"></a>
 <details>
@@ -102,6 +102,11 @@ hello-context-assistant       Role: a responsibility and local guidance
 `Tool` executes business code. Explicit `uses` references connect capabilities.
 Typed Tool signatures generate schemas and validate calls.
 
+Optional `Presentation` values add human-facing server and gateway titles
+without changing machine names or schemas. A `PresentationCatalog` selects
+localized per-ref routing copy by locale with deterministic fallback; one
+server instance uses one resolved locale consistently.
+
 **[See a complete Python declaration →](docs/guides/authoring.md)**
 
 <a id="progressive-disclosure"></a>
@@ -119,6 +124,7 @@ the Tool. Business authorization stays with the application and host.
 | --- | --- |
 | Build and extend my first application | [Tutorial](docs/handbook.md) |
 | Compose Roles, Skills, and Tools | [Authoring guide](docs/guides/authoring.md) |
+| Localize server, gateway, and routing copy | [Localized presentation](docs/guides/authoring.md#localized-presentation) |
 | Connect a host or serve MCP / REST | [Hosting guide](docs/guides/hosting.md) |
 | Understand the design and alternatives | [Design and trade-offs](docs/design.md) |
 | Explore a working example | [Incident demo](contexture/demo/README.md) |

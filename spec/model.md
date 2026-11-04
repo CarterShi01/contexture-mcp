@@ -12,7 +12,10 @@ An Application is a lazy composition root with:
 - one or more model-visible `roots`;
 - zero or more user-controlled `prompt_roots`;
 - optional shared Channels;
-- optional Prompt and Resource publications.
+- optional Prompt and Resource publications;
+- optional human-facing Presentation, or a locale-keyed Presentation Catalog:
+  a server title and description, an optional set of non-empty fixed gateway
+  Tool titles, and optional node presentations keyed by canonical ref.
 
 Constructing or importing an Application creates no node instance, connection,
 Index, Disclosure, or server. Each compilation builds fresh node instances,
@@ -23,6 +26,23 @@ freezes the resulting Index.
 can enter only `roots`. The user-controlled Prompt plane can enter either set.
 A Prompt root cannot be reached by guessing its ref through a model-controlled
 open or invoke call.
+
+The Application `name` is stable machine identity. Presentation is not an
+alias for it and does not change any protocol address. When declared, gateway
+titles are static for the whole Application and MAY differ between separately
+declared surfaces; root or identity selection within one surface MUST NOT vary
+them. Omitting gateway presentation MUST preserve the implementation's
+pre-presentation Tool metadata exactly.
+Bindings MUST keep Presentation independent of their Host SDK so declaration
+construction remains lazy. Empty configured titles are invalid.
+
+A node presentation contains a non-empty human title and MAY contain a
+localized routing description. It MUST NOT change the node's `name`, canonical
+`ref`, kind, invocation contract, or authored instructions. Catalog locale tags
+are normalized. Server construction resolves an explicitly requested locale by
+exact tag, then parent tags, then the catalog's explicit default. One server
+instance MUST use one resolved presentation consistently. Compilation MUST
+validate node refs in every declared locale, including inactive locales.
 
 ## Nodes
 
@@ -40,7 +60,9 @@ address. A Role may contain child Roles, Skills, and Tools. `uses` points to an
 existing address but creates neither containment nor depth.
 
 Every node has three disclosure levels. ROUTE is its pure routing card:
-`kind`, `name`, `description`, and, when registered, canonical `ref`. INSPECT
+`kind`, `name`, optional presentation `title`, `description`, and, when
+registered, canonical `ref`. A selected presentation MAY replace the rendered
+description but never the underlying node identity or instructions. INSPECT
 is a framework-generated, non-activating projection consisting of that card,
 one level of pure routing cards for direct members, and pure routing cards for
 declared `uses`. ACTIVE contains the type-specific actionable surface.
@@ -198,6 +220,19 @@ The MCP model-controlled surface is a fixed gateway: discover, batch inspect,
 open, read-only invoke, and writing invoke. Business Tools appear in
 payload cards, never in the top-level MCP tool list. Prompt and Resource use
 their native MCP primitives according to who chooses the entry.
+
+Each gateway Tool has its fixed machine `name`, framework description, schema,
+and read-only classification. When the Application Presentation declares
+gateway copy, an MCP adapter also publishes its human-readable title in the
+standard Tool `title` and compatibility `annotations.title` fields. Server
+information similarly publishes the optional Application title and
+description. A Host decides what it renders; presentation does not guarantee
+replacement of a client-configured server key or machine Tool name.
+
+Ordinary MCP initialization does not define a portable locale negotiation
+input. Locale selection is therefore an adapter or deployment decision made
+before server construction. Host-specific locale extensions MAY feed that
+input, but the core model does not depend on them.
 
 A REST adapter may publish an explicit allowlist of `(method, path, Tool ref)`
 routes over the same ApplicationRuntime and Binding. It must not expose an

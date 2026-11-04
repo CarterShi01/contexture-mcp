@@ -10,8 +10,11 @@ own declaration syntax and satisfies these rules and the exact golden outputs.
    ambiguous identities, containment cycles, and unresolved `uses` refs.
 4. One runtime Tool Binding owns both the disclosed input schema and validated
    invocation. Language-specific reflection is not normative.
-5. The MCP model-controlled Tool plane equals the five-entry gateway in `golden/tools.json`.
-   No business Tool is registered there.
+5. The MCP model-controlled Tool plane equals the five-entry gateway in
+   `golden/tools.json`. Machine names and behaviour remain fixed; standard
+   Tool `title` and `annotations.title` fields carry the Application's static
+   human presentation when explicitly configured. Omitting presentation
+   preserves the exact golden metadata. No business Tool is registered there.
 6. Discover, inspect, open, read-only invoke, and writing invoke reproduce the successful
    payloads and recovery behavior under `golden/`.
 7. Discover returns model roots only. Model-controlled open/invoke cannot enter
@@ -46,6 +49,12 @@ own declaration syntax and satisfies these rules and the exact golden outputs.
    only pure routing cards for targets, direct members, and declared uses. It
    discloses no instructions, Tool execution facets, process contract,
    content, result, or recursive expansion, and invokes nothing.
+18. A Presentation Catalog resolves locale by normalized exact tag, parent
+   tags, then its explicit default. Compilation validates node presentation
+   refs in every locale. The selected presentation may add a title and replace
+   routing descriptions, but machine names, canonical refs, instructions,
+   schemas, classifications, and invocation targets remain unchanged. One
+   server instance uses one resolved locale consistently.
 
 The JSON files under `golden/` are byte-level protocol fixtures, not examples to
 reinterpret. When a binding cannot express an incidental JSON ordering detail,

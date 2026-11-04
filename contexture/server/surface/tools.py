@@ -7,7 +7,7 @@ the user asked. The only way a tool becomes deferrable is for it not to be on
 the surface at all — its name, description and schema travel inside a payload
 and arrive when the role holding it is opened.
 
-What is on the surface is four tools, whatever the declaration contains:
+What is on the surface is five tools, whatever the declaration contains:
 
     contexture_discover              the root roles, one level
     contexture_open                  one node's detail, plus its members' cards
@@ -36,6 +36,7 @@ from mcp_types import ToolAnnotations
 
 from ...core.model.system_api import DisclosureAPI, ExecutionAPI, GATEWAY
 from ...core.types import CompiledContext
+from ...core.presentation import GatewayPresentation
 from ..identity import principal_of
 from . import translated
 
@@ -43,17 +44,23 @@ from . import translated
 class Tools:
     """The fixed five. Nothing a declaration says changes them."""
 
-    __slots__ = ("_disclosure", "_execution")
+    __slots__ = ("_disclosure", "_execution", "_presentation")
 
-    def __init__(self, disclosure: DisclosureAPI, execution: ExecutionAPI) -> None:
+    def __init__(
+        self,
+        disclosure: DisclosureAPI,
+        execution: ExecutionAPI,
+        presentation: GatewayPresentation | None,
+    ) -> None:
         self._disclosure = disclosure
         self._execution = execution
+        self._presentation = presentation
 
     def install(self, wire: MCPServer) -> None:
         disclosure = self._disclosure
         execution = self._execution
 
-        # Four wrappers holding no rules of their own. Each exists for one thing
+        # Five wrappers holding no rules of their own. Each exists for one thing
         # the kernel cannot have: an SDK `Context` to thread through, and a
         # signature for the SDK to derive this entry point's own schema from.
         async def contexture_discover() -> CompiledContext:
@@ -103,15 +110,24 @@ class Tools:
             )
         )
 
-        # Registered from the kernel's own list rather than four call sites, so
-        # "the surface is exactly these four, described exactly this way" is a
+        # Registered from the kernel's own list rather than five call sites, so
+        # "the surface is exactly these five, described exactly this way" is a
         # fact about one tuple instead of an agreement between eight places.
         for entry in GATEWAY:
+            title = (
+                self._presentation.title_for(entry.name)
+                if self._presentation is not None
+                else None
+            )
             wire.add_tool(
                 implementations[entry.name],
                 name=entry.name,
+                title=title,
                 description=entry.description,
-                annotations=ToolAnnotations(read_only_hint=entry.read_only),
+                annotations=ToolAnnotations(
+                    title=title,
+                    read_only_hint=entry.read_only,
+                ),
             )
 
 

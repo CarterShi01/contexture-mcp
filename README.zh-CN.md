@@ -60,7 +60,7 @@ example.test: reachable (placeholder)
 
 接着按[教程](docs/handbook.zh-CN.md)检查、扩展生成的应用，或体验
 [Kubernetes Demo](contexture/demo/README.zh-CN.md)。已有项目可使用
-`uv add contexture-mcp` 添加依赖；固定当前 1.0 版本使用 `contexture-mcp==1.0.0`。
+`uv add contexture-mcp` 添加依赖；固定当前 1.1 版本使用 `contexture-mcp==1.1.0`。
 
 <a id="连接-mcp-host"></a>
 <details>
@@ -96,6 +96,10 @@ hello-context-assistant       Role：职责与局部指导
 `Role` 包含能力与子 Role；`Skill` 描述过程；`Tool` 执行业务代码。
 显式 `uses` 引用连接能力，Tool 类型签名生成 Schema 并验证调用。
 
+可选的 `Presentation` 在不改变机器名或 Schema 的前提下增加面向人的 Server
+与网关标题。`PresentationCatalog` 按 locale 选择基于稳定 ref 的本地化路由文案，
+并确定性回退；一个 Server 实例始终只使用一份解析后的语言展示。
+
 **[查看完整 Python 声明 →](docs/guides/authoring.zh-CN.md)**
 
 <a id="渐进式公开"></a>
@@ -112,6 +116,7 @@ Open 披露指导与 Schema，Invoke 执行 Tool；业务授权仍由应用与 H
 | --- | --- |
 | 构建和扩展第一个应用 | [入门教程](docs/handbook.zh-CN.md) |
 | 组合 Role、Skill 与 Tool | [应用声明指南](docs/guides/authoring.zh-CN.md) |
+| 本地化 Server、网关和路由文案 | [本地化展示](docs/guides/authoring.zh-CN.md#本地化展示) |
 | 连接 Host 或提供 MCP／REST | [托管指南](docs/guides/hosting.zh-CN.md) |
 | 理解设计及其他方案 | [设计与取舍](docs/design.zh-CN.md) |
 | 探索可运行示例 | [事故 Demo](contexture/demo/README.zh-CN.md) |

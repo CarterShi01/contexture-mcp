@@ -14,6 +14,7 @@ from typing import Sequence, TypeAlias
 from .core.errors import ModelValidationError
 from .core.mcp_interface import Prompt, Resource
 from .core.model import Channels, Role, Skill, Tool
+from .core.presentation import Presentation, PresentationCatalog
 
 
 RootFactory: TypeAlias = type[Role] | type[Skill] | type[Tool]
@@ -54,6 +55,9 @@ class Contexture:
     channels: type[Channels] | None = None
     prompts: Sequence[type[Prompt]] = ()
     resources: Sequence[type[Resource]] = ()
+    #: Human-facing identity and fixed gateway labels. These never replace the
+    #: application or tool names that a Host and an agent call by.
+    presentation: Presentation | PresentationCatalog = Presentation()
 
     def __post_init__(self) -> None:
         if not isinstance(self.name, str) or not self.name.strip():
@@ -81,6 +85,12 @@ class Contexture:
         resources = tuple(self.resources)
         for resource in resources:
             self._require_factory(resource, (Resource,), "resources")
+
+        if not isinstance(self.presentation, (Presentation, PresentationCatalog)):
+            raise ModelValidationError(
+                "A Contexture application `presentation` must be a Presentation "
+                "or PresentationCatalog."
+            )
 
         object.__setattr__(self, "name", self.name.strip())
         object.__setattr__(self, "roots", roots)

@@ -43,11 +43,13 @@ of an earlier call.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Callable, Iterable, Sequence
+from dataclasses import dataclass, field
+from types import MappingProxyType
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from ..constants import SEPARATOR
 from ..errors import ModelValidationError
+from ..presentation import NodePresentation
 from ..types import CompiledContext, JsonObject
 from .binding import Binding, PlainBinding
 from .index import Index
@@ -113,8 +115,23 @@ class Disclosure:
     #: restore a subtree removed by the other.
     selection: SurfaceSelection = SurfaceSelection.all()
 
+    #: Optional human titles and localized routing descriptions, keyed by the
+    #: same stable refs the cards retain. This is presentation, never identity.
+    node_presentations: Mapping[str, NodePresentation] = field(
+        default_factory=lambda: MappingProxyType({})
+    )
+
     def __post_init__(self) -> None:
         object.__setattr__(self, "selection", self.selection.resolve(self.index))
+        presented: dict[str, NodePresentation] = {}
+        for ref, presentation in self.node_presentations.items():
+            self.index.find(ref)
+            if not isinstance(presentation, NodePresentation):
+                raise ModelValidationError(
+                    f"Presentation for node {ref!r} must be a NodePresentation."
+                )
+            presented[ref] = presentation
+        object.__setattr__(self, "node_presentations", MappingProxyType(presented))
         for ref in self.prompt_roots:
             node = self.index.find(ref)
             if self.index.parent_of(node) is not None:
@@ -129,7 +146,11 @@ class Disclosure:
         return (
             self
             if not self.prompt_roots
-            else Disclosure(self.index, selection=self.selection)
+            else Disclosure(
+                self.index,
+                selection=self.selection,
+                node_presentations=self.node_presentations,
+            )
         )
 
     def select(self, selection: SurfaceSelection) -> "Disclosure":
@@ -140,6 +161,7 @@ class Disclosure:
             self.index,
             self.prompt_roots,
             self.selection.intersect(resolved).resolve(self.index),
+            self.node_presentations,
         )
 
     @property
@@ -215,6 +237,23 @@ class Disclosure:
         """One openable card containing routing facts only."""
 
         return node.routing_card(self)
+
+    def present_card(
+        self, node: ContextNode, card: CompiledContext
+    ) -> CompiledContext:
+        """Add selected-locale copy while retaining name and canonical ref."""
+
+        presentation = self.node_presentations.get(self.index.ref_of(node))
+        if presentation is None:
+            return card
+        presented: CompiledContext = {}
+        for key, value in card.items():
+            presented[key] = value
+            if key == "name":
+                presented["title"] = presentation.title
+            elif key == "description" and presentation.description is not None:
+                presented[key] = presentation.description
+        return presented
 
     def card_for(self, ref: str) -> CompiledContext:
         """Render one capability a procedure names but does not own.

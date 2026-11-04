@@ -72,6 +72,62 @@ Role, Skill, and Tool form the graph. Prompt and Resource provide another
 protocol entrance to a ref the graph already owns. Use `prompt_roots` for
 complete trees that only the user-controlled Prompt plane may enter.
 
+## Localized presentation
+
+Machine identity and human copy have different compatibility rules. Keep the
+application name, gateway Tool names, node names, and canonical refs stable;
+attach human-facing server, gateway, and routing copy separately:
+
+```python
+from contexture import (
+    GatewayPresentation,
+    NodePresentation,
+    Presentation,
+    PresentationCatalog,
+)
+
+
+presentation = PresentationCatalog(
+    default_locale="en",
+    locales={
+        "en": Presentation(
+            title="Service Operations",
+            gateway=GatewayPresentation(discover="Browse operations"),
+            nodes={
+                "operations": NodePresentation(
+                    title="Operations",
+                    description="Handle service operations.",
+                ),
+            },
+        ),
+        "zh-CN": Presentation(
+            title="服务运维",
+            gateway=GatewayPresentation(discover="浏览运维能力"),
+            nodes={
+                "operations": NodePresentation(
+                    title="运维",
+                    description="处理服务运维任务。",
+                ),
+            },
+        ),
+    },
+)
+
+app = Contexture(
+    name="service-operations",
+    roots=(Operations,),
+    presentation=presentation,
+)
+```
+
+Select the locale when constructing the server, for example
+`compile_application(app).server(locale="zh-CN")`. Resolution tries the
+normalized exact tag, parent tags (`en-US` to `en`), then the explicit default.
+Compilation validates node refs in every locale. One server instance keeps one
+resolved locale, and presentation never changes schemas, invocation targets,
+or semantic instructions. See [ADR 024](../adr/024-machine-identity-and-human-presentation.md)
+and [ADR 025](../adr/025-localized-node-presentation.md).
+
 The stable 1.0 API lets a Role hold optional `pre_process` and `post_process`
 Roles. ACTIVE composes recognizable framework instruction blocks around
 unchanged business `Role.instructions`, naming refs to open before starting

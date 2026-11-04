@@ -8,7 +8,17 @@ import sys
 import unittest
 from pathlib import Path
 
-from contexture import Contexture, Prompt, Role, Skill, Tool
+from contexture import (
+    Contexture,
+    GatewayPresentation,
+    NodePresentation,
+    Presentation,
+    PresentationCatalog,
+    Prompt,
+    Role,
+    Skill,
+    Tool,
+)
 from contexture.core.errors import ModelValidationError
 from contexture.core.model.system_api import Refused
 from contexture.server import build_server, compile_application
@@ -118,16 +128,151 @@ class ApplicationTests(unittest.TestCase):
         with self.assertRaisesRegex(ModelValidationError, "at least one"):
             Contexture(name="hello", roots=())
 
+    def test_presentation_is_human_metadata_not_machine_identity(self) -> None:
+        presentation = Presentation(
+            title=" Hello product ",
+            description=" A human-facing description. ",
+            gateway=GatewayPresentation(
+                discover="Browse Hello",
+                inspect="Compare Hello capabilities",
+                open="Open a Hello capability",
+                invoke_read_only="Read from Hello",
+                invoke="Act in Hello",
+            ),
+        )
+        app = Contexture(
+            name="hello",
+            roots=(Root,),
+            presentation=presentation,
+        )
+
+        compiled = compile_application(app)
+        wire = compiled.server().build()
+        tools = {tool.name: tool for tool in asyncio.run(wire.list_tools())}
+
+        self.assertIs(compiled.presentation, presentation)
+        self.assertEqual(wire._lowlevel_server.name, "hello")
+        self.assertEqual(wire._lowlevel_server.title, "Hello product")
+        self.assertEqual(
+            wire._lowlevel_server.description, "A human-facing description."
+        )
+        self.assertEqual(tools["contexture_discover"].title, "Browse Hello")
+        self.assertEqual(
+            tools["contexture_discover"].annotations.title, "Browse Hello"
+        )
+        self.assertEqual(
+            tuple(tools),
+            (
+                "contexture_discover",
+                "contexture_inspect",
+                "contexture_open",
+                "contexture_invoke_read_only",
+                "contexture_invoke",
+            ),
+        )
+
+    def test_presentation_refuses_blank_or_untyped_values(self) -> None:
+        with self.assertRaisesRegex(ModelValidationError, "non-empty string"):
+            GatewayPresentation(open=" ")
+        with self.assertRaisesRegex(ModelValidationError, "non-empty string"):
+            Presentation(title=" ")
+        with self.assertRaisesRegex(ModelValidationError, "GatewayPresentation"):
+            Presentation(gateway="labels")  # type: ignore[arg-type]
+
+    def test_a_catalog_localizes_gateway_and_node_copy_with_fallback(self) -> None:
+        catalog = PresentationCatalog(
+            default_locale="zh_CN",
+            locales={
+                "zh-CN": Presentation(
+                    title="问候服务",
+                    gateway=GatewayPresentation(discover="浏览问候能力"),
+                    nodes={
+                        "root": NodePresentation(
+                            title="问候",
+                            description="处理问候。",
+                        )
+                    },
+                ),
+                "en": Presentation(
+                    title="Greeting service",
+                    gateway=GatewayPresentation(discover="Browse greetings"),
+                    nodes={
+                        "root": NodePresentation(
+                            title="Greetings",
+                            description="Handle greetings.",
+                        )
+                    },
+                ),
+            },
+        )
+        compiled = compile_application(
+            Contexture(name="hello", roots=(Root,), presentation=catalog)
+        )
+
+        chinese = compiled.server()
+        english = compiled.server(locale="en-US")
+        fallback = compiled.server(locale="fr-FR")
+        chinese_card = asyncio.run(chinese.surface.api.discover())["roles"][0]
+        english_card = asyncio.run(english.surface.api.discover())["roles"][0]
+
+        self.assertEqual((chinese.locale, english.locale, fallback.locale), (
+            "zh-CN", "en", "zh-CN",
+        ))
+        self.assertEqual(
+            (chinese_card["name"], chinese_card["ref"]), ("root", "root")
+        )
+        self.assertEqual(
+            (chinese_card["title"], chinese_card["description"]),
+            ("问候", "处理问候。"),
+        )
+        self.assertEqual(
+            (english_card["title"], english_card["description"]),
+            ("Greetings", "Handle greetings."),
+        )
+        self.assertEqual(
+            asyncio.run(english.build().list_tools())[0].title,
+            "Browse greetings",
+        )
+        self.assertIn("- Greetings (root): Handle greetings.", english.build().instructions)
+
+    def test_every_locale_ref_is_validated_before_selection(self) -> None:
+        catalog = PresentationCatalog(
+            default_locale="en",
+            locales={
+                "en": Presentation(),
+                "zh-CN": Presentation(
+                    nodes={"missing": NodePresentation(title="不存在")}
+                ),
+            },
+        )
+        with self.assertRaisesRegex(ModelValidationError, "unknown node ref 'missing'"):
+            compile_application(
+                Contexture(name="hello", roots=(Root,), presentation=catalog)
+            )
+
+    def test_catalog_validation_is_extensible_and_strict(self) -> None:
+        japanese = Presentation(title="挨拶")
+        catalog = PresentationCatalog(
+            default_locale="ja-JP",
+            locales={"ja-jp": japanese},
+        )
+        self.assertEqual(catalog.resolve("ja_JP"), ("ja-JP", japanese))
+        with self.assertRaisesRegex(ModelValidationError, "not declared"):
+            PresentationCatalog(default_locale="en", locales={"zh": Presentation()})
+        with self.assertRaisesRegex(ModelValidationError, "BCP-47"):
+            PresentationCatalog(default_locale="x", locales={"x": Presentation()})
+
     def test_importing_the_public_facade_and_declaring_an_app_loads_no_sdk(self) -> None:
         script = "\n".join(
             [
                 "import sys",
                 f"sys.path.insert(0, {str(SOURCE_ROOT)!r})",
-                "from contexture import Contexture, Role",
+                "from contexture import Contexture, GatewayPresentation, NodePresentation, Presentation, PresentationCatalog, Role",
                 "class Root(Role):",
                 "    def __init__(self):",
                 "        super().__init__(name='root', description='Root.', instructions='Do work.')",
-                "app = Contexture(name='hello', roots=(Root,))",
+                "catalog = PresentationCatalog(default_locale='en', locales={'en': Presentation(gateway=GatewayPresentation(), nodes={'root': NodePresentation(title='Root')})})",
+                "app = Contexture(name='hello', roots=(Root,), presentation=catalog)",
                 "assert not any(name.split('.')[0] in {'mcp', 'mcp_types'} for name in sys.modules)",
             ]
         )

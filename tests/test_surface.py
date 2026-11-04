@@ -32,6 +32,7 @@ from contexture.core.model.role import Role
 from contexture.core.model.skill import Skill
 from contexture.core.model.system_api import GATEWAY_TOOLS
 from contexture.core.model.tool import Tool
+from contexture.core.presentation import GatewayPresentation, Presentation
 from mcp.server.mcpserver import Context, MCPServer
 from contexture.server import instructions
 from contexture.server.binding import TypeHintBinding
@@ -159,6 +160,35 @@ class SurfaceTests(unittest.TestCase):
 
         listed = tuple(tool.name for tool in asyncio.run(server.list_tools()))
         self.assertEqual(listed, GATEWAY_TOOLS)
+
+    def test_gateway_titles_have_modern_and_legacy_standard_fields(self) -> None:
+        default_tools = asyncio.run(_server().list_tools())
+        tools = asyncio.run(
+            serve(
+                Responder,
+                presentation=Presentation(gateway=GatewayPresentation()),
+            ).build().list_tools()
+        )
+
+        self.assertEqual(
+            tuple(tool.title for tool in default_tools),
+            (None, None, None, None, None),
+        )
+
+        self.assertEqual(
+            tuple(tool.title for tool in tools),
+            (
+                "Discover capabilities",
+                "Inspect capabilities",
+                "Open capability",
+                "Read data",
+                "Make a change",
+            ),
+        )
+        self.assertEqual(
+            tuple(tool.annotations.title for tool in tools),
+            tuple(tool.title for tool in tools),
+        )
 
     def test_no_business_capability_reaches_the_surface(self) -> None:
         """A registered capability is one every session pays for, forever."""

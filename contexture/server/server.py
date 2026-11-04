@@ -51,11 +51,17 @@ import anyio
 from mcp.server.mcpserver import MCPServer
 
 from ..core.constants import PACKAGE_VERSION
+from ..core.errors import ModelValidationError
 from ..core.mcp_interface.tool import TOOLS, ToolPlane
 from ..core.model.channels import Channels
 from ..core.model.disclosure import Disclosure
 from ..core.model.index import Index
 from ..core.model.telemetry import InMemoryTelemetry, Telemetry
+from ..core.presentation import (
+    Presentation,
+    PresentationCatalog,
+    resolve_presentation,
+)
 from . import instructions as instructions_module
 from .identity import Auth
 from .options import ContextureOptions, ServeError, Transport, configure_logging
@@ -74,7 +80,7 @@ class ContextureServer:
 
     __slots__ = (
         "_index", "_surface", "_telemetry", "name", "version",
-        "instructions", "_surface_selector", "_built", "_auth",
+        "presentation", "locale", "instructions", "_surface_selector", "_built", "_auth",
     )
 
     def __init__(
@@ -83,6 +89,8 @@ class ContextureServer:
         *,
         name: str = "contexture",
         version: str = PACKAGE_VERSION,
+        presentation: Presentation | PresentationCatalog = Presentation(),
+        locale: str | None = None,
         instructions: str | None = None,
         tools: ToolPlane = TOOLS,
         prompts: Any = (),
@@ -113,6 +121,12 @@ class ContextureServer:
             )
         self._index = index
         self._telemetry = telemetry if telemetry is not None else InMemoryTelemetry()
+        try:
+            self.locale, self.presentation = resolve_presentation(
+                presentation, locale
+            )
+        except ModelValidationError as error:
+            raise ServeError(str(error)) from error
         if surface is not None:
             if surface.tree.index is not index:
                 raise ServeError(
@@ -127,12 +141,17 @@ class ContextureServer:
                 )
             self._surface = surface
         else:
-            disclosure = Disclosure(index, frozenset(prompt_roots))
+            disclosure = Disclosure(
+                index,
+                frozenset(prompt_roots),
+                node_presentations=self.presentation.nodes,
+            )
             self._surface = Surface.of(
                 disclosure,
                 prompts=prompts,
                 resources=resources,
                 telemetry=self._telemetry,
+                presentation=self.presentation.gateway,
             )
         self.name = name
         self.version = version
@@ -231,6 +250,8 @@ class ContextureServer:
             )
         return MCPServer(
             name=self.name,
+            title=self.presentation.title,
+            description=self.presentation.description,
             version=self.version,
             instructions=self.instructions
             or (

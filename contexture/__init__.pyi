@@ -23,6 +23,10 @@ from .core.model.telemetry import current_telemetry as current_telemetry
 from .core.model.tool import Tool as Tool
 from .core.principal import Principal as Principal
 from .core.principal import current_principal as current_principal
+from .core.presentation import GatewayPresentation as GatewayPresentation
+from .core.presentation import NodePresentation as NodePresentation
+from .core.presentation import Presentation as Presentation
+from .core.presentation import PresentationCatalog as PresentationCatalog
 
 __version__: str
 
@@ -32,9 +36,13 @@ __all__ = [
     "ContextureError",
     "DeclarationError",
     "DuplicateNameError",
+    "GatewayPresentation",
     "ModelValidationError",
     "NodeNotFoundError",
+    "NodePresentation",
     "Principal",
+    "Presentation",
+    "PresentationCatalog",
     "Prompt",
     "PostProcess",
     "PreProcess",

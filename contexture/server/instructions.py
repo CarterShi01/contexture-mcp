@@ -89,7 +89,13 @@ def build(
     dropped = 0
     full = False
     for index, group in enumerate(_sibling_groups(tree)):
-        entries = [f"- {ref}: {node.description}" for ref, node in group]
+        entries = []
+        for ref, node in group:
+            card = tree.routing_card_of(node)
+            label = (
+                f"{card['title']} ({ref})" if "title" in card else ref
+            )
+            entries.append(f"- {label}: {card['description']}")
         cost = sum(len(entry) + 1 for entry in entries)
         if index == 0:
             # The roots. Cut per entry rather than as a group, because a roster

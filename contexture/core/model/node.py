@@ -58,6 +58,12 @@ class View(Protocol):
         """One pure routing card with no execution facet."""
         ...
 
+    def present_card(
+        self, node: ContextNode, card: CompiledContext
+    ) -> CompiledContext:
+        """Apply optional human copy without changing machine identity."""
+        ...
+
     def card_for(self, ref: str) -> CompiledContext:
         """One routing card for a node named by address rather than held."""
         ...
@@ -214,7 +220,10 @@ class ContextNode(ABC):
     def routing_card(self, view: View) -> CompiledContext:
         """Render the minimal openable card without any subtype extension."""
 
-        return {**self._compile_route(), "ref": view.ref_of(self)}
+        return view.present_card(
+            self,
+            {**self._compile_route(), "ref": view.ref_of(self)},
+        )
 
     def card(self, view: View) -> CompiledContext:
         """Render one routing card: what this node is, and how to open it.
@@ -304,6 +313,11 @@ class _Alone:
 
     def routing_card_of(self, node: ContextNode) -> CompiledContext:
         return node.routing_card(self)
+
+    def present_card(
+        self, node: ContextNode, card: CompiledContext
+    ) -> CompiledContext:
+        return card
 
     def card_for(self, ref: str) -> CompiledContext:
         raise ModelValidationError(
