@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import inspect
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from .node import ContextNode, View
-from ..types import CompiledContext
+from ..errors import ModelValidationError
+from ..types import CompiledContext, JsonObject
 
 
 @dataclass(slots=True, kw_only=True)
@@ -154,3 +156,43 @@ class Tool(ContextNode):
         # one method with one result rather than two that have to be kept in
         # agreement.
         return self.card(view)
+
+
+class ExplicitSchemaTool(Tool):
+    """A Tool whose external JSON Schema is declared rather than inferred.
+
+    This is the Python declaration seam for generated proxy tools.  The server
+    still creates one Binding that validates the same schema it discloses; the
+    difference is only where that schema originates.  Business-owned Python
+    Tools should normally keep using typed ``invoke`` parameters.
+    """
+
+    __slots__ = ("_declared_input_schema",)
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        description: str,
+        input_schema: JsonObject,
+        read_only: bool = False,
+        uses: tuple[str, ...] = (),
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            uses=uses,
+            read_only=read_only,
+        )
+        if not isinstance(input_schema, dict):
+            raise ModelValidationError("An explicit Tool input schema must be an object.")
+        self._declared_input_schema = deepcopy(input_schema)
+
+    @property
+    def declared_input_schema(self) -> JsonObject:
+        """Return a defensive copy of the schema the proxy contract declared."""
+
+        return deepcopy(self._declared_input_schema)
+
+
+__all__ = ["ExplicitSchemaTool", "Tool"]

@@ -11,6 +11,8 @@ golden/         Python 参考应用产生的精确协议输出
 model.md        Application、节点、编译与 Host 表面的规范模型
 conformance.md  每个 Binding 必须满足的行为规则
 bindings.md     各语言可采用的编写与 Schema 策略（非规范）
+node-catalog.schema.json  带版本的编译节点内省合同
+node-catalog/    0.16 之后的语言无关 Catalog fixture 与说明
 ```
 
 核心不变量包括：惰性 Application；Role/Skill/Tool 闭合集；Schema 与调用由

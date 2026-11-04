@@ -125,6 +125,7 @@ the Tool. Business authorization stays with the application and host.
 | Build and extend my first application | [Tutorial](docs/handbook.md) |
 | Compose Roles, Skills, and Tools | [Authoring guide](docs/guides/authoring.md) |
 | Localize server, gateway, and routing copy | [Localized presentation](docs/guides/authoring.md#localized-presentation) |
+| Integrate or browse compiled node metadata | [Node Catalog and debug inspector](docs/handbook.md#10-local-safety-and-troubleshooting) |
 | Connect a host or serve MCP / REST | [Hosting guide](docs/guides/hosting.md) |
 | Understand the design and alternatives | [Design and trade-offs](docs/design.md) |
 | Explore a working example | [Incident demo](contexture/demo/README.md) |

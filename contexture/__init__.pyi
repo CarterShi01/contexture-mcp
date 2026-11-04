@@ -20,6 +20,7 @@ from .core.model.role import PreProcess as PreProcess
 from .core.model.role import Role as Role
 from .core.model.skill import Skill as Skill
 from .core.model.telemetry import current_telemetry as current_telemetry
+from .core.model.tool import ExplicitSchemaTool as ExplicitSchemaTool
 from .core.model.tool import Tool as Tool
 from .core.principal import Principal as Principal
 from .core.principal import current_principal as current_principal
@@ -36,6 +37,7 @@ __all__ = [
     "ContextureError",
     "DeclarationError",
     "DuplicateNameError",
+    "ExplicitSchemaTool",
     "GatewayPresentation",
     "ModelValidationError",
     "NodeNotFoundError",

@@ -1,0 +1,14 @@
+{
+  "schema": "contexture.node-catalog-canonicalization/v1",
+  "vectors": [
+    {
+      "name": "unicode-code-point-object-key-order",
+      "value": {
+        "\ue000": 1,
+        "😀": 2
+      },
+      "canonical_json": "{\"\":1,\"😀\":2}",
+      "content_digest": "sha256:871954531859c7572c6279f90eb83a594ddc3a289e8bdc28d2a84ffb8c1a1703"
+    }
+  ]
+}

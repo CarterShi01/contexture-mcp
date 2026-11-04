@@ -90,12 +90,15 @@ Schema，无需再维护第二份 Schema。
 uv run contexture check
 uv run contexture list
 uv run contexture inspect hello-context-assistant/check-target
+uv run contexture catalog --detail definition --json
 uv run contexture call hello-context-assistant/ping --input '{"target":"example.test"}'
 ```
 
 - `check` 构建并校验应用，但不打开外部连接。
 - `list` 列出每个 Role、Skill、Tool 及其规范 ref。
 - `inspect` 展示 Agent 打开节点时真正收到的指令。
+- `catalog` 输出供产品 UI、文档和确定性 diff 使用的完整编译读模型；它不会
+  重放 Agent disclosure。
 - `call` 通过与正式服务相同的 Binding 调用 Tool，但不启动 MCP。
 
 每个命令只回答一个问题：
@@ -105,6 +108,8 @@ uv run contexture call hello-context-assistant/ping --input '{"target":"example.
 | 应用能否编译？ | `contexture check` |
 | 存在哪些 ref？ | `contexture list` |
 | Agent 会看到什么？ | `contexture inspect` |
+| 上层产品可以集成哪些节点元数据？ | `contexture catalog --detail definition --json` |
+| 如何在本机浏览完整编译树？ | `contexture debug` |
 | 一个 Tool 返回什么？ | `contexture call REF --input JSON` |
 
 不要把 `serve` 当成调试 Tool 的第一步。
@@ -265,6 +270,25 @@ uv run contexture call REF --input '{...}' --allow-write
 | 外部调用失败 | 检查 Channels 配置，先测试一个只读 Tool |
 
 诊断写到 stderr，Tool 结果写到 stdout，因此 `call` 输出仍可供脚本消费。
+
+若要以人类可读方式查看每个 Role、Skill、Tool、指令、依赖关系与已绑定的
+Tool schema，可启动独立的开发者 inspector：
+
+```bash
+uv run contexture debug --view application --port 8787
+```
+
+打开 `http://127.0.0.1:8787`。Inspector 只提供不可变 Node Catalog，支持
+ETag 刷新，没有 Tool 调用路由，并拒绝绑定非 loopback 地址。需要在远端提供
+Catalog 时，应由业务应用建立带认证和明确受众策略的接口，不要代理这个调试端口。
+
+嵌入式代码使用同一套底层 API：
+
+```python
+compiled = compile_application(app)
+snapshot = compiled.catalog(view="model", detail="definition").snapshot()
+compiled.debug(view="model").run(port=8787)
+```
 
 ## 11. 部署或嵌入
 

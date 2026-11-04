@@ -31,7 +31,7 @@ from .role import PostProcess, PreProcess, Role
 from .root_selection import RootSelection, SurfaceSelection
 from .skill import Skill
 from .telemetry import InMemoryTelemetry, NodeUsage, Telemetry, current_telemetry
-from .tool import Tool
+from .tool import ExplicitSchemaTool, Tool
 
 __all__ = [
     "Channels",
@@ -51,6 +51,7 @@ __all__ = [
     "RootSelection",
     "SurfaceSelection",
     "Skill",
+    "ExplicitSchemaTool",
     "Tool",
     "register_root",
 ]

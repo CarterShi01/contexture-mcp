@@ -60,6 +60,38 @@ The JSON files under `golden/` are byte-level protocol fixtures, not examples to
 reinterpret. When a binding cannot express an incidental JSON ordering detail,
 it must still produce semantically identical JSON and exact string values.
 
+## Node Catalog extension obligations
+
+Node Catalog is a post-0.16 application/developer extension and does not change
+the immutable MCP wire rules or asset inventory above. Its normative shape is
+`node-catalog.schema.json`; `node-catalog/fixtures/reference-catalog.json` and
+`golden/node-catalog.json` form its language-neutral corpus.
+
+- Catalog construction is deterministic, immutable, and non-executing. It
+  opens no Channels, invokes no Tool, records no activation telemetry, and adds
+  no MCP gateway.
+- Application, model, and explicitly selected surface views preserve the
+  visibility and root-promotion rules in the public model. Ambient request
+  selection cannot silently narrow application/model artifacts.
+- Definition detail distinguishes authored from effective instructions.
+  Runtime Tool definitions reproduce the Binding schema/classification;
+  unbound Tools claim no execution contract.
+- Containment slots, parent refs, ordinal positions, dependency edges,
+  Presentation, Prompt plane, and declaration order reproduce the compiled
+  graph without a second traversal authority.
+- Contributor namespaces are unique and slash-qualified. Values are finite
+  JSON objects, are defensively frozen, and cannot replace standard fields.
+- Canonical JSON and digest match the reference corpus. A language binding must
+  produce its own snapshot before comparing it with the golden; copying the
+  file is not implementation evidence.
+- Producers validate the cross-node graph invariants in `model.md` in addition
+  to JSON Schema. Shape-valid catalogs with duplicate refs, stale counts,
+  dangling parents/members, non-contiguous ordinals, or non-reciprocal
+  dependencies are non-conforming.
+- A bundled debug adapter, when provided, is read-only and separate from MCP.
+  The Python adapter binds only loopback, validates Host/Origin, emits browser
+  security headers, supports ETag/304, and exposes no invocation method.
+
 ## 0.16 process-member extension obligations (separate from legacy rules)
 
 The numbered rules above are unchanged by this extension.

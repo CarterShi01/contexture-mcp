@@ -238,6 +238,70 @@ def command_inspect(args: argparse.Namespace) -> int:
     return 1 if traced.failures else 0
 
 
+def command_catalog(args: argparse.Namespace) -> int:
+    """Print the compiled node graph without replaying agent disclosure."""
+
+    from ..introspection import CatalogDetail, CatalogView
+    from ..core.model.root_selection import SurfaceSelection
+
+    compiled = _compiled(_targets_and_project(args.target))
+    view = CatalogView(args.view)
+    selection = None
+    if args.select:
+        selection = SurfaceSelection.only(args.select)
+    catalog = compiled.catalog(
+        view=view,
+        detail=CatalogDetail(args.detail),
+        locale=args.locale,
+        surface_selection=selection,
+    )
+
+    if args.refs:
+        nodes = [catalog.get(ref) for ref in args.refs]
+        if args.json:
+            print(json.dumps(
+                [node.as_json() for node in nodes],
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            ))
+            return 0
+        for node in nodes:
+            print(f"{node.kind:<5}  {node.ref}  — {node.description}")
+        return 0
+
+    if args.json:
+        print(catalog.snapshot().to_json())
+        return 0
+
+    snapshot = catalog.snapshot()
+    print(
+        f"{snapshot.application.name}  {snapshot.application.mode}  "
+        f"{snapshot.application.view.value}/{snapshot.application.detail.value}"
+    )
+    print(f"digest  {snapshot.content_digest}")
+    for node in snapshot.nodes:
+        indent = "  " * node.ref.count("/")
+        print(f"{indent}{node.kind:<5}  {node.ref}  — {node.description}")
+    return 0
+
+
+def command_debug(args: argparse.Namespace) -> int:
+    """Serve the compiled Node Catalog on a local developer-only port."""
+
+    from ..core.model.root_selection import SurfaceSelection
+
+    compiled = _compiled(_targets_and_project(args.target))
+    selection = SurfaceSelection.only(args.select) if args.select else None
+    compiled.debug(
+        view=args.view,
+        detail=args.detail,
+        locale=args.locale,
+        surface_selection=selection,
+    ).run(host=args.host, port=args.port)
+    return 0
+
+
 def serve_options(args: argparse.Namespace) -> "ContextureOptions":
     """Turn the transport flags into the object that validates them.
 
@@ -465,6 +529,86 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     inspect.set_defaults(func=command_inspect)
+
+    catalog = subcommands.add_parser(
+        "catalog",
+        help="print the stable node metadata compiled for application integrations",
+        description=(
+            "Describe the compiled Role, Skill and Tool graph without running "
+            "business tools. Unlike inspect, this is a structural application "
+            "read model rather than a replay of model disclosure."
+        ),
+    )
+    catalog.add_argument(
+        "refs", nargs="*", help="optional exact refs to print instead of the snapshot"
+    )
+    catalog.add_argument("--target", default=None, help="package.module:RoleClass")
+    catalog.add_argument(
+        "--view",
+        choices=("application", "model", "surface"),
+        default="model",
+        help="compiled graph view (default: model)",
+    )
+    catalog.add_argument(
+        "--detail",
+        choices=("summary", "definition"),
+        default="summary",
+        help="node detail level (default: summary)",
+    )
+    catalog.add_argument(
+        "--locale", default=None, help="presentation locale to resolve"
+    )
+    catalog.add_argument(
+        "--select",
+        action="append",
+        default=[],
+        metavar="REF",
+        help="surface selector, repeatable; valid only with --view surface",
+    )
+    catalog.add_argument(
+        "--json", action="store_true", help="emit deterministic JSON"
+    )
+    catalog.set_defaults(func=command_catalog)
+
+    debug = subcommands.add_parser(
+        "debug",
+        help="browse compiled node metadata on a loopback-only HTTP port",
+        description=(
+            "Start a read-only local Node Catalog UI. This is not an MCP "
+            "endpoint and has no Tool invocation route. The server refuses "
+            "non-loopback bind addresses."
+        ),
+    )
+    debug.add_argument("--target", default=None, help="package.module:RoleClass")
+    debug.add_argument(
+        "--view",
+        choices=("application", "model", "surface"),
+        default="application",
+        help="compiled graph view (default: application)",
+    )
+    debug.add_argument(
+        "--detail",
+        choices=("summary", "definition"),
+        default="definition",
+        help="node detail level (default: definition)",
+    )
+    debug.add_argument("--locale", default=None, help="presentation locale to resolve")
+    debug.add_argument(
+        "--select",
+        action="append",
+        default=[],
+        metavar="REF",
+        help="surface selector, repeatable; valid only with --view surface",
+    )
+    debug.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="loopback interface to bind (default: 127.0.0.1)",
+    )
+    debug.add_argument(
+        "--port", type=int, default=8787, help="local port to bind (default: 8787)"
+    )
+    debug.set_defaults(func=command_debug)
 
     serve = subcommands.add_parser("serve", help="serve the project over MCP")
     serve.add_argument("target", nargs="?", help="package.module:RoleClass")

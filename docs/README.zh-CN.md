@@ -32,6 +32,8 @@
 - [设计与取舍](design.zh-CN.md)：职责组合、渐进披露、其他方案与适用场景。
 - [视频与文字稿](overview.zh-CN.md)：已实现的交互模型。
 - [路线图](roadmap.zh-CN.md)：计划中的可视化与能力级评估。
+- [编译节点内省](10-compiled-node-introspection-design.zh-CN.md)：已实现的版本化
+  Node Catalog，用于应用集成和开发工具。
 
 ## 参考资料：查询契约
 

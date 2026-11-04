@@ -20,10 +20,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from jsonschema import Draft202012Validator, SchemaError
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.mcpserver.tools import Tool as SDKTool
 
-from ..core.model.tool import Tool
+from ..core.errors import ModelValidationError
+from ..core.model.binding import Binding
+from ..core.model.tool import ExplicitSchemaTool, Tool
 from ..core.types import JsonObject
 
 
@@ -79,6 +82,65 @@ class TypeHintBinding:
             raise
 
 
+@dataclass(slots=True)
+class ExplicitSchemaBinding:
+    """Validate and invoke one generated Tool from its declared wire schema."""
+
+    tool: ExplicitSchemaTool
+    _schema: JsonObject = field(init=False, repr=False)
+    _validator: Draft202012Validator = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        self._schema = self.tool.declared_input_schema
+        if self._schema.get("type") != "object":
+            raise ModelValidationError(
+                f"Explicit Tool {self.tool.name!r} input schema must have type 'object'."
+            )
+        try:
+            Draft202012Validator.check_schema(self._schema)
+        except SchemaError as error:
+            raise ModelValidationError(
+                f"Explicit Tool {self.tool.name!r} has an invalid input schema: "
+                f"{error.message}"
+            ) from error
+        self._validator = Draft202012Validator(self._schema)
+
+    @property
+    def schema(self) -> JsonObject:
+        return self._schema
+
+    async def call(
+        self,
+        arguments: dict[str, Any] | None,
+        context: Any = None,
+    ) -> Any:
+        del context
+        supplied = arguments or {}
+        errors = sorted(
+            self._validator.iter_errors(supplied),
+            key=lambda error: tuple(str(part) for part in error.absolute_path),
+        )
+        if errors:
+            raise ToolError(
+                f"Arguments for Contexture Tool {self.tool.name!r} do not satisfy "
+                f"its input schema: {errors[0].message}"
+            )
+        try:
+            return await getattr(self.tool, "invoke")(**supplied)
+        except PermissionError as failure:
+            # Keep the same intentional business-refusal contract as the
+            # SDK-derived binding, which wraps PermissionError as ToolError.
+            raise ToolError(str(failure)) from failure
+
+
+def bind_tool(tool: Tool) -> Binding:
+    """Choose the one schema/validation derivation declared by this Tool."""
+
+    if isinstance(tool, ExplicitSchemaTool):
+        return ExplicitSchemaBinding(tool)
+    return TypeHintBinding(tool)
+
+
 #: JSON Schema keywords whose value is one schema.
 _SUBSCHEMA = ("items", "additionalProperties", "not", "contains", "propertyNames")
 
@@ -132,4 +194,4 @@ def _without_titles(schema: JsonObject) -> JsonObject:
     return cleaned
 
 
-__all__ = ["TypeHintBinding"]
+__all__ = ["ExplicitSchemaBinding", "TypeHintBinding", "bind_tool"]

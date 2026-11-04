@@ -80,7 +80,8 @@ def _text(result: Any) -> str:
 def capture() -> dict[str, str]:
     """Build the demo and return every golden file as `name -> exact bytes`."""
 
-    from contexture.demo.server import build
+    from contexture.demo.server import app, build
+    from contexture.server import compile_application
 
     holder = build()
     wire = holder.build()
@@ -139,6 +140,13 @@ def capture() -> dict[str, str]:
         matches, total = tree.index.matching_refs(typed, limit=100)
         completions[typed] = {"values": list(matches), "total": total}
     files["completions.json"] = _json(completions)
+
+    files["node-catalog.json"] = _json(
+        compile_application(app)
+        .catalog(view="model", detail="definition")
+        .snapshot()
+        .as_json()
+    )
 
     return files
 

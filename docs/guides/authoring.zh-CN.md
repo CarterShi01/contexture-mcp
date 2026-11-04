@@ -53,6 +53,10 @@ app = Contexture(name="service-operations", roots=(Operations,))
 Contexture 不从类名或 docstring 推导公开名称与描述。Tool 的 `invoke()` 类型标注
 同时生成输入 Schema 并验证调用，不需要分别维护两套定义。
 
+业务自有的 Python 能力应继续使用普通 `Tool`。如果生成式 proxy 的 wire contract 由外部系统拥有，可以
+继承 `ExplicitSchemaTool` 并传入 object-shaped Draft 2020-12 `input_schema`；只有通过这份已披露 schema
+校验的值才会进入 `invoke(**arguments)`。这是 adapter seam，不是让手写业务 Tool 放弃类型签名的理由。
+
 ## 声明词汇
 
 | 概念 | 编写方式 | 含义 |

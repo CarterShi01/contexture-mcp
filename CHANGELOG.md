@@ -6,6 +6,26 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Added the versioned, immutable `contexture.node-catalog/v1` read model over
+  compiled Role, Skill, and Tool graphs, with deterministic JSON/digests,
+  namespaced application contributors, `contexture catalog`, and common APIs
+  on runtime and disclosure-only compiled applications.
+- Added the loopback-only `contexture debug` inspector with a read-only HTTP
+  API, ETag/304 support, Host/Origin validation, browser security headers, and
+  no Tool invocation route.
+- Added `ExplicitSchemaTool` for generated proxy adapters whose JSON Schema is
+  owned by an external contract. The declared Draft 2020-12 schema is both
+  disclosed and applied before invocation.
+
+### Compatibility
+
+- Node Catalog is an application/developer read model and does not change the
+  fixed MCP gateway, progressive disclosure payloads, or the pinned 0.16
+  cross-language release inventory. TypeScript and Go do not claim this
+  post-1.1 extension until they implement its neutral corpus themselves.
+
 ## [1.1.0] - 2026-11-04
 
 ### Added

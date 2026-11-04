@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import assert_type
 
 from contexture import (
-    Contexture, PostProcess, PreProcess, Role, Skill, Tool, binding_instruction,
+    Contexture, ExplicitSchemaTool, PostProcess, PreProcess, Role, Skill, Tool,
+    binding_instruction,
 )
 from contexture.server import ContextureOptions
 
@@ -29,6 +30,19 @@ class Status(Tool):
 
     async def invoke(self, deployment: str) -> dict[str, str]:
         return {"deployment": deployment, "status": "ready"}
+
+
+class GeneratedProxy(ExplicitSchemaTool):
+    def __init__(self) -> None:
+        super().__init__(
+            name="generated-proxy",
+            description="Proxy one generated contract.",
+            input_schema={"type": "object", "properties": {}},
+            read_only=True,
+        )
+
+    async def invoke(self, **arguments: object) -> object:
+        return arguments
 
 
 class OperationSummary(PostProcess):

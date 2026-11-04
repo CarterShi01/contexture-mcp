@@ -1,0 +1,8 @@
+{
+  "schema": "contexture.node-catalog-fixture/v1",
+  "application_fixture": "../../fixtures/reference-application.json",
+  "view": "model",
+  "detail": "definition",
+  "locale": null,
+  "surface_selection": null
+}

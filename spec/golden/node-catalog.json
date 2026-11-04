@@ -1,0 +1,417 @@
+{
+  "schema": "contexture.node-catalog/v1",
+  "application": {
+    "name": "contexture-demo",
+    "mode": "runtime",
+    "view": "model",
+    "detail": "definition",
+    "locale": null,
+    "execution_bound": true
+  },
+  "roots": [
+    "kubernetes-platform"
+  ],
+  "counts": {
+    "role": 3,
+    "skill": 2,
+    "tool": 7
+  },
+  "nodes": [
+    {
+      "ref": "kubernetes-platform",
+      "kind": "role",
+      "name": "kubernetes-platform",
+      "description": "Operate a Kubernetes platform: diagnose incidents, and reverse releases.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": null,
+      "ordinal": 0,
+      "members": [
+        {
+          "ref": "kubernetes-platform/incident-response",
+          "kind": "role",
+          "slot": "child"
+        },
+        {
+          "ref": "kubernetes-platform/deployment-ops",
+          "kind": "role",
+          "slot": "child"
+        }
+      ],
+      "uses": [],
+      "dependents": [],
+      "role": {
+        "authored_instructions": "Route to the specialism the task belongs to, and open only that one. Diagnose\nbefore remediating: incident-response establishes a cause from evidence, and\ndeployment-ops reverses a release once the cause is known.\n",
+        "effective_instructions": "Route to the specialism the task belongs to, and open only that one. Diagnose\nbefore remediating: incident-response establishes a cause from evidence, and\ndeployment-ops reverses a release once the cause is known.\n",
+        "pre_process_ref": null,
+        "post_process_ref": null
+      },
+      "skill": null,
+      "tool": null,
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response",
+      "kind": "role",
+      "name": "incident-response",
+      "description": "Diagnose unhealthy Kubernetes workloads from cluster evidence.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform",
+      "ordinal": 0,
+      "members": [
+        {
+          "ref": "kubernetes-platform/incident-response/diagnose-crash-loop-backoff",
+          "kind": "skill",
+          "slot": "skill"
+        },
+        {
+          "ref": "kubernetes-platform/incident-response/get_pod_status",
+          "kind": "tool",
+          "slot": "tool"
+        },
+        {
+          "ref": "kubernetes-platform/incident-response/get_pod_logs",
+          "kind": "tool",
+          "slot": "tool"
+        },
+        {
+          "ref": "kubernetes-platform/incident-response/get_pod_events",
+          "kind": "tool",
+          "slot": "tool"
+        },
+        {
+          "ref": "kubernetes-platform/incident-response/crash_loop_runbook",
+          "kind": "tool",
+          "slot": "tool"
+        }
+      ],
+      "uses": [],
+      "dependents": [],
+      "role": {
+        "authored_instructions": "Work from evidence, never from the shape of the question. Select the skill that\nmatches the reported symptom, follow its procedure, and collect tool output\nbefore naming a cause. Report the root cause and the smallest safe next action.\n",
+        "effective_instructions": "Work from evidence, never from the shape of the question. Select the skill that\nmatches the reported symptom, follow its procedure, and collect tool output\nbefore naming a cause. Report the root cause and the smallest safe next action.\n",
+        "pre_process_ref": null,
+        "post_process_ref": null
+      },
+      "skill": null,
+      "tool": null,
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response/diagnose-crash-loop-backoff",
+      "kind": "skill",
+      "name": "diagnose-crash-loop-backoff",
+      "description": "Find why a Pod restarts repeatedly, before proposing any remediation.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/incident-response",
+      "ordinal": 0,
+      "members": [],
+      "uses": [],
+      "dependents": [
+        "kubernetes-platform/deployment-ops/roll-back-a-failed-release"
+      ],
+      "role": null,
+      "skill": {
+        "authored_instructions": "Establish the cause from evidence, in this order.\n\n1. Call get_pod_status. A high restart_count with ready=false confirms a\n   restart loop rather than a slow or pending start.\n2. Call get_pod_logs. The container's own output names the failure; read it\n   before forming a hypothesis.\n3. Call get_pod_events. Events tell you what the kubelet observed, including\n   the exit code, which separates an application failure from a kill.\n4. Call crash_loop_runbook and match the evidence you collected against its\n   table of causes. The same content is optionally published to hosts at\n   contexture://runbooks/crash-loop-backoff.\n\nThen report the root cause and the single smallest next action.\n\nConstraints:\n- Do not recommend restarting or deleting the Pod before the cause is known.\n  A restart does not repair a configuration error; it produces one more restart.\n- Do not state any cluster state you have not read from a tool.\n- Name the specific evidence, including the exit code, that supports your\n  conclusion.",
+        "effective_instructions": "Establish the cause from evidence, in this order.\n\n1. Call get_pod_status. A high restart_count with ready=false confirms a\n   restart loop rather than a slow or pending start.\n2. Call get_pod_logs. The container's own output names the failure; read it\n   before forming a hypothesis.\n3. Call get_pod_events. Events tell you what the kubelet observed, including\n   the exit code, which separates an application failure from a kill.\n4. Call crash_loop_runbook and match the evidence you collected against its\n   table of causes. The same content is optionally published to hosts at\n   contexture://runbooks/crash-loop-backoff.\n\nThen report the root cause and the single smallest next action.\n\nConstraints:\n- Do not recommend restarting or deleting the Pod before the cause is known.\n  A restart does not repair a configuration error; it produces one more restart.\n- Do not state any cluster state you have not read from a tool.\n- Name the specific evidence, including the exit code, that supports your\n  conclusion."
+      },
+      "tool": null,
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response/get_pod_status",
+      "kind": "tool",
+      "name": "get_pod_status",
+      "description": "Return the current phase, container state, and restart count of a Pod.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/incident-response",
+      "ordinal": 1,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {
+            "namespace": {
+              "type": "string"
+            },
+            "pod": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "namespace",
+            "pod"
+          ],
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response/get_pod_logs",
+      "kind": "tool",
+      "name": "get_pod_logs",
+      "description": "Return the recent container logs for a Pod.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/incident-response",
+      "ordinal": 2,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {
+            "namespace": {
+              "type": "string"
+            },
+            "pod": {
+              "type": "string"
+            },
+            "previous": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "namespace",
+            "pod"
+          ],
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response/get_pod_events",
+      "kind": "tool",
+      "name": "get_pod_events",
+      "description": "Return the Kubernetes events recorded against a Pod.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/incident-response",
+      "ordinal": 3,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {
+            "namespace": {
+              "type": "string"
+            },
+            "pod": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "namespace",
+            "pod"
+          ],
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/incident-response/crash_loop_runbook",
+      "kind": "tool",
+      "name": "crash_loop_runbook",
+      "description": "How to diagnose a container that keeps restarting, and what not to do.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/incident-response",
+      "ordinal": 4,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/deployment-ops",
+      "kind": "role",
+      "name": "deployment-ops",
+      "description": "Inspect and reverse Kubernetes releases that have gone wrong.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform",
+      "ordinal": 1,
+      "members": [
+        {
+          "ref": "kubernetes-platform/deployment-ops/roll-back-a-failed-release",
+          "kind": "skill",
+          "slot": "skill"
+        },
+        {
+          "ref": "kubernetes-platform/deployment-ops/get_rollout_status",
+          "kind": "tool",
+          "slot": "tool"
+        },
+        {
+          "ref": "kubernetes-platform/deployment-ops/roll_back_deployment",
+          "kind": "tool",
+          "slot": "tool"
+        },
+        {
+          "ref": "kubernetes-platform/deployment-ops/rollback_policy",
+          "kind": "tool",
+          "slot": "tool"
+        }
+      ],
+      "uses": [],
+      "dependents": [],
+      "role": {
+        "authored_instructions": "Remediation follows diagnosis and never replaces it. Read the policy, establish\nwhat the previous revision would restore, and say what evidence a rollback\ndestroys before proposing one. Anything that changes the cluster is run through\ncontexture_invoke, where a host can put a human in front of it.\n",
+        "effective_instructions": "Remediation follows diagnosis and never replaces it. Read the policy, establish\nwhat the previous revision would restore, and say what evidence a rollback\ndestroys before proposing one. Anything that changes the cluster is run through\ncontexture_invoke, where a host can put a human in front of it.\n",
+        "pre_process_ref": null,
+        "post_process_ref": null
+      },
+      "skill": null,
+      "tool": null,
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/deployment-ops/roll-back-a-failed-release",
+      "kind": "skill",
+      "name": "roll-back-a-failed-release",
+      "description": "Decide whether to roll a release back, and what to capture first.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/deployment-ops",
+      "ordinal": 0,
+      "members": [],
+      "uses": [
+        "kubernetes-platform/incident-response/diagnose-crash-loop-backoff"
+      ],
+      "dependents": [],
+      "role": null,
+      "skill": {
+        "authored_instructions": "A rollback destroys the evidence it was called for. Work in this order.\n\n1. Call rollback_policy before doing anything else. The same content is\n   optionally published to hosts at contexture://runbooks/rollback-policy.\n2. Call get_rollout_status. Compare the current and previous image: if they\n   differ only in a tag, the cause may not be in the image at all.\n3. Establish the cause first, by opening the procedure listed under `uses` and\n   following it. A rollback that follows a guess will be needed again on the\n   next release.\n4. Only then call roll_back_deployment, and say plainly what evidence is lost.\n\nConstraints:\n- Do not roll back before the cause is known and the evidence is captured.\n- A configuration fault follows the previous revision back. Say so rather than\n  presenting a rollback as a fix.\n- roll_back_deployment changes the cluster. It is not read-only, so it must be\n  run through contexture_invoke and a human may be asked first.",
+        "effective_instructions": "A rollback destroys the evidence it was called for. Work in this order.\n\n1. Call rollback_policy before doing anything else. The same content is\n   optionally published to hosts at contexture://runbooks/rollback-policy.\n2. Call get_rollout_status. Compare the current and previous image: if they\n   differ only in a tag, the cause may not be in the image at all.\n3. Establish the cause first, by opening the procedure listed under `uses` and\n   following it. A rollback that follows a guess will be needed again on the\n   next release.\n4. Only then call roll_back_deployment, and say plainly what evidence is lost.\n\nConstraints:\n- Do not roll back before the cause is known and the evidence is captured.\n- A configuration fault follows the previous revision back. Say so rather than\n  presenting a rollback as a fix.\n- roll_back_deployment changes the cluster. It is not read-only, so it must be\n  run through contexture_invoke and a human may be asked first."
+      },
+      "tool": null,
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/deployment-ops/get_rollout_status",
+      "kind": "tool",
+      "name": "get_rollout_status",
+      "description": "Return the current and previous revision of a Deployment's rollout.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/deployment-ops",
+      "ordinal": 1,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {
+            "namespace": {
+              "type": "string"
+            },
+            "deployment": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "namespace",
+            "deployment"
+          ],
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/deployment-ops/roll_back_deployment",
+      "kind": "tool",
+      "name": "roll_back_deployment",
+      "description": "Restore a Deployment's previous revision, replacing its running Pods.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/deployment-ops",
+      "ordinal": 2,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": false,
+        "input_schema": {
+          "properties": {
+            "namespace": {
+              "type": "string"
+            },
+            "deployment": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "namespace",
+            "deployment"
+          ],
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    },
+    {
+      "ref": "kubernetes-platform/deployment-ops/rollback_policy",
+      "kind": "tool",
+      "name": "rollback_policy",
+      "description": "When a rollback is the right remediation, and what it costs.",
+      "presentation": null,
+      "plane": "model",
+      "parent_ref": "kubernetes-platform/deployment-ops",
+      "ordinal": 3,
+      "members": [],
+      "uses": [],
+      "dependents": [],
+      "role": null,
+      "skill": null,
+      "tool": {
+        "execution_available": true,
+        "read_only": true,
+        "input_schema": {
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "extensions": {}
+    }
+  ],
+  "content_digest": "sha256:ab7302cf78c9805dd09bd97734d9df93ebabc191779c07eeb2ff12be5586e5e4"
+}

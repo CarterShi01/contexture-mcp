@@ -34,6 +34,9 @@ install → generate → inspect → call → extend → connect a host.
   progressive disclosure, alternatives, and when to choose Contexture.
 - [Video and transcript](overview.md): the implemented interaction model.
 - [Roadmap](roadmap.md): planned visualization and capability-level evaluation.
+- [Compiled node introspection](10-compiled-node-introspection-design.md):
+  implemented versioned Node Catalog for application integrations and developer
+  tooling.
 
 ## Reference — look up a contract
 

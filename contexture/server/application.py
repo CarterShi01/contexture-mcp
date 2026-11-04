@@ -9,7 +9,7 @@ it, and hands that frozen index to the existing server.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from ..application import Contexture
 from ..core.errors import ModelValidationError
@@ -24,11 +24,21 @@ from ..core.presentation import (
     PresentationCatalog,
     resolve_presentation,
 )
-from .binding import TypeHintBinding
+from .binding import bind_tool
 from .options import ContextureOptions
 from .root_selector import RootSelector, SurfaceSelector
 from .server import ContextureServer
 from .surface import DisclosureSurface
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from ..debug import CatalogDebugServer
+    from ..introspection import (
+        CatalogDetail,
+        CatalogView,
+        NodeCatalog,
+        NodeMetadataContributor,
+    )
+    from ..core.model.root_selection import SurfaceSelection
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,6 +91,51 @@ class CompiledApplication:
 
         return ApplicationRuntime(self.index, self.telemetry)
 
+    def catalog(
+        self,
+        *,
+        view: "CatalogView | str",
+        detail: "CatalogDetail | str" = "summary",
+        locale: str | None = None,
+        surface_selection: "SurfaceSelection | None" = None,
+        contributors: Iterable["NodeMetadataContributor"] = (),
+    ) -> "NodeCatalog":
+        """Return the read-only Node Catalog for this compiled application."""
+
+        from ..introspection import NodeCatalog
+
+        return NodeCatalog.of(
+            self,
+            view=view,
+            detail=detail,
+            locale=locale,
+            surface_selection=surface_selection,
+            contributors=contributors,
+        )
+
+    def debug(
+        self,
+        *,
+        view: "CatalogView | str" = "application",
+        detail: "CatalogDetail | str" = "definition",
+        locale: str | None = None,
+        surface_selection: "SurfaceSelection | None" = None,
+        contributors: Iterable["NodeMetadataContributor"] = (),
+    ) -> "CatalogDebugServer":
+        """Build the loopback-only developer UI for this compiled graph."""
+
+        from ..debug import CatalogDebugServer
+
+        return CatalogDebugServer(
+            self.catalog(
+                view=view,
+                detail=detail,
+                locale=locale,
+                surface_selection=surface_selection,
+                contributors=contributors,
+            )
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class CompiledDisclosureApplication:
@@ -132,6 +187,51 @@ class CompiledDisclosureApplication:
             surface=surface,
             surface_selector=surface_selector,
             root_selector=root_selector,
+        )
+
+    def catalog(
+        self,
+        *,
+        view: "CatalogView | str",
+        detail: "CatalogDetail | str" = "summary",
+        locale: str | None = None,
+        surface_selection: "SurfaceSelection | None" = None,
+        contributors: Iterable["NodeMetadataContributor"] = (),
+    ) -> "NodeCatalog":
+        """Return the read-only Node Catalog for this compiled application."""
+
+        from ..introspection import NodeCatalog
+
+        return NodeCatalog.of(
+            self,
+            view=view,
+            detail=detail,
+            locale=locale,
+            surface_selection=surface_selection,
+            contributors=contributors,
+        )
+
+    def debug(
+        self,
+        *,
+        view: "CatalogView | str" = "application",
+        detail: "CatalogDetail | str" = "definition",
+        locale: str | None = None,
+        surface_selection: "SurfaceSelection | None" = None,
+        contributors: Iterable["NodeMetadataContributor"] = (),
+    ) -> "CatalogDebugServer":
+        """Build the loopback-only developer UI for this compiled graph."""
+
+        from ..debug import CatalogDebugServer
+
+        return CatalogDebugServer(
+            self.catalog(
+                view=view,
+                detail=detail,
+                locale=locale,
+                surface_selection=surface_selection,
+                contributors=contributors,
+            )
         )
 
 
@@ -246,7 +346,7 @@ def compile_parts(
     normal_resources = tuple(
         _published(entry, Resource, "resource") for entry in resources
     )
-    index = Index.of(manager, bind=TypeHintBinding)
+    index = Index.of(manager, bind=bind_tool)
     _validate_presentation(index, presentation)
     return CompiledApplication(
         name=name,

@@ -55,6 +55,13 @@ Contexture never infers public names or descriptions from class names or
 docstrings. A Tool's `invoke()` type hints produce its input schema and validate
 the same call, so schema and runtime cannot drift independently.
 
+Use ordinary `Tool` for business-owned Python capabilities. A generated proxy
+whose wire contract is owned by another system may instead subclass
+`ExplicitSchemaTool` and pass an object-shaped Draft 2020-12 `input_schema`.
+Its `invoke(**arguments)` receives values only after that exact disclosed
+schema validates them. This is an adapter seam, not a reason to replace typed
+signatures in hand-written business Tools.
+
 ## Declaration vocabulary
 
 | Concept | What you write | Meaning |

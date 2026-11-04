@@ -63,11 +63,19 @@ ALLOWED: dict[str, set[str]] = {
     # and protocol-plane declarations. It is deliberately below `server` so
     # importing `app` does not build a wire object.
     "application": {"core.__base__", "core.model", "core.mcp_interface"},
+    # A stable read model over one compiled graph. It joins model facts but
+    # imports neither an application declaration nor a transport.
+    "introspection": {"core.__base__", "core.model"},
+    # Local, read-only HTTP adapter over the introspection read model. It owns
+    # no graph rules and has no dependency on the MCP server layer.
+    "debug": {"core.__base__", "introspection"},
     "server": {
         "core.__base__",
         "core.model",
         "core.mcp_interface",
         "application",
+        "introspection",
+        "debug",
     },
     # The human-facing inbound adapter. It publishes explicit HTTP addresses
     # over a runtime that core.model already owns; it may not import MCP or the
@@ -101,6 +109,7 @@ ALLOWED: dict[str, set[str]] = {
         "core.mcp_interface",
         "server",
         "inspection",
+        "introspection",
     },
 }
 
@@ -401,7 +410,8 @@ class IOBoundaryTests(unittest.TestCase):
     FILESYSTEM_WRITERS = {"cli/scaffold.py"}
     # `web.surface` imports urllib only for standards-compliant query decoding;
     # it is itself the human-facing inbound transport and opens no connection.
-    NETWORK_MODULES: set[str] = {"web/surface.py"}
+    # `debug` is the separately bounded loopback-only catalog HTTP adapter.
+    NETWORK_MODULES: set[str] = {"debug.py", "web/surface.py"}
 
     WRITE_CALLS = {"write_text", "write_bytes", "mkdir", "touch", "unlink"}
     NETWORK_PACKAGES = {"urllib", "socket", "http", "httpx", "requests", "aiohttp"}

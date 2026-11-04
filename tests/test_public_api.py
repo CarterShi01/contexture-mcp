@@ -18,6 +18,7 @@ AUTHORING_API = {
     "ContextureError",
     "DeclarationError",
     "DuplicateNameError",
+    "ExplicitSchemaTool",
     "GatewayPresentation",
     "ModelValidationError",
     "NodeNotFoundError",

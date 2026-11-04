@@ -16,6 +16,8 @@ golden/     the exact payload and the exact sentence the bundled demo produces
 model.md    the language-neutral public Application/Role/Skill/Tool model
 conformance.md  behavioral rules every language binding must reproduce
 bindings.md language-specific authoring notes; explicitly non-normative
+node-catalog.schema.json  the versioned compiled-node introspection contract
+node-catalog/  the post-0.16 language-neutral catalog fixture and guidance
 ```
 
 `golden/` is produced from `contexture.demo`, which is the reference
@@ -34,6 +36,7 @@ two documents and one command. It covers every branch an agent can reach:
 | `commands.json` | what a person reads when they run a command |
 | `reads.json` | what a host gets from a resource read |
 | `completions.json` | what a person is offered while typing a ref |
+| `node-catalog.json` | the complete model-visible compiled node metadata (Node Catalog extension, not the immutable 0.16 wire inventory) |
 
 Regenerate deliberately, and review the diff — these bytes are the contract:
 

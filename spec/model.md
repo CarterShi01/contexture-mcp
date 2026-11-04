@@ -183,6 +183,56 @@ and exposes only discover/open plus optional Prompts. Tool nodes in this graph
 are structural cards, not callable capabilities. Runtime and disclosure-only
 applications never share node instances, Indexes, telemetry, or lifecycle.
 
+## Compiled Node Catalog
+
+A language binding that claims Node Catalog v1 support MUST let its compiled
+Application produce a transport-neutral structural read model conforming to
+`contexture.node-catalog/v1` and `node-catalog.schema.json`. This extension is
+implemented by the Python binding; another binding does not acquire the claim
+merely by continuing to satisfy the pinned MCP wire release contract. A Node
+Catalog is for trusted application code, generated documentation, CI diffs,
+and developer tools. It is not an MCP gateway, is not progressive disclosure,
+and MUST NOT become model-visible unless an application deliberately publishes
+it through a separate surface.
+
+Catalog assembly joins facts at their actual owners: authored node identity and
+text, Index-owned refs/parentage/order/Binding/dependencies, Disclosure-owned
+visibility and effective instructions, and selected Presentation copy. It MUST
+NOT move compiled refs, Tool schemas, or effective process instructions onto
+mutable declaration objects as a second authority.
+
+The three explicit views are `application`, `model`, and `surface`.
+`application` includes model and Prompt planes; `model` excludes Prompt roots;
+`surface` additionally requires one explicit SurfaceSelection and promotes each
+selected ref to a catalog root. An application/model catalog MUST NOT inherit
+request-local selection accidentally. Declaration order determines roots,
+nodes, members, `uses`, and dependents; map ordering never does.
+
+`summary` detail omits kind definitions. `definition` detail carries authored
+and effective Role/Skill instructions separately. A runtime Tool definition
+carries the same read-only classification and input schema owned by its
+Binding. A disclosure-only Tool states `execution_available=false` and MUST
+NOT invent either field. Member descriptors distinguish pre-process, child,
+post-process, Skill, and Tool slots while retaining the closed three node kinds.
+
+Application metadata extensions enter through explicitly registered
+contributors. Every contributor owns a unique slash-qualified namespace and
+returns only JSON data. Extensions cannot replace standard fields or change
+visibility. The complete snapshot is immutable and has a canonical SHA-256
+digest over UTF-8 JSON with recursively sorted object keys, preserved array
+order, no insignificant whitespace, and finite integral floats normalized to
+integers. The `content_digest` field itself is excluded from that digest.
+
+JSON Schema validates the local shape of the document; producers and consumers
+MUST additionally enforce graph semantics that JSON Schema cannot express.
+Node refs and roots are unique; roots are exactly the nodes whose visible
+`parent_ref` is null; counts equal the nodes by kind; root and member ordinals
+are contiguous; every non-root is named exactly once by its Role parent with a
+matching kind and slot; every member target names that parent; and every
+`uses`/`dependents` edge is present in the selected view and reciprocal.
+Definition presence matches the declared detail level, process refs match
+their member slots, and Tool execution availability matches application mode.
+
 ## Path-selected views
 
 A SurfaceSelection is an immutable set of exact refs and terminal direct-child

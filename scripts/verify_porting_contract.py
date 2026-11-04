@@ -23,6 +23,12 @@ BINDING_DIRECTORIES = {
     "go": "contexture-mcp-go",
 }
 
+# Node Catalog is a post-0.16 application introspection extension. Its golden
+# remains producer-checked in spec/golden, but it is not an MCP wire asset from
+# the immutable 0.16 revision and therefore is not copied into release-binding
+# conformance manifests.
+EXTENSION_GOLDEN = {"node-catalog.json"}
+
 
 def _object(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -49,7 +55,11 @@ def _immutable_file(revision: str, path: Path) -> bytes:
 def verify_assets() -> dict[str, Any]:
     inventory = _object(PORTING / "assets.json")
     actual_fixtures = sorted(path.name for path in (SPEC / "fixtures").glob("*.json"))
-    actual_golden = sorted(path.name for path in (SPEC / "golden").iterdir() if path.is_file())
+    actual_golden = sorted(
+        path.name
+        for path in (SPEC / "golden").iterdir()
+        if path.is_file() and path.name not in EXTENSION_GOLDEN
+    )
     if inventory.get("fixtures") != actual_fixtures:
         raise ValueError("fixture inventory does not match spec/fixtures")
     if inventory.get("golden") != actual_golden:

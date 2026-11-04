@@ -69,6 +69,7 @@ _EXPORTS = {
     "RootSelection": ".model",
     "SurfaceSelection": ".model",
     "Skill": ".model",
+    "ExplicitSchemaTool": ".model",
     "Tool": ".model",
 }
 

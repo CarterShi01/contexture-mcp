@@ -102,6 +102,7 @@ Run these commands from the project root before connecting any MCP host:
 uv run contexture check
 uv run contexture list
 uv run contexture inspect hello-context-assistant/check-target
+uv run contexture catalog --detail definition --json
 uv run contexture call hello-context-assistant/ping --input '{"target":"example.test"}'
 ```
 
@@ -111,6 +112,8 @@ Expected outcome:
   builds and validates the application but does **not** open external connections.
 - `list` prints every Role, Skill, Tool, and its ref.
 - `inspect` shows the instructions an agent receives when it opens that Skill.
+- `catalog` emits the complete compiled application read model for product UI,
+  documentation, and deterministic diffs; it does not replay agent disclosure.
 - `call` prints `example.test: reachable (placeholder)`. It uses the same Tool
   binding as the served application, without starting MCP.
 
@@ -121,6 +124,8 @@ Use the commands for distinct questions:
 | Can this app compile? | `contexture check` |
 | What refs exist? | `contexture list` |
 | What will an agent see? | `contexture inspect` |
+| What metadata can my product integrate? | `contexture catalog --detail definition --json` |
+| Can I browse the compiled tree locally? | `contexture debug` |
 | What does one Tool return? | `contexture call REF --input JSON` |
 
 Do not use `serve` as the first way to debug a Tool.
@@ -383,6 +388,27 @@ Common recovery paths:
 
 Diagnostics are written to stderr while Tool results go to stdout, so `call`
 output remains usable in scripts.
+
+For a human-readable view of every Role, Skill, Tool, instruction, dependency,
+and bound Tool schema, start the separate developer inspector:
+
+```bash
+uv run contexture debug --view application --port 8787
+```
+
+Open `http://127.0.0.1:8787`. The inspector serves an immutable Node Catalog,
+supports ETag-based refresh, and has no Tool invocation route. It refuses
+non-loopback bind addresses. If catalog data must be available remotely, expose
+it from an authenticated application endpoint with an explicit audience policy
+instead of proxying this developer port.
+
+Embedding code can use the same lower-level API:
+
+```python
+compiled = compile_application(app)
+snapshot = compiled.catalog(view="model", detail="definition").snapshot()
+compiled.debug(view="model").run(port=8787)
+```
 
 ## 11. Deploy or embed
 
