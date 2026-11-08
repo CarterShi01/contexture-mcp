@@ -108,6 +108,26 @@ forecast (10k about 16 min, 100k about 2.7 h on this machine) is an
 extrapolation, not a measured capacity. A 10k run was invalidated because
 sources were edited during it (the runner's source fingerprint check).
 
+## Release 2.0.0 / 2.0.1 re-run (code `80f946f`, same runner)
+
+WP14 durable workload, native profile, strict durability, tracemalloc on,
+`sources_unchanged: true`, 10/10 samples with 0 errors:
+
+| Workload | Repetitions | Result | Median wall time |
+| --- | --- | --- | --- |
+| history 2000 changing + 200 no-op commits | 5 | 5/5, 0 errors | writes 128.6 s; close/reopen/full replay 56.0 s |
+| churn 10 cycles (hot swap) | 5 | 5/5, 0 errors | churn 43.1 s; full replay 7.6 s |
+
+The first run on `2271aa2` failed churn repetition 1 because the harness read
+command receipts after closing the owner (since M8 the owner keeps no receipt
+copy); the harness was fixed (`80f946f`), product code unchanged. The reopen
+median is higher than the earlier 30 s because One-Creator adoption tests ran
+concurrently on the same 2 cores; it is not a like-for-like timing comparison.
+
+2.0.1 also fixes `ReleaseManager.wait()` so a refused, failed, timed-out or
+cancelled attempt is reported at once as `failed` instead of `pending` at the
+timeout (found while composing One-Creator's managed mode).
+
 ## Not verified here
 
 * TypeScript and Go: not changed in phase 1; they do not have R01-R11.
@@ -115,4 +135,4 @@ sources were edited during it (the runner's source fingerprint check).
 * Five-repetition 10k/100k matrices with the full shape/text/schema mix.
 * One-Creator adoption (phase 2): the Personal image dependency closure, the
   managed-mode entry point, and Team/Panel/worker wiring.
-* Spec acceptance: `accepted_spec_revision` stays `null`; Q01-Q06 are undecided.
+* Spec acceptance: accepted as the v1 baseline in 2.0.0 (owner decision 2026-11-08); Q01-Q06 remain open questions.

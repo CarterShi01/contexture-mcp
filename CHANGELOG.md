@@ -6,6 +6,17 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-08
+
+### Fixed
+
+- `ReleaseManager.wait()` returns `status="failed"` as soon as this instance's
+  latest attempt for the awaited release ended without serving it (refused,
+  failed, timed out or cancelled) and nothing is running or queued for it,
+  instead of reporting `pending` only when the timeout expires. The cause is in
+  `result.local.last_error` / `last_attempt`.
+- Durable churn workload reads command receipts before closing the owner.
+
 ## [2.0.0] - 2026-11-08
 
 The managed (dynamic, versioned) runtime becomes the 2.0 line. The static
@@ -262,7 +273,8 @@ managed graph APIs that were introduced as candidates after 1.1.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/CarterShi01/contexture-mcp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v1.0.0

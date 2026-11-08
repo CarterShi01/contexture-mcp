@@ -100,8 +100,9 @@ async def test_timeout_cancel_cleanup_explicit_retry_same_epoch(system, mode):
     assert m.request(value) == receipt
     await asyncio.sleep(0)
     assert system[4].prepare_calls == calls  # retry is explicit, never an idempotency side effect
-    pending = await m.wait(receipt, timeout=0.01)
-    assert pending.status == "pending" and pending.receipt == receipt
+    # Nothing runs until an explicit retry: wait reports the failure at once.
+    stopped = await m.wait(receipt, timeout=10)
+    assert stopped.status == "failed" and stopped.receipt == receipt
     probe.proceed.set()
     assert m.retry_desired() == receipt
     assert (await m.wait(receipt, timeout=2)).status == "observed"
@@ -134,7 +135,8 @@ async def test_failed_desired_keeps_actual_lkg_and_wait_cancel_does_not_cancel_w
     assert state.observed and state.last_attempt == ("2", "failed")
     old = await m.wait(first, timeout=0.01)
     assert old.status == "superseded" and old.observation_reached and old.superseded_by == "2"
-    assert (await m.wait(second, timeout=0.01)).status == "pending"
+    failed = await m.wait(second, timeout=20)  # returns at once, not at the timeout
+    assert failed.status == "failed" and failed.local.last_attempt == ("2", "failed")
     async with m.request_lease() as lease:
         assert lease.release.epoch == "1"
     await m.shutdown()

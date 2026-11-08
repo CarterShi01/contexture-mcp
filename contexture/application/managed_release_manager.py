@@ -63,7 +63,9 @@ class ReleaseManagerStatus:
 @dataclass(frozen=True, slots=True)
 class ReleaseWaitResult:
     receipt: ReleaseReceipt
-    status: Literal["observed", "pending", "superseded"]
+    # "failed": this instance's latest attempt for the release ended without
+    # serving it and nothing is running or queued for it (see local.last_error).
+    status: Literal["observed", "pending", "superseded", "failed"]
     observation_reached: bool
     superseded_by: str | None
     local: ReleaseManagerStatus
@@ -287,8 +289,13 @@ class ReleaseManager:
                 if item["release"] == identity and item["status"] == "superseded"), None)
             local = self.status()
             remaining = deadline - self._loop.time()
-            if successor is not None or reached or remaining <= 0 or self._closed:
-                state = "superseded" if successor is not None else "observed" if reached else "pending"
+            epoch = identity["release_epoch"]
+            failed = (local.last_attempt is not None and local.last_attempt[0] == epoch
+                      and local.last_attempt[1] not in ("local_observed", "serving_unobserved")
+                      and epoch not in (local.running_epoch, local.pending_epoch))
+            if successor is not None or reached or failed or remaining <= 0 or self._closed:
+                state = ("superseded" if successor is not None else "observed" if reached
+                         else "failed" if failed else "pending")
                 return ReleaseWaitResult(receipt, state, reached, successor, local)
             try:
                 await asyncio.wait_for(changed.wait(), min(remaining, 0.1))
