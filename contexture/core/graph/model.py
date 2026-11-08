@@ -7,7 +7,7 @@ from an author's input_contract assertion. This is not compiler lowering.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from ipaddress import IPv6Address
 import re
@@ -18,7 +18,9 @@ from unicodedata import normalize
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 
-from .canonical import FrozenJSON, canonical_digest, decode_json, freeze_json, thaw_json, validate_id
+from .canonical import (
+    FrozenJSON, canonical_digest, canonical_json, decode_json, freeze_json, thaw_json, validate_id,
+)
 from .errors import GraphError
 
 Kind = Literal["role", "skill", "tool"]
@@ -615,6 +617,29 @@ class PublicationContract:
             raise _error("Invalid publication contract evidence")
 
 
+PublicationContracts = Mapping[str, PublicationContract] | Iterable[PublicationContract]
+"""Registry evidence: a collection of contracts, or a mapping whose values are.
+
+Evidence is indexed by the EXACT binding descriptor, never by node identity, so
+a registry may vouch for several versions of a binding at once (e.g. while a
+Tool is upgraded in one transaction). Mapping keys are not semantic.
+"""
+
+
+def contract_lookup(contracts: PublicationContracts | None) -> dict[bytes, PublicationContract]:
+    """Index registry evidence by canonical binding descriptor bytes."""
+    values: Iterable[object] = (() if contracts is None else
+        contracts.values() if isinstance(contracts, Mapping) else contracts)
+    result: dict[bytes, PublicationContract] = {}
+    for contract in values:
+        if not isinstance(contract, PublicationContract):
+            raise _error("Invalid publication contract evidence", code="contract_mismatch")
+        key = canonical_json(contract.binding.as_json())
+        if result.setdefault(key, contract) != contract:
+            raise _error("Conflicting registry evidence for one binding", code="contract_mismatch")
+    return result
+
+
 @dataclass(frozen=True, slots=True, init=False)
 class GraphDefinition(_Value):
     schema: str
@@ -631,12 +656,16 @@ class GraphDefinition(_Value):
 
     @classmethod
     def from_json(
-        cls, value: object, *, publication_contracts: Mapping[str, PublicationContract] | None = None,
+        cls, value: object, *, publication_contracts: PublicationContracts | None = None,
+        verify_contracts: bool = True,
     ) -> GraphDefinition:
         """Strictly decode bytes or detach native JSON and validate a committed forest.
 
         Native JSON has already lost numeric lexemes; raw imports should use
         bytes. Empty drafts are deliberately not accepted as serving definitions.
+        `verify_contracts=False` is ONLY for already accepted history (replay,
+        transaction bases): registry evidence is admission/compile input, so a
+        later registry must never make an accepted journal unreadable.
         """
         if isinstance(value, bytes):
             value = decode_json(value)
@@ -669,7 +698,8 @@ class GraphDefinition(_Value):
         # uses the same whole-forest validator as callers' explicit indexes.
         from .index import GraphIndex
 
-        GraphIndex.build(definition, publication_contracts=publication_contracts)
+        GraphIndex.build(definition, publication_contracts=publication_contracts,
+                         verify_contracts=verify_contracts)
         return definition
 
     def as_json(self) -> dict[str, object]:

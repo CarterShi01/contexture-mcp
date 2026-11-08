@@ -12,12 +12,12 @@ import re
 from typing import cast
 
 from .canonical import (
-    FrozenJSON, MAX_COUNTER, canonical_digest, canonical_json, freeze_json,
+    FrozenJSON, MAX_COUNTER, canonical_digest, freeze_json,
     parse_counter, thaw_json, validate_id,
 )
 from .errors import GraphError
 from .canonical import canonical_equal
-from .model import GraphDefinition, NodeSpec, PublicationContract
+from .model import GraphDefinition, NodeSpec
 
 Wire = dict[str, object]
 Facts = tuple[Mapping[str, FrozenJSON], ...]
@@ -248,8 +248,7 @@ def bootstrap_event(base: UnseededState, seed: GraphDefinition | BootstrapCandid
                       "source_digest": base.definition_digest}})
 
 
-def _apply_bootstrap(base: UnseededState, event: Mapping[str, object], tombstones: object,
-                     contracts: Mapping[str, PublicationContract] | None) -> RevisionState:
+def _apply_bootstrap(base: UnseededState, event: Mapping[str, object], tombstones: object) -> RevisionState:
     e = _object(event, "type graph_id semantic_version base_revision result_revision before_digest "
                 "after_digest resolved_facts command_digest reason migration")
     _provenance(e["migration"], "bootstrap", base.definition_digest)
@@ -259,38 +258,13 @@ def _apply_bootstrap(base: UnseededState, event: Mapping[str, object], tombstone
     fact = _object(facts[0], "type before after")
     if fact["type"] != "GraphSeeded" or fact["before"] is not None or not _equal(tombstones, []):
         raise _fail("Bootstrap has no prior definition or retained identities")
-    definition = GraphDefinition.from_json(fact["after"], publication_contracts=contracts)
+    definition = GraphDefinition.from_json(fact["after"], verify_contracts=False)
     provenance = cast(Mapping[str, object], e["migration"])
     expected = bootstrap_event(base, definition, command_digest=cast(str, e["command_digest"]),
         reason=cast(str, e["reason"]), approval_ref=cast(str, provenance["approval_ref"]))
     if not _equal(expected, e):
         raise _fail("Bootstrap event is not the exact normalized seed transition")
     return RevisionState(definition, "1")
-
-
-def _entries(definition: GraphDefinition) -> dict[str, list[Wire]]:
-    return {c.locale: [e.as_json() for e in c.entries] for c in definition.presentations.catalogs}
-
-
-def _legacy_presentations(base: GraphDefinition, candidate: GraphDefinition) -> list[Wire]:
-    """Validate the old restricted vocabulary without accepting ambiguous order."""
-    a, b = _entries(base), _entries(candidate)
-    if base.presentations.default_locale != candidate.presentations.default_locale or list(a) != list(b):
-        raise _fail("Legacy presentation facts cannot alter catalog order/default")
-    facts: list[Wire] = []
-    for locale, entries in a.items():
-        ae = {cast(str, e["node_id"]): e for e in entries}
-        be = {cast(str, e["node_id"]): e for e in b[locale]}
-        if list(be) != [n for n in ae if n in be] + sorted(be.keys() - ae.keys()):
-            raise _fail("Legacy presentation entry order is ambiguous")
-        for identity in sorted(ae.keys() | be.keys()):
-            if identity not in be:
-                facts.append({"type": "PresentationRemoved", "locale": locale, "before": ae[identity]})
-            elif identity not in ae or not _equal(ae[identity], be[identity]):
-                facts.append({"type": "PresentationPut", "locale": locale,
-                    "before": {"present": True, "value": ae[identity]} if identity in ae
-                        else {"present": False}, "after": be[identity]})
-    return facts
 
 
 def resolve_facts(base: RevisionState, candidate: GraphDefinition) -> ResolvedChange:
@@ -386,10 +360,13 @@ def apply_facts(
     base: RevisionState, facts: Sequence[Mapping[str, object]], *,
     tombstones: object, revision: str, before_digest: str, after_digest: str,
     resolved_fact_digest: str | None = None,
-    publication_contracts: Mapping[str, PublicationContract] | None = None,
     migration: object = None,
 ) -> RevisionState:
     """Replay a complete normalized patch, validating the final graph only.
+
+    Replay is a pure function of accepted journal facts: it never consults a
+    binding registry. Registry evidence was checked when the candidate was
+    admitted and is re-resolved per binding by the compiler before serving.
 
     All before values are against base, never a transient intermediate graph.
     Re-normalizing the complete candidate checks closed shapes, preconditions,
@@ -415,7 +392,6 @@ def apply_facts(
     nodes = {n: v.as_json() for n, v in base.definition.nodes.items()}
     publications = {p.publication_id: p.as_json() for p in base.definition.publications}
     positions = {p.publication_id: i for i, p in enumerate(base.definition.publications)}
-    locales = _entries(base.definition)
     presentations: object = None
     migration_id: str | None = None
     source_mapping: Mapping[str, FrozenJSON] | None = None
@@ -483,23 +459,6 @@ def apply_facts(
                     raise _fail("Publication removal target missing")
                 del publications[identity]
                 del positions[identity]
-        elif tag in ("PresentationPut", "PresentationRemoved"):
-            locale = f.get("locale")
-            if type(locale) is not str or locale not in locales:
-                raise _fail("Catalog creation has no fact encoding", "unsupported_contract")
-            entry = _object(f.get("after" if tag == "PresentationPut" else "before"),
-                            "node_id", "title description")
-            identity = validate_id(entry["node_id"])
-            entries = locales[locale]
-            found = next((i for i, e in enumerate(entries) if e["node_id"] == identity), None)
-            if tag == "PresentationRemoved":
-                if found is None:
-                    raise _fail("Presentation removal target missing")
-                entries.pop(found)
-            elif found is None:
-                entries.append(entry)
-            else:
-                entries[found] = entry
         else:
             raise _fail("Unknown or unsupported required fact type", "unsupported_contract")
     wire["nodes"] = [nodes[n] for n in sorted(nodes) if n not in deleted]
@@ -508,10 +467,9 @@ def apply_facts(
     if sorted(positions.values()) != list(range(len(positions))):
         raise _fail("Publication positions are not a complete final permutation")
     wire["publications"] = [publications[n] for n in sorted(publications, key=lambda n: positions[n])]
-    wire["presentations"] = presentations if presentations is not None else {
-        "default_locale": base.definition.presentations.default_locale,
-        "catalogs": [{"locale": k, "entries": v} for k, v in locales.items()]}
-    candidate = GraphDefinition.from_json(wire, publication_contracts=publication_contracts)
+    wire["presentations"] = (presentations if presentations is not None
+                             else base.definition.presentations.as_json())
+    candidate = GraphDefinition.from_json(wire, verify_contracts=False)
     if migration_id is not None:
         expected = resolve_migration(base, candidate, migration_id=migration_id,
             exact_diff=_provenance(migration, "migration", base.definition_digest)["exact_diff"],
@@ -519,12 +477,6 @@ def apply_facts(
     else:
         expected = resolve_facts(base, candidate)
     expected_facts: object = expected.facts
-    if any(f["type"] in ("PresentationPut", "PresentationRemoved") for f in raw_facts):
-        legacy = _legacy_presentations(base.definition, candidate)
-        expanded: list[object] = []
-        for f in expected.facts:
-            expanded.extend(legacy if f["type"] == "PresentationsAssigned" else [f])
-        expected_facts = expanded
     if not _equal(expected_facts, raw_facts):
         raise _fail("Facts are not the complete normalized base-to-candidate patch")
     supplied = _tombstones(tombstones, revision)
@@ -566,14 +518,13 @@ def change_event(base: RevisionState, change: ResolvedChange, *, command_digest:
         **({"migration": migration} if migration is not None else {})})
 
 
-def apply_event(base: RevisionState | UnseededState, event: object, *, tombstones: object,
-                publication_contracts: Mapping[str, PublicationContract] | None = None) -> RevisionState:
+def apply_event(base: RevisionState | UnseededState, event: object, *, tombstones: object) -> RevisionState:
     """Reduce a graph event only; release/receipt/journal projections are separate."""
     event = thaw_json(event)
     if not isinstance(event, dict):
         raise _fail("Expected graph event")
     if isinstance(base, UnseededState):
-        return _apply_bootstrap(base, event, tombstones, publication_contracts)
+        return _apply_bootstrap(base, event, tombstones)
     if event.get("type") == "CommandCompleted":
         e = _object(event, "type graph_id revision command_digest status")
         _digest(e["command_digest"])
@@ -594,4 +545,4 @@ def apply_event(base: RevisionState | UnseededState, event: object, *, tombstone
     return apply_facts(base, cast(list[Mapping[str, object]], e["resolved_facts"]),
         tombstones=tombstones, revision=cast(str, e["result_revision"]),
         before_digest=cast(str, e["before_digest"]), after_digest=cast(str, e["after_digest"]),
-        publication_contracts=publication_contracts, migration=e.get("migration"))
+        migration=e.get("migration"))

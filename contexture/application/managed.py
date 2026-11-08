@@ -27,7 +27,7 @@ from contexture.core.graph.events import (
 )
 from contexture.core.graph.history import History
 from contexture.core.graph.index import GraphIndex
-from contexture.core.graph.model import GraphDefinition, PublicationContract
+from contexture.core.graph.model import GraphDefinition, PublicationContracts, contract_lookup
 from contexture.core.graph.policy import (
     Admission, AdmissionRequest, VerifiedApproval, VerifiedContext,
     check_admission, read_snapshot,
@@ -156,7 +156,7 @@ class GraphOwner:
                  admission: Admission, authority_fence: AuthorityFence,
                  clock: Callable[[], str], approvals: ApprovalProvider | None = None,
                  payloads: PayloadProvider | None = None,
-                 publication_contracts: Mapping[str, PublicationContract] | None = None,
+                 publication_contracts: PublicationContracts | None = None,
                  limits: Limits = Limits(),
                  projections: Mapping[str, EventProjection] | None = None):
         self._lock = RLock()
@@ -164,7 +164,9 @@ class GraphOwner:
         self._journal, self._identities, self._admission = journal, identities, admission
         self._fence, self._clock, self._approvals = authority_fence, clock, approvals
         self._payloads, self._limits = payloads, limits
-        self._contracts = None if publication_contracts is None else dict(publication_contracts)
+        # Validated once; indexed by exact binding descriptor, not node identity.
+        self._contracts = (None if publication_contracts is None
+                           else tuple(contract_lookup(publication_contracts).values()))
         self._projections = dict(projections or {})
         self._tags: dict[str, str] = {}
         for name, projection in self._projections.items():
@@ -270,7 +272,7 @@ class GraphOwner:
                     history = histories.get(graph_id)
                     if history is None:
                         history = History.bootstrap(UnseededState(graph_id), event,
-                            journal_seq=str(sequence), publication_contracts=self._contracts)
+                            journal_seq=str(sequence))
                     else:
                         # Tombstones are reconstructed from complete accepted facts;
                         # restorations retain evidence rather than erase it.
@@ -284,7 +286,7 @@ class GraphOwner:
                                 if identity in tombstones:
                                     tombstones[identity]["mutable"] = fact["after"]
                         history = history.append(event, journal_seq=str(sequence),
-                            tombstones=list(tombstones.values()), publication_contracts=self._contracts)
+                            tombstones=list(tombstones.values()))
                     histories[graph_id] = history
                 elif isinstance(tag, str) and tag in self._tags:
                     name = self._tags[tag]

@@ -1,19 +1,24 @@
 """Stable-ID definition diff, distinct from explicitly supplied runtime views.
 
 DefinitionDiff is the schema's five groups, not an execution/behavior claim.
-Projection comparisons require their real inputs; text is not semantic proof.
+execution_diff compares pinned ExecutionManifests and surface_diff compiled
+StructuralPlans; equal definition text never proves equal execution/surface.
 """
 
 from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
-from .canonical import FrozenJSON, canonical_equal, freeze_json, thaw_json
+from .canonical import FrozenJSON, canonical_equal, canonical_json, freeze_json, thaw_json
 from .errors import GraphError
 from .events import Wire, optional
 from .model import GraphDefinition
+
+if TYPE_CHECKING:
+    from .bindings import ExecutionManifest
+    from .compiler import StructuralPlan
 
 GROUPS = ("nodes", "membership", "uses", "publications", "locales")
 
@@ -101,29 +106,76 @@ def definition_diff(base: GraphDefinition, candidate: GraphDefinition) -> Defini
     return DefinitionDiff(cast(Mapping[str, FrozenJSON], freeze_json(groups)))
 
 
-# Convenient transaction-facing spelling; candidate wire acceptance is separate.
-diff = definition_diff
+def _changes(before: Mapping[str, object], after: Mapping[str, object]) -> list[Wire]:
+    return [{"id": key, "before": optional(before, key), "after": optional(after, key)}
+            for key in sorted(before.keys() | after.keys())
+            if not canonical_equal(optional(before, key), optional(after, key))]
 
 
-def _projection_diff(before: object, after: object, kind: str) -> Mapping[str, FrozenJSON]:
-    a, b = freeze_json(before), freeze_json(after)
-    if not isinstance(a, Mapping) or not isinstance(b, Mapping):
-        raise GraphError("schema_invalid", "Explicit normalized projection objects are required")
+def execution_diff(before: ExecutionManifest, after: ExecutionManifest) -> Mapping[str, FrozenJSON]:
+    """What changed in what actually executes: compiler, registry, app/environment
+    and per-binding entries (grouped by binding_id, so an upgrade shows v1 -> v2).
+
+    Equal definitions never prove equal execution; compare pinned manifests.
+    """
+    from .bindings import ExecutionManifest as _Manifest
+
+    if not isinstance(before, _Manifest) or not isinstance(after, _Manifest):
+        raise GraphError("schema_invalid", "Execution diff requires two ExecutionManifests")
+    a, b = before.as_json(), after.as_json()
+    derived = ("binding_entries", "manifest_digest")
+    fields = {k: v for k, v in a.items() if k not in derived}
+    later = {k: v for k, v in b.items() if k not in derived}
+
+    def grouped(manifest: ExecutionManifest) -> dict[str, object]:
+        result: dict[str, list[object]] = {}
+        for entry in manifest.binding_entries:
+            result.setdefault(entry.binding.binding_id, []).append(entry.as_json())
+        return {k: sorted(v, key=canonical_json) for k, v in result.items()}
+
+    changes = {"fields": _changes(fields, later), "bindings": _changes(grouped(before), grouped(after))}
     return cast(Mapping[str, FrozenJSON], freeze_json({
-        "kind": kind, "equal": canonical_equal(a, b), "before": a, "after": b,
-    }))
+        "kind": "execution", "equal": before.manifest_digest == after.manifest_digest,
+        "before_digest": before.manifest_digest, "after_digest": after.manifest_digest, **changes}))
 
 
-def behavior_diff(before: object, after: object) -> Mapping[str, FrozenJSON]:
-    """Compare caller's behavior projections/evaluation evidence, not graph text."""
-    return _projection_diff(before, after, "behavior")
+def surface_diff(before: StructuralPlan, after: StructuralPlan) -> Mapping[str, FrozenJSON]:
+    """What changed in the effective agent-facing surface of two compiled plans:
+    selected locale, effective presentations, typed instruction programs and
+    process designations, aligned by stable node ID (not display path)."""
+    from .compiler import StructuralPlan as _Plan
 
+    if not isinstance(before, _Plan) or not isinstance(after, _Plan):
+        raise GraphError("schema_invalid", "Surface diff requires two compiled StructuralPlans")
+    if before.definition.graph_id != after.definition.graph_id:
+        raise GraphError("schema_invalid", "Cannot align different graph identities")
 
-def surface_diff(before: object, after: object) -> Mapping[str, FrozenJSON]:
-    """Compare actual rendered locale/selection/scope surface projections."""
-    return _projection_diff(before, after, "surface")
+    def projection(plan: StructuralPlan) -> dict[str, dict[str, object]]:
+        result: dict[str, dict[str, object]] = {}
+        for identity in plan.definition.nodes:
+            value: dict[str, object] = {"path": plan.index.path(identity),
+                                        "plane": plan.index.locations[identity].plane}
+            if identity in plan.presentations:
+                p = plan.presentations[identity]
+                value["presentation"] = {"title": p.title, "description": p.description}
+            if identity in plan.instructions:
+                value["instructions"] = [part.as_json() for part in plan.instructions[identity]]
+            if identity in plan.processes:
+                process = plan.processes[identity]
+                value["process"] = {"pre_process": process.pre_process, "post_process": process.post_process}
+            result[identity] = value
+        return result
 
-
-def execution_diff(before: object, after: object) -> Mapping[str, FrozenJSON]:
-    """Compare explicit pinned manifests incl. registry/compiler/dependencies."""
-    return _projection_diff(before, after, "execution")
+    a, b = projection(before), projection(after)
+    nodes: list[Wire] = []
+    for identity in sorted(a.keys() | b.keys()):
+        if identity not in a or identity not in b:
+            nodes.append({"id": identity, "field": "", "before": optional(a, identity),
+                          "after": optional(b, identity)})
+            continue
+        nodes.extend({"id": identity, "field": change["id"], "before": change["before"],
+                      "after": change["after"]} for change in _changes(a[identity], b[identity]))
+    locale = [] if before.selected_locale == after.selected_locale else [
+        {"before": before.selected_locale, "after": after.selected_locale}]
+    return cast(Mapping[str, FrozenJSON], freeze_json({
+        "kind": "surface", "equal": not nodes and not locale, "locale": locale, "nodes": nodes}))

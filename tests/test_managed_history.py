@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from contexture.core.graph.diff import behavior_diff, definition_diff, execution_diff, surface_diff
+from contexture.core.graph.diff import definition_diff, execution_diff, surface_diff
 from contexture.core.graph.errors import GraphError
 from contexture.core.graph.events import RevisionState, change_event, resolve_facts
 from contexture.core.graph.history import History, revert_candidate
@@ -21,27 +21,36 @@ def append(history: History, candidate: GraphDefinition, sequence: str) -> Histo
     return history.append(event, journal_seq=sequence, tombstones=change.tombstones)
 
 def test_append_validates_only_new_link_but_public_construction_checks_all_links(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dataclasses import replace
+
     from contexture.core.graph import history as module
     calls = 0
-    original = module.parse_counter
+    original = module.apply_event
 
-    def counted(value: object) -> int:
+    def counted(*args: Any, **kwargs: Any) -> Any:
         nonlocal calls
         calls += 1
-        return original(value)
+        return original(*args, **kwargs)
 
     history = History.seed(RevisionState(graph(), "1"), journal_seq="1")
-    monkeypatch.setattr(module, "parse_counter", counted)
+    monkeypatch.setattr(module, "apply_event", counted)
     for sequence in range(2, 102):
         history = append(history, graph(node("r", name=f"node-{sequence}")), str(sequence))
-    assert calls == 300
+    assert calls == 100  # one replay per append: only the new link
     before = calls
     rebuilt = History(history.records)
-    assert calls - before == 200
-    assert rebuilt == history
+    assert calls - before == 100  # public construction replays every link
+    assert rebuilt == history and rebuilt.at("50") == history.at("50")
     invalid = (history.records[-1], *history.records[:-1])
     with pytest.raises(GraphError):
         History(invalid)
+    # A record whose state is not what its event produces is rejected even when
+    # sequence/graph identity look fine.
+    records = list(history.records)
+    forged = replace(records[5], state=records[6].state)
+    with pytest.raises(GraphError) as error:
+        History((*records[:5], forged, *records[6:]))
+    assert error.value.code == "corrupt_facts"
 
 
 def test_history_is_immutable_retained_and_ordered_not_wall_time() -> None:
@@ -132,15 +141,24 @@ def test_revert_restores_identity_without_erasing_tombstone_history() -> None:
     assert history.head.definition.nodes.keys() == {"r"}
 
 
-def test_projection_comparisons_require_actual_distinct_dependencies() -> None:
-    # Equal definition never proves equal manifests or rendered surfaces.
-    assert definition_diff(graph(), graph()).empty
-    assert execution_diff({"registry": "a"}, {"registry": "b"})["equal"] is False
-    assert surface_diff({"locale": "en"}, {"locale": "fr"})["equal"] is False
-    assert behavior_diff({"evaluation": [True]}, {"evaluation": [False]})["equal"] is False
-    for compare in (behavior_diff, surface_diff, execution_diff):
+def test_execution_and_surface_diffs_compare_real_compiled_artifacts() -> None:
+    from tests.test_managed_compiler import compile_graph, definition
+
+    base = compile_graph()
+    assert definition_diff(base.definition, base.definition).empty
+    same = execution_diff(base.manifest, compile_graph().manifest)
+    assert same["equal"] is True and same["fields"] == () and same["bindings"] == ()
+    rebuilt = execution_diff(base.manifest, compile_graph(compiler_build="build-2").manifest)
+    assert rebuilt["equal"] is False
+    assert [c["id"] for c in rebuilt["fields"]] == ["compiler_build"]  # type: ignore[index, union-attr]
+    # Equal definition, different execution: never inferred from text.
+    assert definition_diff(base.definition, compile_graph(compiler_build="build-2").definition).empty
+    assert surface_diff(base, compile_graph())["equal"] is True
+    french = surface_diff(base, compile_graph(locale="fr"))
+    assert french["locale"] == ({"before": base.selected_locale, "after": "fr"},)
+    for compare in (execution_diff, surface_diff):
         with pytest.raises(GraphError):
-            compare(graph(), graph())
+            compare(definition(), definition())  # type: ignore[arg-type]
 
 
 def test_history_node_filter_excludes_unrelated_publications() -> None:
@@ -197,3 +215,24 @@ def test_history_bootstrap_migration_and_ordered_translation_revert() -> None:
     proposal = revert_candidate(final.head, history.head)
     assert proposal.change.candidate.digest() == candidate.digest()
     assert proposal.change.facts[0]["type"] == "PresentationsAssigned"
+
+def test_execution_diff_shows_binding_upgrade_and_surface_diff_instructions() -> None:
+    from tests.test_managed_compiler import compile_graph, definition, raw_graph, registration, registry
+
+    pinned = registry(registration(), registration(version="2"))
+    base = compile_graph(definition(reg=pinned), registry=pinned)
+    raw = raw_graph()
+    for n in raw["nodes"]:
+        if n["node_id"] == "a":
+            n["binding"]["version"] = "2"
+        if n["node_id"] == "p":
+            n["instructions"] = "changed program"
+    upgraded = compile_graph(definition(raw, reg=pinned), registry=pinned)
+    diff = execution_diff(base.manifest, upgraded.manifest)
+    assert diff["equal"] is False and diff["fields"] == ()
+    (reader,) = diff["bindings"]  # type: ignore[misc]
+    assert reader["id"] == "reader"
+    assert {e["binding"]["version"] for e in reader["before"]["value"]} == {"1"}  # type: ignore[index, union-attr]
+    assert {e["binding"]["version"] for e in reader["after"]["value"]} == {"1", "2"}  # type: ignore[index, union-attr]
+    surface = surface_diff(base, upgraded)
+    assert [(c["id"], c["field"]) for c in surface["nodes"]] == [("p", "instructions")]  # type: ignore[index, union-attr]

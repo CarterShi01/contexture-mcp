@@ -447,6 +447,9 @@ def test_all_resolved_fact_branches_and_field_value_types():
     tombstone = {"node_id": "r", "kind": "role", "mutable": "inherit", "deleted_revision": "2"}
     publication = COMMAND_EXAMPLES[14]["publication"]
     presentation = {"node_id": "r", "title": "Root"}
+    for legacy in ({"type": "PresentationPut", "locale": "en", "before": {"present": False}, "after": presentation},
+                   {"type": "PresentationRemoved", "locale": "en", "before": presentation}):
+        invalid("Fact", legacy)  # removed: aggregate PresentationsAssigned is the only encoding
     facts = [
         {"type": "NodeCreated", "node": n},
         {"type": "NodeRestored", "node": n, "tombstone": tombstone},
@@ -457,8 +460,6 @@ def test_all_resolved_fact_branches_and_field_value_types():
         {"type": "UsesAssigned", "node_id": "r", "before": [], "after": ["s"]},
         {"type": "PublicationPut", "before": {"present": False}, "after": publication, "position": 0},
         {"type": "PublicationRemoved", "before": publication, "position": 0},
-        {"type": "PresentationPut", "locale": "en", "before": {"present": False}, "after": presentation},
-        {"type": "PresentationRemoved", "locale": "en", "before": presentation},
         {"type": "SemanticMigrated", "before": "0", "after": "1", "migration_id": "m", "source_mapping": {"retained_ids": ["r"], "new_ids": [], "deleted_ids": []}},
         {"type": "CreationPolicyMigrated", "node_id": "r", "before": False, "after": True, "migration_id": "m"},
     ]

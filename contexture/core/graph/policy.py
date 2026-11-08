@@ -8,7 +8,7 @@ are not a revocation contract. The owner must fence admission and journal append
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Set as AbstractSet
+from collections.abc import Set as AbstractSet
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -16,7 +16,7 @@ from .canonical import canonical_json, parse_counter, validate_id
 from .errors import GraphDiagnostic, GraphError
 from .events import RevisionState
 from .index import GraphIndex
-from .model import GraphDefinition, NodeRefPart, NodeSpec, PublicationContract
+from .model import GraphDefinition, NodeRefPart, NodeSpec, PublicationContracts
 
 
 def _deny(message: str, code: str = "mutation_protected", *, rule: str | None = None,
@@ -249,10 +249,11 @@ def _reordered(before: tuple[str, ...], after: tuple[str, ...]) -> set[str]:
 
 
 def protect_change(base: RevisionState, candidate: GraphDefinition, *,
-                   publication_contracts: Mapping[str, PublicationContract] | None = None
+                   publication_contracts: PublicationContracts | None = None
                    ) -> ProtectionReport:
     """One final-diff gate shared by every ordinary mutation/lowering path."""
-    old = GraphIndex.build(base.definition, publication_contracts=publication_contracts)
+    # The base is accepted history; only the candidate must satisfy current evidence.
+    old = GraphIndex.build(base.definition, verify_contracts=False)
     new = GraphIndex.build(candidate, publication_contracts=publication_contracts)
     a, b = base.definition.nodes, candidate.nodes
     # Locked = effectively immutable in the base. A locked node protects its own

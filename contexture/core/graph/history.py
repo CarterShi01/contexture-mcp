@@ -7,17 +7,17 @@ only proposes a new candidate; it never appends or rewinds an accepted head.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import cast
 
-from rpds import List as PersistentList
+from rpds import HashTrieMap, List as PersistentList
 
-from .canonical import FrozenJSON, freeze_json, parse_counter, validate_id
+from .canonical import FrozenJSON, freeze_json, parse_counter, thaw_json, validate_id
 from .diff import DefinitionDiff, definition_diff
 from .errors import GraphError
 from .events import ResolvedChange, RevisionState, UnseededState, apply_event, resolve_facts
-from .model import GraphDefinition, PublicationContract
+from .model import GraphDefinition, PublicationContracts
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,24 +40,39 @@ class History:
     Sequence need only increase: intervening records may concern other graphs or
     releases. Contiguous store-wide chain checks belong to the journal reducer.
     A seed at revision N is an explicit retained lower bound, not invented N-1.
+
+    The public constructor verifies the whole chain: every non-seed record's
+    event must replay from its predecessor to exactly its state (and a seed
+    carrying a bootstrap event must replay from nothing). `append` verifies
+    only the new link, since the retained prefix is already verified.
     """
 
     _entries: PersistentList[RevisionRecord] = field(repr=False)
     _seed: RevisionRecord = field(repr=False, compare=False)
+    _by_revision: HashTrieMap[str, RevisionState] = field(repr=False, compare=False)
     _cached_records: tuple[RevisionRecord, ...] | None = field(repr=False, compare=False)
 
     def __init__(self, records: tuple[RevisionRecord, ...]) -> None:
         normalized = tuple(records)
         if not normalized or any(not isinstance(r, RevisionRecord) for r in normalized):
             raise GraphError("schema_invalid", "History requires an accepted seed")
+        seed = normalized[0]
+        if seed.event is not None and seed.event.get("type") == "GraphChangeCommitted" \
+                and seed.state.revision == "1":
+            _verify_link(UnseededState(seed.state.definition.graph_id), seed)
         for before, after in zip(normalized, normalized[1:]):
             if (parse_counter(after.journal_seq) <= parse_counter(before.journal_seq)
                     or after.state.definition.graph_id != before.state.definition.graph_id):
                 raise GraphError("corrupt_facts", "Historical sequence or graph mismatch")
             if after.event is None:
                 raise GraphError("corrupt_facts", "Only the retained seed may omit its event")
+            _verify_link(before.state, after)
+        by_revision: HashTrieMap[str, RevisionState] = HashTrieMap()
+        for record in normalized:
+            by_revision = by_revision.insert(record.state.revision, record.state)
         object.__setattr__(self, "_entries", PersistentList(normalized[::-1]))
-        object.__setattr__(self, "_seed", normalized[0])
+        object.__setattr__(self, "_seed", seed)
+        object.__setattr__(self, "_by_revision", by_revision)
         object.__setattr__(self, "_cached_records", normalized)
 
     @property
@@ -76,10 +91,9 @@ class History:
         return cls((RevisionRecord(journal_seq, state),))
 
     @classmethod
-    def bootstrap(cls, base: UnseededState, event: object, *, journal_seq: str,
-                  publication_contracts: Mapping[str, PublicationContract] | None = None) -> History:
+    def bootstrap(cls, base: UnseededState, event: object, *, journal_seq: str) -> History:
         """Retain the verified initial event, not an invented revision-zero forest."""
-        state = apply_event(base, event, tombstones=[], publication_contracts=publication_contracts)
+        state = apply_event(base, event, tombstones=[])
         frozen = freeze_json(event)
         if not isinstance(frozen, Mapping):
             raise GraphError("schema_invalid", "Expected bootstrap event object")
@@ -93,12 +107,10 @@ class History:
     def retained_lower_bound(self) -> str:
         return self._seed.state.revision
 
-    def append(self, event: object, *, journal_seq: str, tombstones: object,
-               publication_contracts: Mapping[str, PublicationContract] | None = None) -> History:
+    def append(self, event: object, *, journal_seq: str, tombstones: object) -> History:
         if parse_counter(journal_seq) <= parse_counter(next(iter(self._entries)).journal_seq):
             raise GraphError("corrupt_facts", "Historical sequence must increase")
-        state = apply_event(self.head, event, tombstones=tombstones,
-                            publication_contracts=publication_contracts)
+        state = apply_event(self.head, event, tombstones=tombstones)
         frozen = freeze_json(event)
         if not isinstance(frozen, Mapping):
             raise GraphError("schema_invalid", "Expected event object")
@@ -110,34 +122,83 @@ class History:
         result = object.__new__(History)
         object.__setattr__(result, "_entries", self._entries.push_front(record))
         object.__setattr__(result, "_seed", self._seed)
+        object.__setattr__(result, "_by_revision", self._by_revision.insert(state.revision, state))
         object.__setattr__(result, "_cached_records", None)
         return result
 
     def at(self, revision: str) -> RevisionState:
         parse_counter(revision)
-        for record in self._entries:
-            if record.state.revision == revision:
-                return record.state
-        raise GraphError("history_unavailable", "Revision is outside retained verified history")
+        state = self._by_revision.get(revision)
+        if state is None:
+            raise GraphError("history_unavailable", "Revision is outside retained verified history")
+        return state
 
     def diff(self, before: str, after: str) -> DefinitionDiff:
         return definition_diff(self.at(before).definition, self.at(after).definition)
 
     def for_node(self, node_id: str) -> tuple[RevisionRecord, ...]:
+        """Records that changed this node: its fields, placement, publications,
+        presentations or the default locale. Stable-ID aligned across renames.
+
+        Accepted facts pre-filter candidates (a fact that never mentions the ID
+        and is not graph-wide cannot change its projection), so cost is the total
+        fact size plus a full projection only for the few candidate records.
+        """
         validate_id(node_id)
-        result: list[RevisionRecord] = []
-        for previous, record in zip(self.records, self.records[1:]):
-            if _node_projection(previous.state, node_id) != _node_projection(record.state, node_id):
-                result.append(record)
-        return tuple(result)
+        return self._filtered(node_id, lambda state: _node_projection(state, node_id))
 
     def for_publication(self, publication_id: str) -> tuple[RevisionRecord, ...]:
         validate_id(publication_id)
+
         def projection(state: RevisionState) -> object:
             return tuple((i, p.as_json()) for i, p in enumerate(state.definition.publications)
                          if p.publication_id == publication_id)
-        return tuple(record for previous, record in zip(self.records, self.records[1:])
-                     if projection(previous.state) != projection(record.state))
+        return self._filtered(publication_id, projection)
+
+    def _filtered(self, identity: str, projection: Callable[[RevisionState], object]
+                  ) -> tuple[RevisionRecord, ...]:
+        records = self.records
+        result: list[RevisionRecord] = []
+        for previous, record in zip(records, records[1:]):
+            if record.event is None or not _mentions(record.event, identity):
+                continue
+            if projection(previous.state) != projection(record.state):
+                result.append(record)
+        return tuple(result)
+
+
+_GRAPH_WIDE = frozenset({"GraphSeeded", "GraphFieldsSet", "SemanticMigrated", "PresentationsAssigned",
+                         "RootsAssigned"})
+
+
+def _mentions(event: Mapping[str, FrozenJSON], identity: str) -> bool:
+    """Conservative: True if any fact is graph-wide or contains `identity`."""
+    facts = event.get("resolved_facts")
+    if not isinstance(facts, (list, tuple)):
+        return False
+    stack: list[object] = []
+    for fact in facts:
+        if isinstance(fact, Mapping) and fact.get("type") in _GRAPH_WIDE:
+            return True
+        stack.append(fact)
+    while stack:
+        value = stack.pop()
+        if value == identity:
+            return True
+        if isinstance(value, Mapping):
+            stack.extend(value.values())
+        elif isinstance(value, (list, tuple)):
+            stack.extend(value)
+    return False
+
+
+def _verify_link(before: RevisionState | UnseededState, record: RevisionRecord) -> None:
+    assert record.event is not None
+    replayed = apply_event(before, record.event, tombstones=thaw_json(record.state.tombstones))
+    if (replayed.revision != record.state.revision
+            or replayed.definition_digest != record.state.definition_digest
+            or replayed.definition != record.state.definition):
+        raise GraphError("corrupt_facts", "Historical record does not replay to its state")
 
 
 def _node_projection(state: RevisionState, identity: str) -> object:
@@ -165,7 +226,7 @@ class RevertCandidate:
 
 def revert_candidate(base: RevisionState, target: RevisionState, *,
                      node_ids: tuple[str, ...] | None = None,
-                     publication_contracts: Mapping[str, PublicationContract] | None = None) -> RevertCandidate:
+                     publication_contracts: PublicationContracts | None = None) -> RevertCandidate:
     """Propose full or precisely node-scoped restoration, never authorize it.
 
     Scoped restoration copies exactly those nodes; it does not overwrite roots,

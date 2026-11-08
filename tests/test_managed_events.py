@@ -264,10 +264,12 @@ def test_runtime_tool_all_fields_and_pinned_resource_evidence() -> None:
     change = resolve_facts(RevisionState(candidate, "2"), with_resource)
     event = change_event(RevisionState(candidate, "2"), change, command_digest="sha256:" + "1" * 64, reason="test")
     oracle(event, "Event")
-    result = apply_event(RevisionState(candidate, "2"), event, tombstones=[], publication_contracts=contracts)
+    # Replay is a pure function of the accepted journal: no registry needed.
+    result = apply_event(RevisionState(candidate, "2"), event, tombstones=[])
     assert result.definition_digest == with_resource.digest()
+    # A NEW candidate still requires current pinned registry evidence.
     with pytest.raises(GraphError) as error:
-        apply_event(RevisionState(candidate, "2"), event, tombstones=[])
+        GraphDefinition.from_json(wire)
     assert error.value.code == "binding_contract_required"
 
 
@@ -493,23 +495,6 @@ def test_trusted_resolver_rejects_inexact_diff_and_kind_identity_rewrite() -> No
             source_mapping=mapping)):
         with pytest.raises(GraphError):
             resolve()
-
-
-def test_legacy_presentation_facts_replay_but_mixed_or_lossy_patches_refuse() -> None:
-    base = RevisionState(graph(presentations={"default_locale": "en", "catalogs": [
-        {"locale": "en", "entries": []}]}), "1")
-    candidate = graph(presentations={"default_locale": "en", "catalogs": [
-        {"locale": "en", "entries": [{"node_id": "r", "title": "R"}]}]})
-    legacy: Any = [{"type": "PresentationPut", "locale": "en", "before": {"present": False},
-                    "after": {"node_id": "r", "title": "R"}}]
-    state = apply_facts(base, legacy, tombstones=[], revision="2", before_digest=base.definition_digest,
-                        after_digest=candidate.digest())
-    assert state.definition_digest == candidate.digest()
-    for facts in ([*legacy, *resolve_facts(base, candidate).facts],
-                  [dict(legacy[0], before={"present": True, "value": {"node_id": "r", "title": "old"}})]):
-        with pytest.raises(GraphError):
-            apply_facts(base, facts, tombstones=[], revision="2", before_digest=base.definition_digest,
-                        after_digest=candidate.digest())
 
 
 @pytest.mark.parametrize("mutation", ["before", "omit", "extra", "duplicate", "identity"])

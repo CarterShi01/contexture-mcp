@@ -232,8 +232,8 @@ not permission to issue such a command. Mode remains subject to full validation.
 PresentationsAssigned carries complete normalized Presentations on both sides;
 all catalog/entry order, empty catalogs, normalized default and locale tags are
 preserved. New normalization never synthesizes a default catalog or sorts arrays.
-Replay of old PresentationPut/Removed remains valid only for old restricted
-retained-order-plus-ID-sorted-appends normal form; mixed representations refuse.
+Granular PresentationPut/Removed facts were removed before any release; they are
+unknown fact types and refuse. PresentationsAssigned is the only encoding.
 PublicationPut.position is the FINAL ordinal, Removed.position the BASE ordinal.
 Every changed or shifted retained publication gets Put, all final positions form
 exactly 0..N-1. Thus no new PublicationOrderAssigned is needed. Old/new preconditions,

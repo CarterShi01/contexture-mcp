@@ -15,9 +15,10 @@ from types import MappingProxyType
 from .errors import GraphError
 from .model import (
     GraphDefinition, NodeRefPart, NodeSpec, Plane, Presentation, PromptPublication,
-    PublicationContract, ResourcePublication, RoutePublication, Slot, _Value, _new,
-    normalize_locale,
+    PublicationContracts, ResourcePublication, RoutePublication, Slot, _Value, _new,
+    contract_lookup, normalize_locale,
 )
+from .canonical import canonical_json
 
 
 def _fail(message: str, location: str = "", code: str = "schema_invalid") -> GraphError:
@@ -61,8 +62,10 @@ class GraphIndex(_Value):
     @classmethod
     def build(
         cls, definition: GraphDefinition, *,
-        publication_contracts: Mapping[str, PublicationContract] | None = None,
+        publication_contracts: PublicationContracts | None = None,
+        verify_contracts: bool = True,
     ) -> GraphIndex:
+        """Validate one whole forest. See GraphDefinition.from_json for evidence modes."""
         if not isinstance(definition, GraphDefinition):
             raise _fail("Expected GraphDefinition")
         nodes = definition.nodes
@@ -169,6 +172,7 @@ class GraphIndex(_Value):
                     if isinstance(part, NodeRefPart):
                         templates.setdefault(part.target_id, []).append(TemplateReference(node_id, i))
 
+        evidence = contract_lookup(publication_contracts) if verify_contracts else {}
         publication_ids: set[str] = set()
         public_names: set[str] = set()
         uris: set[str] = set()
@@ -188,8 +192,21 @@ class GraphIndex(_Value):
                 continue
             if definition.mode != "runtime" or node.kind != "tool" or node.binding is None:
                 raise _fail("Executable publication requires a runtime Tool", loc)
-            contract = (publication_contracts or {}).get(node.node_id)
-            if (not isinstance(contract, PublicationContract) or contract.binding != node.binding):
+            if not verify_contracts:
+                # Accepted history: effect/argument checks were admission-time
+                # registry evidence and are re-resolved by the compiler.
+                if isinstance(publication, ResourcePublication):
+                    if publication.uri in uris:
+                        raise _fail("Duplicate Resource URI", loc)
+                    uris.add(publication.uri)
+                elif isinstance(publication, RoutePublication):
+                    route = (publication.method, publication.path)
+                    if route in routes:
+                        raise _fail("Duplicate Route method/path", loc)
+                    routes.add(route)
+                continue
+            contract = evidence.get(canonical_json(node.binding.as_json()))
+            if contract is None:
                 raise _fail("Pinned registry contract required for executable publication", loc,
                             "binding_contract_required")
             if isinstance(publication, ResourcePublication):

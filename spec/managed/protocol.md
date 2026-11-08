@@ -91,7 +91,7 @@ Normalize facts from base versus final candidate, never command transient states
 creation/restoration→node field changes→complete roots/members/uses/publications/
 locales results→deletions/tombstones. The minimal closed vocabulary is
 `NodeCreated`, `NodeFieldsSet`, `NodeRestored`, `NodeDeleted`, `MembersAssigned`,
-`RootsAssigned`, `UsesAssigned`, `PublicationPut/Removed`, `PresentationPut/Removed`,
+`RootsAssigned`, `UsesAssigned`, `PublicationPut/Removed`,
 `SemanticMigrated` and trusted `CreationPolicyMigrated`. The M17–M21 candidate adds
 `GraphSeeded`, `GraphFieldsSet` and aggregate `PresentationsAssigned` to close
 bootstrap, metadata and all presentation ordering/default/empty-catalog states.

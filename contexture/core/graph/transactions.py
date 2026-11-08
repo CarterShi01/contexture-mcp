@@ -29,7 +29,7 @@ from .errors import GraphError
 from .events import ResolvedChange, RevisionState, resolve_facts
 from .index import GraphIndex
 from .model import (
-    BindingDescriptor, GraphDefinition, InstructionTemplate, NodeSpec, PublicationContract, RootEntry,
+    BindingDescriptor, GraphDefinition, InstructionTemplate, NodeSpec, PublicationContracts, RootEntry,
     _extensions, _name, _publication, normalize_locale,
 )
 from .policy import (
@@ -401,7 +401,7 @@ def _check_scope(before: GraphDefinition, after: GraphDefinition,
 
 
 class _Draft:
-    def __init__(self, base: RevisionState, contracts: Mapping[str, PublicationContract] | None,
+    def __init__(self, base: RevisionState, contracts: PublicationContracts | None,
                  limits: Limits, history: HistoryProvider | None, payloads: PayloadProvider | None):
         self.base = base
         # Relation pools below own the detached draft. Do not retain a second
@@ -511,7 +511,9 @@ class _Draft:
             ids.insert(position, identity)
             self.assign(parent, slot, ids)
 
-    def definition(self) -> GraphDefinition:
+    def definition(self, *, final: bool = True) -> GraphDefinition:
+        """Validate the draft. Only the FINAL candidate needs registry evidence;
+        a transient intermediate draft may still carry an old binding/route pair."""
         wire = dict(self.wire)
         wire.update(nodes=list(self.nodes.values()), roots=self.roots, publications=self.pubs,
                     presentations={"default_locale": self.default_locale,
@@ -519,8 +521,9 @@ class _Draft:
                                                 for k, v in self.catalogs.items()]})
         if len(self.nodes) > self.limits.max_nodes or len(canonical_json(wire)) > self.limits.max_definition_bytes:
             raise _fail("Candidate exceeds graph budget", "limit_exceeded")
-        definition = GraphDefinition.from_json(wire, publication_contracts=self.contracts)
-        index = GraphIndex.build(definition, publication_contracts=self.contracts)
+        definition = GraphDefinition.from_json(wire, publication_contracts=self.contracts,
+                                               verify_contracts=final)
+        index = GraphIndex.build(definition, verify_contracts=False)
         edges = len(definition.roots) + len(definition.publications)
         for identity, node in definition.nodes.items():
             edges += len(node.uses) + (len(node.members.placements()) if node.members else 0)
@@ -729,13 +732,14 @@ class _Draft:
             raw = payload["inline"]
         if len(canonical_json(raw)) > self.limits.max_definition_bytes:
             raise _fail("Definition payload exceeds budget", "limit_exceeded")
-        candidate = GraphDefinition.from_json(raw, publication_contracts=self.contracts)
+        # Payload is one command's input; the final candidate is verified later.
+        candidate = GraphDefinition.from_json(raw, verify_contracts=False)
         if candidate.graph_id != self.base.definition.graph_id:
             raise _fail("Cross-graph replacement is not an ordinary transaction")
         # Compare with this command's draft, not the transaction's initial head.
         # Earlier explicit boundary repairs remain legal; this payload itself
         # cannot silently repair or overwrite an unrelated relation owner.
-        before = self.definition()
+        before = self.definition(final=False)
         seeds = ([validate_id(command["anchor_id"])] if command["op"] == "replace_subtree"
                  else _ids(command["scope_ids"]))
         if command["op"] == "replace_subtree":
@@ -830,7 +834,7 @@ class AdmittedTransition:
 def prepare(base: RevisionState, envelope: object, *, context: VerifiedContext,
             admission: Admission, history: HistoryProvider | None = None,
             payloads: PayloadProvider | None = None,
-            publication_contracts: Mapping[str, PublicationContract] | None = None,
+            publication_contracts: PublicationContracts | None = None,
             limits: Limits = Limits()) -> PreparedTransaction:
     """Authorize snapshot, construct detached draft, validate final and protect.
 
@@ -865,7 +869,7 @@ def prepare_revert(base: RevisionState, target_revision: str, *, context: Verifi
                    admission: Admission, history: HistoryProvider,
                    node_ids: tuple[str, ...] | None = None, idempotency_key: str,
                    reason: str, correlation_id: str,
-                   publication_contracts: Mapping[str, PublicationContract] | None = None,
+                   publication_contracts: PublicationContracts | None = None,
                    limits: Limits = Limits()) -> PreparedTransaction:
     """Prepare an ordinary historical candidate, never append or claim commit.
 
@@ -946,7 +950,7 @@ def preview(prepared: PreparedTransaction, *, context: VerifiedContext, admissio
 def admit_transition(receipt: Preview, current: RevisionState, *, context: VerifiedContext,
                      admission: Admission, now: str, approval: VerifiedApproval | None = None,
                      history: HistoryProvider | None = None, payloads: PayloadProvider | None = None,
-                     publication_contracts: Mapping[str, PublicationContract] | None = None,
+                     publication_contracts: PublicationContracts | None = None,
                      limits: Limits = Limits()) -> AdmittedTransition:
     """Owner-serialized pre-append recheck. Does NOT write or advance any head."""
     if not isinstance(context, VerifiedContext) or context != receipt.context:

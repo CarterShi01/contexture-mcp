@@ -98,8 +98,8 @@ Payloads are complete graph definitions, never partial patches. The algorithm
 matches the candidate transaction implementation; it is recorded for review,
 not an accepted managed spec revision or native parity claim.
 
-Legacy PresentationPut/Removed remains replay-only with exact old normalization;
-new writers MUST NOT emit both granular and aggregate presentation facts. Existing
+Granular PresentationPut/Removed facts were removed before release (no accepted
+journal used them); aggregate PresentationsAssigned is the single encoding. Existing
 PublicationPut/Removed final-position encoding already covers every ordered list,
 so PublicationOrderAssigned is unnecessary: every shifted retained object gets Put.
 Unsupported future schema/version decoding is explicit, not a smaller product goal.

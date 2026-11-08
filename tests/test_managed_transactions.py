@@ -475,8 +475,7 @@ def test_runtime_publications_require_exact_pinned_contracts() -> None:
                                 publication_contracts=contracts)
     assert len(admitted.change.candidate.publications) == 2
     result = apply_facts(base, admitted.change.facts, tombstones=admitted.change.tombstones,
-        revision="2", before_digest=base.definition_digest, after_digest=admitted.change.candidate.digest(),
-        publication_contracts=contracts)
+        revision="2", before_digest=base.definition_digest, after_digest=admitted.change.candidate.digest())
     assert result.definition == admitted.change.candidate
     # A GET publication cannot borrow a write binding's evidence.
     with pytest.raises(GraphError):
