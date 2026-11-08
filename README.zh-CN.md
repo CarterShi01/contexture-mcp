@@ -60,7 +60,7 @@ example.test: reachable (placeholder)
 
 接着按[教程](docs/handbook.zh-CN.md)检查、扩展生成的应用，或体验
 [Kubernetes Demo](contexture/demo/README.zh-CN.md)。已有项目可使用
-`uv add contexture-mcp` 添加依赖；固定当前 2.0 版本使用 `contexture-mcp==2.0.1`。
+`uv add contexture-mcp` 添加依赖；固定当前 2.0 版本使用 `contexture-mcp==2.1.0`。
 
 <a id="连接-mcp-host"></a>
 <details>

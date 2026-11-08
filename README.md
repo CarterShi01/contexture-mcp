@@ -65,7 +65,7 @@ example.test: reachable (placeholder)
 Next, follow the [tutorial](docs/handbook.md) to inspect and extend the
 generated app, or try the [Kubernetes demo](contexture/demo/README.md).
 Already have a project? Add the package with `uv add contexture-mcp`.
-To pin the current 2.0 release, use `contexture-mcp==2.0.1`.
+To pin the current 2.0 release, use `contexture-mcp==2.1.0`.
 
 <a id="connect-an-mcp-host"></a>
 <details>

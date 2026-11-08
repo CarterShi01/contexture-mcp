@@ -47,3 +47,41 @@ def test_managed_mcp_server_takes_the_same_auth_as_the_static_server() -> None:
     other = Auth(verifier=Verifier(), issuer="https://idp.example", resource="https://mcp.example/mcp")
     with pytest.raises(ValueError):
         server.build(auth=other)
+
+
+@pytest.mark.asyncio
+async def test_selection_resolver_attenuates_each_managed_request() -> None:
+    from contextlib import asynccontextmanager
+    from types import SimpleNamespace
+
+    from mcp.server.mcpserver.exceptions import ToolError
+
+    from contexture.server.managed import ManagedMCPServer
+
+    seen = []
+
+    class Runtime:
+        @asynccontextmanager
+        async def request(self, *, run_context=None, selection=None, publication_audience=False):
+            seen.append(selection)
+
+            class Request:
+                async def discover(self):
+                    return {"ok": True}
+            yield Request()
+
+    ctx = SimpleNamespace(request_context=SimpleNamespace(request=None, meta={}))
+    plain = ManagedMCPServer(Runtime())  # type: ignore[arg-type]
+    assert await plain._call(ctx, "discover") == {"ok": True}  # type: ignore[arg-type]
+    selected = ManagedMCPServer(Runtime(), selection_resolver=lambda _ctx: frozenset({"team"}))  # type: ignore[arg-type]
+    assert await selected._call(ctx, "discover") == {"ok": True}  # type: ignore[arg-type]
+
+    async def async_resolver(_ctx):
+        return frozenset({"work"})
+    asynchronous = ManagedMCPServer(Runtime(), selection_resolver=async_resolver)  # type: ignore[arg-type]
+    await asynchronous._call(ctx, "discover")  # type: ignore[arg-type]
+    assert seen == [None, frozenset({"team"}), frozenset({"work"})]
+    wrong = ManagedMCPServer(Runtime(), selection_resolver=lambda _ctx: ["team"])  # type: ignore[arg-type]
+    with pytest.raises(ToolError, match="permission_denied"):
+        await wrong._call(ctx, "discover")  # type: ignore[arg-type]
+

@@ -17,5 +17,5 @@ def test_stable_release_version_and_classifier_are_aligned() -> None:
     with (ROOT / "pyproject.toml").open("rb") as handle:
         project = tomllib.load(handle)["project"]
 
-    assert project["version"] == PACKAGE_VERSION == contexture.__version__ == "2.0.1"
+    assert project["version"] == PACKAGE_VERSION == contexture.__version__ == "2.1.0"
     assert "Development Status :: 5 - Production/Stable" in project["classifiers"]

@@ -57,6 +57,7 @@ class ManagedMCPServer:
         run_context_resolver: RunContextResolver | None = None,
         enable_run_header: bool = False,
         lifespan: Callable[[MCPServer], AbstractAsyncContextManager[Any]] | None = None,
+        selection_resolver: Callable[[Context], Any] | None = None,
     ) -> None:
         if type(enable_run_header) is not bool:
             raise ValueError("Explicit run-header configuration required")
@@ -66,6 +67,10 @@ class ManagedMCPServer:
         self._resolver = run_context_resolver
         self._run_header = enable_run_header
         self._name, self._version, self._lifespan = name, version, lifespan
+        # Optional trusted Host port: request-scoped subtree anchors (an
+        # attenuation such as a selection header, never authority; the
+        # runtime's authorization still bounds the result).
+        self._selection_resolver = selection_resolver
         self._wire: MCPServer | None = None
         self._auth: Any = None
 
@@ -96,10 +101,21 @@ class ManagedMCPServer:
                 raise GraphError("schema_invalid")
             return await publication_call(request, operation, key, arguments)
 
+    async def _selection(self, ctx: Context) -> frozenset[str] | None:
+        if self._selection_resolver is None:
+            return None
+        selected = self._selection_resolver(ctx)
+        if hasattr(selected, "__await__"):
+            selected = await selected
+        if selected is not None and type(selected) is not frozenset:
+            raise GraphError("permission_denied")
+        return selected
+
     async def _call(self, ctx: Context, operation: str, *args: Any) -> Any:
         try:
             run = await self._resolve_run(ctx)
-            async with self._runtime.request(run_context=run) as request:
+            selection = await self._selection(ctx)
+            async with self._runtime.request(run_context=run, selection=selection) as request:
                 if operation == "discover":
                     return await request.discover()
                 if operation == "inspect":
