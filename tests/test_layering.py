@@ -15,6 +15,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from zipfile import ZipFile
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
@@ -46,6 +47,9 @@ ALLOWED: dict[str, set[str]] = {
     # it stands on nothing, which is what lets the sibling layers below stay
     # independent of each other without duplicating an exception hierarchy.
     "core.__base__": set(),
+    # Pure managed graph values and algorithms. Current modules import only
+    # siblings; neither the declaration model nor adapters are dependencies.
+    "core.graph": set(),
     # What a capability *is*, where it hangs, and how much of it one call
     # answers with. The reference, the level and the four system entry points
     # all live here: since ADR 014 navigation is part of the kernel rather than
@@ -62,7 +66,7 @@ ALLOWED: dict[str, set[str]] = {
     # A business application's composition root depends only on declarations
     # and protocol-plane declarations. It is deliberately below `server` so
     # importing `app` does not build a wire object.
-    "application": {"core.__base__", "core.model", "core.mcp_interface"},
+    "application": {"core.__base__", "core.model", "core.mcp_interface", "core.graph"},
     # A stable read model over one compiled graph. It joins model facts but
     # imports neither an application declaration nor a transport.
     "introspection": {"core.__base__", "core.model"},
@@ -71,6 +75,7 @@ ALLOWED: dict[str, set[str]] = {
     "debug": {"core.__base__", "introspection"},
     "server": {
         "core.__base__",
+        "core.graph",
         "core.model",
         "core.mcp_interface",
         "application",
@@ -78,9 +83,10 @@ ALLOWED: dict[str, set[str]] = {
         "debug",
     },
     # The human-facing inbound adapter. It publishes explicit HTTP addresses
-    # over a runtime that core.model already owns; it may not import MCP or the
-    # MCP server layer.
-    "web": {"core.__base__", "core.model"},
+    # over declaration runtimes or structural managed graph ports. Pure graph
+    # values are a downward dependency, not an application/server dependency;
+    # MCP and its SDK remain outside this adapter.
+    "web": {"core.__base__", "core.model", "core.graph"},
     # The bundled reference application sits above everything and is imported
     # by nothing. It reaches everything a declaration writes with through the
     # public facade — `Role`, `Skill`, `Tool`, `Prompt` and `Resource` all
@@ -282,6 +288,94 @@ def _contexture_imports(path: Path) -> set[str]:
 
 
 class LayeringTests(unittest.TestCase):
+    def test_graph_consumers_only_gain_downward_dependencies(self) -> None:
+        for layer in ("application", "server", "web"):
+            self.assertIn("core.graph", ALLOWED[layer])
+        self.assertNotIn("core.graph", ALLOWED["core.model"])
+        self.assertEqual(ALLOWED["core.graph"], set())
+        for relative, source in (
+            ("application/managed.py", "from contexture.server import managed_journal"),
+            ("core/model/_probe.py", "from contexture.core.graph import transactions"),
+            ("core/graph/_probe.py", "from contexture.web import managed"),
+        ):
+            with self.subTest(relative=relative), patch(
+                __name__ + "._source_modules", return_value=[PACKAGE / relative]
+            ), patch.object(Path, "read_text", return_value=source):
+                with self.assertRaises(AssertionError):
+                    LayeringTests().test_no_layer_imports_one_above_it()
+
+    def test_managed_web_consumes_pure_graph_not_upper_layers_or_sdk(self) -> None:
+        candidate = PACKAGE / "web" / "managed.py"
+        self.assertEqual(ALLOWED["web"], {"core.__base__", "core.model", "core.graph"})
+        for source in (
+            "from contexture.core.graph.canonical import decode_json, thaw_json",
+            "from contexture.core.graph.errors import GraphError",
+            "from contexture.core.graph.model import RoutePublication",
+        ):
+            with self.subTest(source=source), patch(
+                __name__ + "._source_modules", return_value=[candidate]
+            ), patch.object(Path, "read_text", return_value=source):
+                LayeringTests().test_no_layer_imports_one_above_it()
+        for source in (
+            "from contexture.application.managed import GraphOwner",
+            "from ..application import managed",
+            "from contexture.server import managed_journal",
+            "from ..server.managed import Host",
+            "from contexture.core.mcp_interface import resource",
+        ):
+            with self.subTest(source=source), patch(
+                __name__ + "._source_modules", return_value=[candidate]
+            ), patch.object(Path, "read_text", return_value=source):
+                with self.assertRaises(AssertionError):
+                    LayeringTests().test_no_layer_imports_one_above_it()
+        for package in sorted(SDK_PACKAGES):
+            with self.subTest(package=package), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, "web/managed.py", ast.parse(f"import {package}"))],
+            ):
+                with self.assertRaises(AssertionError):
+                    LayeringTests().test_only_the_server_layer_imports_the_mcp_sdk()
+
+    def test_application_package_preserves_real_legacy_imports(self) -> None:
+        import contexture
+        import contexture.application as application
+        from contexture.application import Contexture, RootFactory
+        from contexture.application.managed import GraphOwner
+
+        self.assertIs(Contexture, contexture.Contexture)
+        self.assertIs(RootFactory, application.RootFactory)
+        self.assertEqual(Contexture.__module__, "contexture.application")
+        self.assertEqual(GraphOwner.__module__, "contexture.application.managed")
+        self.assertEqual(Path(application.__file__).name, "__init__.py")
+        self.assertFalse((PACKAGE / "application.py").exists())
+        loaded = _modules_loaded_by("import contexture.application")
+        self.assertNotIn("contexture.application.managed", loaded)
+        self.assertNotIn("contexture.server.managed_journal", loaded)
+        self.assertFalse(any(m.split('.')[0] in SDK_PACKAGES for m in loaded))
+
+    def test_graph_has_no_cross_layer_dependencies_or_facade_shortcut(self) -> None:
+        self.assertEqual(ALLOWED["core.graph"], set())
+        for path in _source_modules(PACKAGE / "core" / "graph"):
+            with self.subTest(module=str(path.relative_to(PACKAGE))):
+                self.assertNotIn("contexture", _contexture_imports(path))
+
+    def test_graph_rejects_upper_and_sibling_layer_imports(self) -> None:
+        """Inject forbidden imports through the real architectural checker."""
+        candidate = PACKAGE / "core" / "graph" / "_boundary_probe.py"
+        for source in (
+            "import contexture.application",
+            "from contexture.server import create_server",
+            "from contexture.introspection import Catalog",
+            "from ..model import Role",
+            "from ... import application",
+            "from contexture.core.mcp_interface import resource",
+        ):
+            with self.subTest(source=source), patch(
+                __name__ + "._source_modules", return_value=[candidate]
+            ), patch.object(Path, "read_text", return_value=source):
+                with self.assertRaises(AssertionError):
+                    LayeringTests().test_no_layer_imports_one_above_it()
+
     def test_every_module_belongs_to_a_known_layer(self) -> None:
         for path in _source_modules(PACKAGE):
             if path.name == "__init__.py" and path.parent == PACKAGE:
@@ -393,28 +487,167 @@ class LayeringTests(unittest.TestCase):
 
 
 class IOBoundaryTests(unittest.TestCase):
-    """Only the scaffold may write, and only inbound adapters touch networking modules.
+    """Only exact filesystem adapters write; inbound adapters own networking.
 
-    One module in the whole package touches the filesystem, and it is the one
-    that writes a project *for the user*. Nothing on the path from a
-    declaration to the wire opens a file, which is why the boundary is worth
-    checking rather than assuming.
+    Project scaffolding and the exact managed storage adapters own filesystem
+    effects. Nothing on the static declaration-to-wire path opens a file.
+    Adding a CLI never grants it direct storage or pure-graph dependencies.
 
     Checks run over the parsed tree rather than the source text, because a
     substring search cannot tell `open(` from `urlopen(`.
     """
 
-    # One module of 106 lines, where this used to name a file of 695. The
-    # split did not change the rule; it changed how much code the rule has to
-    # excuse.
-    FILESYSTEM_WRITERS = {"cli/scaffold.py"}
+    FILESYSTEM_WRITERS = {
+        "cli/scaffold.py", "server/managed_journal.py", "server/managed_store_ops.py",
+    }
     # `web.surface` imports urllib only for standards-compliant query decoding;
     # it is itself the human-facing inbound transport and opens no connection.
     # `debug` is the separately bounded loopback-only catalog HTTP adapter.
     NETWORK_MODULES: set[str] = {"debug.py", "web/surface.py"}
+    # Managed REST needs only this pure parser, not a network-adapter exemption.
+    QUERY_PARSER_MODULES = frozenset({"web/managed.py"})
 
     WRITE_CALLS = {"write_text", "write_bytes", "mkdir", "touch", "unlink"}
     NETWORK_PACKAGES = {"urllib", "socket", "http", "httpx", "requests", "aiohttp"}
+    # Pure graph algorithms have no filesystem or process adapter. Keep this
+    # graph-specific restriction separate from existing adapter permissions.
+    GRAPH_IO_PACKAGES = {"io", "os", "pathlib", "shutil", "tempfile", "subprocess"}
+
+    def test_managed_query_parser_exception_is_exact(self) -> None:
+        self.assertEqual(self.NETWORK_MODULES, {"debug.py", "web/surface.py"})
+        self.assertEqual(self.QUERY_PARSER_MODULES, {"web/managed.py"})
+        source = "from urllib.parse import parse_qs"
+        for relative in ("web/managed.py", "web/other.py", "web/managed_helpers.py",
+                         "web/managed/helpers.py", "core/graph/managed.py"):
+            with self.subTest(relative=relative), patch(
+                __name__ + "._modules",
+                return_value=[(PACKAGE / relative, relative, ast.parse(source))],
+            ):
+                if relative == "web/managed.py":
+                    IOBoundaryTests().test_only_the_transport_reaches_the_network()
+                else:
+                    with self.assertRaises(AssertionError):
+                        IOBoundaryTests().test_only_the_transport_reaches_the_network()
+
+    def test_managed_parser_permission_grants_no_network_or_filesystem_io(self) -> None:
+        relative = "web/managed.py"
+        candidate = PACKAGE / relative
+        for source in (
+            *(f"import {package}" for package in sorted(self.NETWORK_PACKAGES)),
+            "import urllib.parse",
+            "from urllib import request",
+            "from urllib.request import urlopen",
+            "from urllib.parse import urlparse",
+            "from urllib.parse import parse_qs, urlparse",
+            "from urllib.parse import *",
+            "from urllib.parse import parse_qs\nimport socket",
+        ):
+            with self.subTest(source=source), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, relative, ast.parse(source))],
+            ):
+                with self.assertRaises(AssertionError):
+                    IOBoundaryTests().test_only_the_transport_reaches_the_network()
+        for source in ("open('data')", "path.write_bytes(b'data')"):
+            with self.subTest(source=source), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, relative, ast.parse(source))],
+            ):
+                with self.assertRaises(AssertionError):
+                    IOBoundaryTests().test_only_the_scaffold_touches_the_filesystem()
+
+    def test_managed_owner_imports_no_io_adapters(self) -> None:
+        for path, relative, tree in _modules():
+            if relative == "application/managed.py":
+                self.assertEqual(
+                    _imported_packages(tree) & (self.GRAPH_IO_PACKAGES | self.NETWORK_PACKAGES),
+                    set(),
+                )
+
+    def test_journal_filesystem_exception_is_exact_not_server_wide(self) -> None:
+        self.assertEqual(self.FILESYSTEM_WRITERS,
+                         {"cli/scaffold.py", "server/managed_journal.py", "server/managed_store_ops.py"})
+        for relative in ("application/managed.py", "server/other_journal.py",
+                         "server/managed_journal/helpers.py", "core/graph/transactions.py",
+                         "server/managed_store_ops_helpers.py", "server/managed_store_ops/helpers.py",
+                         "cli/store.py"):
+            candidate = PACKAGE / relative
+            for source in ("open('data')", "path.write_bytes(b'data')"):
+                with self.subTest(relative=relative, source=source), patch(
+                    __name__ + "._modules",
+                    return_value=[(candidate, relative, ast.parse(source))],
+                ):
+                    with self.assertRaises(AssertionError):
+                        IOBoundaryTests().test_only_the_scaffold_touches_the_filesystem()
+
+    def test_managed_owner_allows_threads_but_rejects_io(self) -> None:
+        candidate = PACKAGE / "application/managed.py"
+        for package in sorted(self.GRAPH_IO_PACKAGES | self.NETWORK_PACKAGES):
+            with self.subTest(package=package), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, "application/managed.py", ast.parse(f"import {package}"))],
+            ):
+                with self.assertRaises(AssertionError):
+                    self.test_managed_owner_imports_no_io_adapters()
+        with patch(__name__ + "._modules", return_value=[
+            (candidate, "application/managed.py", ast.parse("from threading import RLock"))
+        ]):
+            self.test_managed_owner_imports_no_io_adapters()
+
+    def test_filesystem_checker_resolves_aliases_and_class_calls(self) -> None:
+        for source in (
+            "import os as native; native.open('data', 0)",
+            "from os import open as acquire; acquire('data', 0)",
+            "from pathlib import Path as P; P.open(P('data'))",
+            "from pathlib import Path as P; P('data').open()",
+            "import builtins as b; b.open('data')",
+            "from io import open as acquire; acquire('data')",
+            "import shutil as files; files.rmtree('data')",
+            "from pathlib import Path as P; p = P('data'); p.rename('other')",
+        ):
+            with self.subTest(source=source):
+                self.assertTrue(_filesystem_calls(ast.parse(source)))
+        for source in ("text.replace('a', 'b')", "owner.read('g')",
+                       "surface.open(ref)", "channel.close()"):
+            with self.subTest(source=source):
+                self.assertEqual(_filesystem_calls(ast.parse(source)), set())
+
+    def test_graph_imports_no_io_adapters(self) -> None:
+        for path, relative, tree in _modules():
+            if _layer_of(path) == "core.graph":
+                with self.subTest(module=relative):
+                    self.assertEqual(
+                        _imported_packages(tree) & self.GRAPH_IO_PACKAGES, set()
+                    )
+
+    def test_graph_rejects_network_and_filesystem_io(self) -> None:
+        candidate = PACKAGE / "core" / "graph" / "_boundary_probe.py"
+        relative = candidate.relative_to(PACKAGE).as_posix()
+        self.assertNotIn(relative, self.NETWORK_MODULES)
+        self.assertNotIn(relative, self.FILESYSTEM_WRITERS)
+        for package in sorted(self.NETWORK_PACKAGES | SDK_PACKAGES | self.GRAPH_IO_PACKAGES):
+            source = f"import {package}"
+            with self.subTest(source=source), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, relative, ast.parse(source))],
+            ):
+                if package in SDK_PACKAGES:
+                    check = LayeringTests().test_only_the_server_layer_imports_the_mcp_sdk
+                elif package in self.GRAPH_IO_PACKAGES:
+                    check = IOBoundaryTests().test_graph_imports_no_io_adapters
+                else:
+                    check = IOBoundaryTests().test_only_the_transport_reaches_the_network
+                with self.assertRaises(AssertionError):
+                    check()
+        for source in ["open('data')", *(
+            f"path.{name}('data')" for name in sorted(self.WRITE_CALLS)
+        )]:
+            with self.subTest(source=source), patch(
+                __name__ + "._modules",
+                return_value=[(candidate, relative, ast.parse(source))],
+            ):
+                with self.assertRaises(AssertionError):
+                    IOBoundaryTests().test_only_the_scaffold_touches_the_filesystem()
 
     def test_only_the_scaffold_touches_the_filesystem(self) -> None:
         for path, relative, tree in _modules():
@@ -427,6 +660,16 @@ class IOBoundaryTests(unittest.TestCase):
         for path, relative, tree in _modules():
             if relative in self.NETWORK_MODULES:
                 continue
+            if relative in self.QUERY_PARSER_MODULES:
+                # Exempt only the exact pure parser import. Other imports in
+                # this same module still pass through the network prohibition.
+                tree = ast.Module(body=[
+                    node for node in ast.walk(tree)
+                    if isinstance(node, (ast.Import, ast.ImportFrom))
+                    and not (isinstance(node, ast.ImportFrom) and node.level == 0
+                             and node.module == "urllib.parse" and node.names
+                             and all(alias.name == "parse_qs" for alias in node.names))
+                ], type_ignores=[])
             with self.subTest(module=relative):
                 self.assertEqual(
                     _imported_packages(tree) & self.NETWORK_PACKAGES,
@@ -446,13 +689,51 @@ def _modules() -> list[tuple[Path, str, ast.Module]]:
 
 
 def _filesystem_calls(tree: ast.Module) -> set[str]:
+    # Resolve exact stdlib adapter aliases, not every method named read/open/
+    # replace: graph owners, strings and declaration Channels use those too.
+    aliases: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                aliases[alias.asname or alias.name] = alias.name
+        elif isinstance(node, ast.ImportFrom) and not node.level:
+            for alias in node.names:
+                aliases[alias.asname or alias.name] = f"{node.module}.{alias.name}"
+
+    def target(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return aliases.get(node.id, node.id)
+        if isinstance(node, ast.Attribute):
+            return target(node.value) + "." + node.attr
+        if isinstance(node, ast.Call):
+            return target(node.func)
+        return ""
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and target(node.value) in {
+            "pathlib.Path", "pathlib.PosixPath", "pathlib.WindowsPath",
+        }:
+            for name in node.targets:
+                if isinstance(name, ast.Name):
+                    aliases[name.id] = target(node.value)
     found: set[str] = set()
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         func = node.func
-        if isinstance(func, ast.Name) and func.id == "open":
-            found.add("open")
+        resolved = target(func)
+        if resolved == "open" or resolved.startswith((
+            "builtins.open", "io.open", "os.open", "os.read", "os.write",
+            "os.rename", "os.replace", "os.unlink", "os.remove", "os.mkdir",
+            "os.rmdir", "os.fsync", "shutil.copy", "shutil.move", "shutil.rmtree",
+        )) or (
+            resolved.startswith(("pathlib.Path.", "pathlib.PosixPath.", "pathlib.WindowsPath."))
+            and resolved.rsplit(".", 1)[-1] in {
+                "open", "write_text", "write_bytes", "mkdir", "touch", "unlink",
+                "rename", "replace", "rmdir", "chmod", "symlink_to", "hardlink_to",
+            }
+        ):
+            found.add(resolved)
         elif (
             isinstance(func, ast.Attribute)
             and func.attr in IOBoundaryTests.WRITE_CALLS
@@ -540,6 +821,9 @@ class PackagingBoundaryTests(unittest.TestCase):
         self.assertIn("contexture/__init__.pyi", package_files)
         self.assertIn("contexture/server/__init__.pyi", package_files)
         self.assertIn("contexture/py.typed", package_files)
+        self.assertIn("contexture/application/__init__.py", package_files)
+        self.assertIn("contexture/application/managed.py", package_files)
+        self.assertNotIn("contexture/application.py", package_files)
         self.assertNotIn("contexture/cli.py", package_files)
         self.assertNotIn("contexture/tree.py", package_files)
         self.assertFalse(any("__pycache__" in name for name in package_files))
@@ -568,6 +852,21 @@ class PackagingBoundaryTests(unittest.TestCase):
             with tempfile.TemporaryDirectory(prefix="contexture-user-") as user_raw:
                 user = Path(user_raw)
                 command = ["uv", "run", "--no-project", "--with", str(wheel), "contexture"]
+                consumer = subprocess.run(
+                    ["uv", "run", "--no-project", "--with", str(wheel), "python", "-I", "-c",
+                     "import contexture; import contexture.application as app; "
+                     "from contexture.application import Contexture, RootFactory; "
+                     "from contexture.application.managed import GraphOwner; "
+                     "from pathlib import Path; "
+                     "assert Contexture is contexture.Contexture; "
+                     "assert RootFactory is app.RootFactory; "
+                     "assert Path(app.__file__).name == '__init__.py'; "
+                     "assert GraphOwner.__module__ == 'contexture.application.managed'; "
+                     f"assert not Path(app.__file__).is_relative_to(Path({str(SOURCE_ROOT)!r})); "
+                     "print('PACKAGED_MANAGED_IMPORT_OK')"],
+                    cwd=user, check=True, capture_output=True, text=True,
+                )
+                self.assertIn("PACKAGED_MANAGED_IMPORT_OK", consumer.stdout)
                 subprocess.run(
                     [*command, "new", "hello-context"],
                     cwd=user,

@@ -12,6 +12,8 @@ The package is layered, and the layering is the architecture:
     contexture.core.model          the kernel: what a capability is, where it
                                    hangs, and the five calls an agent makes
     contexture.core.mcp_interface  what each MCP primitive carries; still no SDK
+    contexture.application         lazy declarations; explicit managed owner module
+    contexture.core.graph          pure managed graph values and transactions
     contexture.server              compilation and the native MCP Host adapter
     contexture.web                 the explicit REST/ASGI Host adapter
 
@@ -22,34 +24,36 @@ nor `contexture.server`, nor the SDK, so a project that only models context
 pays for only that.
 """
 
+import importlib
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .application import Contexture as Contexture
 
-from .core import (
-    Channels,
-    ContextureError,
-    DeclarationError,
-    DuplicateNameError,
-    ExplicitSchemaTool,
-    GatewayPresentation,
-    ModelValidationError,
-    NodeNotFoundError,
-    NodePresentation,
-    Principal,
-    Presentation,
-    PresentationCatalog,
-    PostProcess,
-    PreProcess,
-    Role,
-    Skill,
-    Tool,
-    binding_instruction,
-    current_graph,
-    current_principal,
-    current_telemetry,
-)
+if TYPE_CHECKING:
+    from .core import (
+        Channels as Channels,
+        ContextureError as ContextureError,
+        DeclarationError as DeclarationError,
+        DuplicateNameError as DuplicateNameError,
+        ExplicitSchemaTool as ExplicitSchemaTool,
+        GatewayPresentation as GatewayPresentation,
+        ModelValidationError as ModelValidationError,
+        NodeNotFoundError as NodeNotFoundError,
+        NodePresentation as NodePresentation,
+        Principal as Principal,
+        Presentation as Presentation,
+        PresentationCatalog as PresentationCatalog,
+        PostProcess as PostProcess,
+        PreProcess as PreProcess,
+        Role as Role,
+        Skill as Skill,
+        Tool as Tool,
+        binding_instruction as binding_instruction,
+        current_graph as current_graph,
+        current_principal as current_principal,
+        current_telemetry as current_telemetry,
+    )
 from .core.constants import PACKAGE_VERSION as __version__
 
 # The two planes a declaration writes on arrive through one import, because
@@ -62,18 +66,28 @@ from .core.constants import PACKAGE_VERSION as __version__
 # It costs nothing to put them here: `core.mcp_interface` stands only on the
 # shared ground, so importing this facade still loads no disclosure layer and
 # no SDK.
-from .core.mcp_interface import Prompt, Resource
+if TYPE_CHECKING:
+    from .core.mcp_interface import Prompt as Prompt, Resource as Resource
 
 
 def __getattr__(name: str) -> object:
-    """Resolve the application facade without pulling it into ``core`` imports."""
+    """Resolve declarations without loading unrelated layers on package import."""
 
-    if name != "Contexture":
+    if name == "Contexture":
+        module = ".application"
+    elif name in {"Prompt", "Resource"}:
+        module = ".core.mcp_interface"
+    elif name in __all__ and name != "__version__":
+        module = ".core"
+    else:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    from .application import Contexture
+    value = getattr(importlib.import_module(module, __name__), name)
+    globals()[name] = value
+    return value
 
-    globals()[name] = Contexture
-    return Contexture
+
+def __dir__() -> list[str]:
+    return sorted(__all__)
 
 __all__ = [
     "Channels",

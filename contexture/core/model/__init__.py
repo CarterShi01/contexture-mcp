@@ -23,15 +23,64 @@ a declaration is imported: a class is a zero-argument factory, and a
 # here: a project that only declares context should not load the forest and the
 # five entry points to do it, and every caller that wants them is a caller that
 # is about to serve something.
-from .channels import Channels
-from .graph_context import current_graph
-from .manager import ControllerManager, register_root
-from .node import CompiledGraph, CompileLevel, ContextNode, View
-from .role import PostProcess, PreProcess, Role
-from .root_selection import RootSelection, SurfaceSelection
-from .skill import Skill
-from .telemetry import InMemoryTelemetry, NodeUsage, Telemetry, current_telemetry
-from .tool import ExplicitSchemaTool, Tool
+from __future__ import annotations
+
+import importlib
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .channels import Channels as Channels
+    from .graph_context import current_graph as current_graph
+    from .manager import ControllerManager as ControllerManager, register_root as register_root
+    from .node import (
+        CompiledGraph as CompiledGraph, CompileLevel as CompileLevel,
+        ContextNode as ContextNode, View as View,
+    )
+    from .role import PostProcess as PostProcess, PreProcess as PreProcess, Role as Role
+    from .root_selection import RootSelection as RootSelection, SurfaceSelection as SurfaceSelection
+    from .skill import Skill as Skill
+    from .telemetry import (
+        InMemoryTelemetry as InMemoryTelemetry, NodeUsage as NodeUsage,
+        Telemetry as Telemetry, current_telemetry as current_telemetry,
+    )
+    from .tool import ExplicitSchemaTool as ExplicitSchemaTool, Tool as Tool
+
+_EXPORTS = {
+    "Channels": ".channels",
+    "current_graph": ".graph_context",
+    "ControllerManager": ".manager",
+    "register_root": ".manager",
+    "CompiledGraph": ".node",
+    "CompileLevel": ".node",
+    "ContextNode": ".node",
+    "View": ".node",
+    "PostProcess": ".role",
+    "PreProcess": ".role",
+    "Role": ".role",
+    "RootSelection": ".root_selection",
+    "SurfaceSelection": ".root_selection",
+    "Skill": ".skill",
+    "InMemoryTelemetry": ".telemetry",
+    "NodeUsage": ".telemetry",
+    "Telemetry": ".telemetry",
+    "current_telemetry": ".telemetry",
+    "ExplicitSchemaTool": ".tool",
+    "Tool": ".tool",
+}
+
+
+def __getattr__(name: str) -> Any:
+    """Keep the declaration facade without eagerly importing the static forest."""
+    module = _EXPORTS.get(name)
+    if module is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(importlib.import_module(module, __name__), name)
+    globals()[name] = value
+    return value
+
+
+def __dir__() -> list[str]:
+    return sorted(__all__)
 
 __all__ = [
     "Channels",

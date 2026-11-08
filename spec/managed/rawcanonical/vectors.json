@@ -1,0 +1,17 @@
+{
+  "status": "candidate-not-review-accepted",
+  "profile": "contexture.canonical/jcs-binary64-safeint-v1",
+  "vectors": [
+    {"name": "utf16-not-codepoint", "raw_utf8_hex": "7b22ee8080223a312c22f09f9880223a327d", "canonical_utf8_hex": "7b22f09f9880223a322c22ee8080223a317d"},
+    {"name": "negative-zero", "raw_utf8_hex": "2d302e30", "canonical_utf8_hex": "30"},
+    {"name": "fraction-rounding", "raw_utf8_hex": "3333333333333333332e3333333333333239", "canonical_utf8_hex": "3333333333333333332e33333333333333"},
+    {"name": "duplicate-escaped-key", "raw_utf8_hex": "7b2261223a312c225c7530303631223a327d", "error": "schema_invalid"},
+    {"name": "unsafe-exponent-integer", "raw_utf8_hex": "31653230", "error": "schema_invalid"},
+    {"name": "unsafe-integer", "raw_utf8_hex": "39303037313939323534373430393933", "error": "schema_invalid"},
+    {"name": "nonzero-underflow", "raw_utf8_hex": "31652d39393939", "error": "schema_invalid"},
+    {"name": "overflow", "raw_utf8_hex": "316539393939", "error": "schema_invalid"},
+    {"name": "lone-surrogate", "raw_utf8_hex": "225c756438303022", "error": "schema_invalid"},
+    {"name": "invalid-utf8", "raw_utf8_hex": "22ff22", "error": "schema_invalid"},
+    {"name": "utf8-bom", "raw_utf8_hex": "efbbbf7b7d", "error": "schema_invalid"}
+  ]
+}

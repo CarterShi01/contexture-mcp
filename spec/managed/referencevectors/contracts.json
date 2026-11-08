@@ -1,0 +1,30 @@
+{
+  "status": "candidate-not-review-accepted",
+  "canonical_profile": "contexture.canonical/jcs-binary64-safeint-v1",
+  "hash_vectors": [
+    {
+      "name": "record-payload-without-receipt",
+      "definition": "RecordPayload",
+      "domain": "contexture.journal-payload/v1",
+      "canonical_utf8": "{\"events\":[{\"command_digest\":\"sha256:0000000000000000000000000000000000000000000000000000000000000000\",\"graph_id\":\"g\",\"revision\":\"1\",\"status\":\"noop\",\"type\":\"CommandCompleted\"}]}",
+      "digest": "sha256:60e56ab8a56be248952a3afb9a72f2ec6d48d03ddce583e1bbfd5ebc6bbeda65"
+    },
+    {
+      "name": "preview-approval-subject",
+      "definition": "PreviewSubject",
+      "domain": "contexture.preview/v1",
+      "canonical_utf8": "{\"base_digest\":\"sha256:0000000000000000000000000000000000000000000000000000000000000000\",\"base_revision\":\"1\",\"candidate_digest\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"command_digest\":\"sha256:2222222222222222222222222222222222222222222222222222222222222222\",\"graph_id\":\"g\",\"resolved_fact_digest\":\"sha256:3333333333333333333333333333333333333333333333333333333333333333\",\"schema\":\"contexture.preview/v1\"}",
+      "digest": "sha256:83a4d23eb35f150b8349fd0a6ab9cc7597345675684e8184641fca9ace074987"
+    }
+  ],
+  "file_layout": [
+    {"seq": "1", "bucket": "00000000000000000000", "record_path": "records/00000000000000000000/00000000000000000001.json"},
+    {"seq": "10000", "bucket": "00000000000000000000", "record_path": "records/00000000000000000000/00000000000000010000.json"},
+    {"seq": "10001", "bucket": "00000000000000000001", "record_path": "records/00000000000000000001/00000000000000010001.json"},
+    {"seq": "99999999999999999999", "bucket": "00009999999999999999", "record_path": "records/00009999999999999999/99999999999999999999.json"}
+  ],
+  "blob_layout": [
+    {"digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "path": "blobs/sha256/00/0000000000000000000000000000000000000000000000000000000000000000.blob"},
+    {"digest": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789", "path": "blobs/sha256/ab/abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789.blob"}
+  ]
+}

@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from .node import ContextNode, View
 from ..errors import ModelValidationError
@@ -177,12 +177,14 @@ class ExplicitSchemaTool(Tool):
         input_schema: JsonObject,
         read_only: bool = False,
         uses: tuple[str, ...] = (),
+        mutable: Literal["inherit"] | bool = "inherit",
     ) -> None:
         super().__init__(
             name=name,
             description=description,
             uses=uses,
             read_only=read_only,
+            mutable=mutable,
         )
         if not isinstance(input_schema, dict):
             raise ModelValidationError("An explicit Tool input schema must be an object.")

@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, ClassVar, Iterable, Iterator, Protocol
+from typing import Any, ClassVar, Iterable, Iterator, Literal, Protocol
 
 from ..constants import SEPARATOR
 from ..errors import ModelValidationError
@@ -145,6 +145,9 @@ class ContextNode(ABC):
     #: object graph describes both business execution and system operation.
     uses: tuple[str, ...] = ()
 
+    #: Creation policy for managed lowering; false ancestors always remain locked.
+    mutable: Literal["inherit"] | bool = "inherit"
+
     #: The segments that reach this node, or `()` until a `ControllerManager`
     #: has registered it. A node still cannot *work out* where it hangs — it is
     #: told, once, by the one object that holds the whole graph.
@@ -178,6 +181,12 @@ class ContextNode(ABC):
     group: ClassVar[str] = "nodes"
 
     def __post_init__(self) -> None:
+        if type(self.mutable) is not bool and (
+            type(self.mutable) is not str or self.mutable != "inherit"
+        ):
+            raise ModelValidationError(
+                "Context node mutable must be true, false, or 'inherit'."
+            )
         if not self.name.strip():
             raise ModelValidationError("Context node name must not be empty.")
         if not self.description.strip():

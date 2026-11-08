@@ -6,8 +6,15 @@ separate from the immutable 0.16 MCP wire inventory in
 `../porting/assets.json`: Node Catalog is a trusted application/developer read
 model and changes no gateway payload.
 
-`fixtures/reference-catalog.json` selects the existing language-neutral
-reference application, model view, and definition detail. A binding constructs
+`fixtures/reference-catalog.json` selects
+`fixtures/reference-demo-application.json`, model view, and definition detail.
+The selected input records the existing native `contexture-demo` author facts,
+ordered members/uses and exact bound input schemas, including authored trailing
+newlines. It is not the smaller `reference-operations` prototype in
+`../fixtures/reference-application.json`: that application cannot produce this
+12-node demo golden. Both old prototype input and the Catalog golden remain
+unchanged. The Python producer verifies the selected input against the same
+native declarations before producing the Catalog. A binding constructs
 that application through its native declaration API and must produce
 `../golden/node-catalog.json` semantically, including the canonical content
 digest. Object key ordering and indentation are not normative; node and member

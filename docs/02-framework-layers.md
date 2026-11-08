@@ -81,6 +81,52 @@ layer may import the ones below it and never the reverse. Importing
 package structure state it, because a layering that only exists in prose stops
 being true the first time somebody adds a convenient import.
 
+### Pure managed graph foundation (graph-runtime work in progress)
+
+`core.graph` is a separate, pure bottom layer for managed graph values,
+canonicalization, references, indexes and in-memory graph algorithms. It is
+not the application composition root, the existing declaration runtime in
+`core.model`, or an introspection/server adapter. Its current internal imports
+are exclusively within `core.graph`; its cross-layer dependency set is empty.
+Adding transaction or history modules to this directory grants only same-layer
+imports, not permission to import other core layers or upper layers.
+
+`tests/test_layering.py` registers and enforces this layer alongside the
+existing layers. Upper application/server imports, sibling introspection imports,
+facade shortcuts, MCP SDK, network packages and filesystem I/O remain prohibited
+inside the graph layer. URI checks are pure
+syntax validation, not network resolution. Persistence and transport adapters
+do not belong in this layer. Application, server and web may import `core.graph`
+downward; the graph layer may not import any of them or any core sibling. This records
+the new foundation, not a
+completed managed-product release or a change to pinned parity manifests.
+
+`contexture.application` is a real package preserving `Contexture` and
+`RootFactory`, including the old dotted module name for backward imports.
+Managed callers explicitly import `contexture.application.managed`; importing
+declarations loads neither that module, the server, nor MCP. The owner uses
+thread locks and external structural ports, not filesystem/network/process
+adapters. Only the exact `server/managed_journal.py` file joins
+`cli/scaffold.py` in the filesystem adapter allowlist; no server-wide exception
+exists. Wheel consumer tests import both declarations and managed ownership
+normally outside the checkout, without custom loaders or module registration.
+
+The managed REST adapter in `web/managed.py` is an inbound transport consuming
+structural `RouteRuntime`/`RouteRequest` ports. Its graph dependencies are pure
+canonical JSON conversion, `GraphError`, and `RoutePublication` values; it does
+not construct an owner, open a journal, or import an application, server, or MCP
+SDK. Allowing `web` to depend downward on `core.graph` expresses this boundary
+without duplicating graph contracts in a new port layer. Runtime ownership and
+Host composition remain outside web, and the graph layer remains I/O-free.
+
+Managed REST's query decoding permits only the exact
+`from urllib.parse import parse_qs` import in `web/managed.py`, not a network
+adapter exemption. The existing exact `web/surface.py` and `debug.py` transport
+exceptions are unchanged. Negative architectural probes reject other network
+imports in managed REST, parser imports in adjacent modules, filesystem calls,
+application/server/SDK dependencies, and reverse graph-to-web imports. No
+web-wide network permission or graph I/O permission is granted.
+
 ### 3.1 Why `role_runtime` was renamed
 
 The package was called `role_runtime` while the runtime was the whole product.

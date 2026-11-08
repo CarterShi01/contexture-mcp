@@ -621,12 +621,24 @@ def build_parser() -> argparse.ArgumentParser:
     add_transport_arguments(demo)
     demo.set_defaults(func=command_demo)
 
+    subcommands.add_parser("managed", help="explicit trusted managed CLI (use managed --help)")
+    subcommands.add_parser("store", help="offline managed store operations (use store --help)")
+
     return parser
 
 
 def main(argv: Iterable[str] | None = None) -> int:
+    tokens = list(argv) if argv is not None else sys.argv[1:]
+    if tokens and tokens[0] == "managed":
+        # Isolated parser keeps managed JSON errors redacted without changing
+        # legacy human-facing commands or importing managed storage eagerly.
+        from .managed import main as managed_main
+        return managed_main(tokens[1:])
+    if tokens and tokens[0] == "store":
+        from .store import main as store_main
+        return store_main(tokens[1:])
     parser = build_parser()
-    args = parser.parse_args(list(argv) if argv is not None else None)
+    args = parser.parse_args(tokens)
     try:
         return int(args.func(args))
     except UsageError as exc:

@@ -1,0 +1,41 @@
+{
+  "schema": "contexture.portable-binding-primitives/candidate-v1",
+  "contract_id": "decimal-count-label/v1",
+  "input_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "count": {"type": ["integer", "string"]},
+      "label": {"type": "string"}
+    }
+  },
+  "cases": [
+    {"id": "defaults", "input": {}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 2, "label": "default", "actor": "actor"}}},
+    {"id": "zero", "input": {"count": 0, "label": ""}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 0, "label": "", "actor": "actor"}}},
+    {"id": "upper", "input": {"count": 9}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 9, "label": "default", "actor": "actor"}}},
+    {"id": "integral-binary64", "input": {"count": 2.0}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 2, "label": "default", "actor": "actor"}}},
+    {"id": "negative-zero-number", "input": {"count": -0.0}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 0, "label": "default", "actor": "actor"}}},
+    {"id": "coerce-zero", "input": {"count": "0"}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 0, "label": "default", "actor": "actor"}}},
+    {"id": "coerce-upper", "input": {"count": "9", "label": "\u4e2d\u6587 \ud83d\ude00\n"}, "expected": {"status": "ok", "stages": ["decoder", "validator", "handler"], "output": {"count": 9, "label": "\u4e2d\u6587 \ud83d\ude00\n", "actor": "actor"}}},
+    {"id": "integer-over", "input": {"count": 10}, "expected": {"status": "rejected", "stages": ["decoder", "validator"]}},
+    {"id": "integer-under", "input": {"count": -1}, "expected": {"status": "rejected", "stages": ["decoder", "validator"]}},
+    {"id": "string-over", "input": {"count": "10"}, "expected": {"status": "rejected", "stages": ["decoder", "validator"]}},
+    {"id": "string-under", "input": {"count": "-1"}, "expected": {"status": "rejected", "stages": ["decoder", "validator"]}},
+    {"id": "empty", "input": {"count": ""}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "leading-zero", "input": {"count": "02"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "negative-zero", "input": {"count": "-0"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "plus", "input": {"count": "+2"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "space", "input": {"count": " 2"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "newline", "input": {"count": "2\n"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "fraction-string", "input": {"count": "2.0"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "exponent-string", "input": {"count": "2e0"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "unicode-digit", "input": {"count": "\u0662"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "unbounded-string", "input": {"count": "99999999999999999999999999999"}, "expected": {"status": "rejected", "stages": ["decoder"]}},
+    {"id": "boolean", "input": {"count": true}, "expected": {"status": "rejected", "stages": []}},
+    {"id": "null-not-missing", "input": {"count": null}, "expected": {"status": "rejected", "stages": []}},
+    {"id": "fraction", "input": {"count": 2.5}, "expected": {"status": "rejected", "stages": []}},
+    {"id": "label-null", "input": {"label": null}, "expected": {"status": "rejected", "stages": []}},
+    {"id": "unknown-field", "input": {"actor": "forged"}, "expected": {"status": "rejected", "stages": []}},
+    {"id": "array", "input": [], "expected": {"status": "rejected", "stages": []}}
+  ]
+}
