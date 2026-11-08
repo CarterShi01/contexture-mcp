@@ -720,7 +720,7 @@ class GraphDefinition(_Value):
     presentations: Presentations
     extensions: Mapping[str, FrozenJSON]
     _cached_digest: str | None = field(default=None, init=False, repr=False, compare=False)
-    _cached_bytes: bytes | None = field(default=None, init=False, repr=False, compare=False)
+    _cached_size: int | None = field(default=None, init=False, repr=False, compare=False)
 
     @classmethod
     def from_json(
@@ -805,7 +805,7 @@ class GraphDefinition(_Value):
             publications=tuple(_publication(p) for p in _array(obj.get("publications", ()))),
             presentations=Presentations.from_json(obj["presentations"]),
             extensions=_extensions(obj.get("extensions", {}), "/extensions"), _cached_digest=None,
-            _cached_bytes=None)
+            _cached_size=None)
         # Local import avoids a module initialization cycle. Build is pure and
         # uses the same whole-forest validator as callers' explicit indexes.
         from .index import GraphIndex
@@ -831,27 +831,45 @@ class GraphDefinition(_Value):
             "publications": [p.as_json() for p in self.publications],
             "presentations": self.presentations.as_json(), "extensions": thaw_json(self.extensions)}
 
-    def canonical_bytes(self) -> bytes:
-        """JCS bytes of as_json(), spliced from memoized node bytes.
+    def _pieces(self) -> list[bytes]:
+        """JCS bytes of as_json() as pieces around the shared node bytes.
 
         JCS sorts object keys, so the top-level object is exactly the keys
         before "nodes", then "nodes", then the keys after it.
         """
-        cached = self._cached_bytes
-        if cached is None:
-            header = self.header()
-            before = canonical_json({k: v for k, v in header.items() if k < "nodes"})
-            after = canonical_json({k: v for k, v in header.items() if k > "nodes"})
-            body = b",".join(self.nodes[n].canonical_bytes() for n in sorted(self.nodes))
-            cached = before[:-1] + b',"nodes":[' + body + b"]," + after[1:]
-            object.__setattr__(self, "_cached_bytes", cached)
-        return cached
+        header = self.header()
+        before = canonical_json({k: v for k, v in header.items() if k < "nodes"})
+        after = canonical_json({k: v for k, v in header.items() if k > "nodes"})
+        pieces = [before[:-1], b',"nodes":[']
+        for i, identity in enumerate(sorted(self.nodes)):
+            if i:
+                pieces.append(b",")
+            pieces.append(self.nodes[identity].canonical_bytes())
+        pieces.extend((b"],", after[1:]))
+        return pieces
+
+    def canonical_bytes(self) -> bytes:
+        """Exact JCS bytes of as_json() (not retained: revisions share nodes)."""
+        return b"".join(self._pieces())
+
+    @property
+    def canonical_size(self) -> int:
+        """len(canonical_bytes()), memoized with the digest."""
+        self.digest()
+        return cast(int, self._cached_size)
 
     def digest(self) -> str:
         digest = self._cached_digest
         if digest is None:
-            digest = "sha256:" + hashlib.sha256(
-                b"contexture.graph/v1\0" + self.canonical_bytes()).hexdigest()
+            # Stream the hash: retaining joined bytes per revision would cost
+            # revisions x graph size, defeating node sharing in History.
+            hasher = hashlib.sha256(b"contexture.graph/v1\0")
+            size = 0
+            for piece in self._pieces():
+                hasher.update(piece)
+                size += len(piece)
+            digest = "sha256:" + hasher.hexdigest()
+            object.__setattr__(self, "_cached_size", size)
             object.__setattr__(self, "_cached_digest", digest)
         return digest
 

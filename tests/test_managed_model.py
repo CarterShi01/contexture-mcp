@@ -266,6 +266,7 @@ def test_immutable_definition_digest_is_computed_once_and_detached(monkeypatch: 
     definition = load(raw)
     expected = canonical_digest(definition.as_json(), "contexture.graph/v1")
     assert definition.canonical_bytes() == canonical_json(definition.as_json())
+    assert definition.digest() == expected
     monkeypatch.setattr(model, "canonical_json", counted)
     for _ in range(100):
         assert definition.digest() == expected

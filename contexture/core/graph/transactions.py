@@ -645,7 +645,7 @@ class _Draft:
         definition = GraphDefinition.assemble(header, self.nodes.specs, self.nodes.wires,
             reuse=self.base.definition.nodes, publication_contracts=self.contracts,
             verify_contracts=final)
-        if len(definition.canonical_bytes()) > self.limits.max_definition_bytes:
+        if definition.canonical_size > self.limits.max_definition_bytes:
             raise _fail("Candidate exceeds graph budget", "limit_exceeded")
         index = GraphIndex.build(definition, verify_contracts=False)
         edges = len(definition.roots) + len(definition.publications)

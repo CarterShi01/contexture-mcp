@@ -81,11 +81,16 @@ seed → publish → 在请求打开期间新增 Skill 和新 Tool → publish�
   `.serving`、`.release`。
 * **停写错误**：`commit_unknown`（结果不确定）与 `store_in_use`（另一写者、锁被删）。关闭后重开，
   由恢复确定耐久后缀；不要换幂等键盲目重试。
-* **离线工具**（服务停止时）：`contexture store doctor --root STORE` 校验记录链、receipt 与 blob；
-  `backup` / `restore --allow-write` 生成并恢复隔离副本。用 `ManagedGraphHost` 打开即执行完整语义重放。
+* **启动与快照**：每 `snapshot_every` 条记录（默认 1000）及正常关闭时写入 owner 快照
+  （`GraphOwner.checkpoint()`）。启动时校验记录链，锚点（store id、序号、record hash、包版本）一致则
+  恢复快照并只应用日志尾部；更早的 revision 首次使用时从日志重建。快照只是可丢弃的 hint，任何不一致即全量重放。
+* **离线工具**（服务停止时）：`contexture store doctor --root STORE` 原地只读校验：目录与权限、完整记录链与
+  receipt、所有被引用 blob，以及图语义的纯重放（忽略快照）；`--isolated` 额外做隔离恢复（需约 2–3 倍空间）。
+  `backup` / `restore --allow-write` 生成并恢复隔离副本，`--max-store-mib` 可放宽备份大小上限。
 
 ## 当前限制
 
 * 每个存储单写进程；不支持多副本 rollout 或跨图原子事务。
-* 重启会重放完整日志（checkpoint 辅助恢复在计划中）；请按历史规模评估重启时间。
+* 启动仍会读取并校验每条日志记录的哈希（小机器上约 1ms/条）；快照省去的是图重放而非链校验。
+  备份是受 `--max-store-mib` 约束的单个内存信封。
 * 内置执行 ABI 仅 `python-managed-call/v1`；其他 ABI 需显式提供 `ExecutionAdapter`。

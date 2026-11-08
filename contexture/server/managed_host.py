@@ -299,13 +299,15 @@ class ManagedGraphHost:
     def __init__(self, journal: FileJournal, owner: GraphOwner, provider: _Provider, *,
                  policy: HostPolicy, graph_id: str, target_id: str, instance_id: str,
                  registrations: tuple[ExecutionAdapterRegistration, ...],
-                 clock: Callable[[], str], preview_seconds: int, prepare_timeout: float) -> None:
+                 clock: Callable[[], str], preview_seconds: int, prepare_timeout: float,
+                 snapshot_every: int = 1000) -> None:
         self.journal, self.owner = journal, owner
         self.graph_id, self.target_id, self._instance_id = graph_id, target_id, instance_id
         self._provider, self._policy, self._registrations = provider, policy, registrations
         self._clock, self._preview_seconds, self._prepare_timeout = clock, preview_seconds, prepare_timeout
         self._releases: ReleaseManager | None = None
         self._runtime: ManagedRuntime | None = None
+        self._snapshot_every = snapshot_every
 
     @property
     def releases(self) -> ReleaseManager:
@@ -336,13 +338,16 @@ class ManagedGraphHost:
                    resources: Mapping[tuple[str, str], Any] | None = None,
                    execution_adapters: Mapping[str, ExecutionAdapter] | None = None,
                    clock: Callable[[], str] = utc_clock, preview_seconds: int = 300,
-                   prepare_timeout: float = 30) -> AsyncIterator[ManagedGraphHost]:
+                   prepare_timeout: float = 30, snapshot_every: int = 1000,
+                   ) -> AsyncIterator[ManagedGraphHost]:
         """Open (or create) a store and start serving its desired release, if any.
 
         ``registry`` lists every deployed executable binding (None for a
         disclosure-only graph). ``resources`` maps (binding_id, version) to a
         ResourcePreparationAdapter for stateful bindings. ``execution_adapters``
         maps an ABI to its ExecutionAdapter; ``python-managed-call/v1`` is built in.
+        Every ``snapshot_every`` records (and on a clean close) an owner snapshot
+        is written so startup replays only the journal tail (0 disables).
         Bindings are attested per exact contract, not per node, so Tools created
         at runtime against a deployed binding execute without a restart.
         """
@@ -362,7 +367,8 @@ class ManagedGraphHost:
                 projections={PROJECTION_NAME: release_projection()})
             host = cls(journal, owner, provider, policy=policy, graph_id=graph_id,
                        target_id=target_id, instance_id=instance_id, registrations=registrations,
-                       clock=clock, preview_seconds=preview_seconds, prepare_timeout=prepare_timeout)
+                       clock=clock, preview_seconds=preview_seconds, prepare_timeout=prepare_timeout,
+                       snapshot_every=snapshot_every)
             _LOG.info("managed host opened", extra={"graph_id": graph_id, "target_id": target_id,
                       "watermark": journal.watermark})
             if host.initialized:
@@ -373,6 +379,8 @@ class ManagedGraphHost:
         finally:
             if host is not None and host._releases is not None:
                 await host._releases.shutdown()
+            if host is not None and owner is not None:
+                host._snapshot(force=True)
             if owner is not None:
                 owner.close()
             journal.close()
@@ -406,6 +414,7 @@ class ManagedGraphHost:
         receipt = cast(dict[str, Any], self.owner.commit_bootstrap(preview))
         if self._releases is None:
             self._start_serving()
+        self._snapshot()
         return receipt
 
     def preview(self, *commands: Mapping[str, Any], reason: str,
@@ -422,7 +431,9 @@ class ManagedGraphHost:
                idempotency_key: str | None = None, approval_ref: str | None = None) -> dict[str, Any]:
         """Preview and commit one atomic transaction; returns the command receipt."""
         preview = self.preview(*commands, reason=reason, idempotency_key=idempotency_key)
-        return cast(dict[str, Any], self.owner.commit(preview, approval_ref=approval_ref))
+        receipt = cast(dict[str, Any], self.owner.commit(preview, approval_ref=approval_ref))
+        self._snapshot()
+        return receipt
 
     def revert(self, target_revision: str, *, node_ids: Sequence[str] | None = None,
                reason: str, idempotency_key: str | None = None) -> dict[str, Any]:
@@ -431,7 +442,9 @@ class ManagedGraphHost:
             idempotency_key=idempotency_key or str(uuid4()), reason=reason,
             correlation_id=str(uuid4()), expires_at=self._expires(),
             node_ids=None if node_ids is None else tuple(node_ids))
-        return cast(dict[str, Any], self.owner.commit(preview))
+        receipt = cast(dict[str, Any], self.owner.commit(preview))
+        self._snapshot()
+        return receipt
 
     # -- history --------------------------------------------------------
 
@@ -495,6 +508,16 @@ class ManagedGraphHost:
             await asyncio.sleep(0.01)
 
     # -- helpers ----------------------------------------------------------
+
+    def _snapshot(self, *, force: bool = False) -> None:
+        pending = self.owner.records_since_snapshot
+        if not self._snapshot_every or pending == 0 or self.owner.writes_stopped:
+            return
+        if force or pending >= self._snapshot_every:
+            try:
+                self.owner.checkpoint()
+            except GraphError as error:  # acceleration only; never fail the caller
+                _LOG.warning("owner snapshot skipped", extra={"error_code": error.code})
 
     def _expires(self) -> str:
         return _later(self._clock(), self._preview_seconds)

@@ -193,6 +193,7 @@ class FileJournal:
 		self._mutex = RLock()
 		self._lock_fd: int | None = None
 		self._lock_identity: tuple[int, int] | None = None
+		self._confirmed_parents: set[Path] = set()
 		self._closed = False
 		self._unknown = False
 		self._records: list[dict[str, Any]] = []
@@ -476,7 +477,10 @@ class FileJournal:
 		self._mkdir(final.parent)
 		# Also confirm an already existing bucket: an earlier failed mkdir
 		# confirmation must not let a later append bypass its parent sync.
-		self._sync_dir(final.parent.parent)
+		# Once that sync succeeded in this lifetime the entry is durable.
+		if final.parent not in self._confirmed_parents:
+			self._sync_dir(final.parent.parent)
+			self._confirmed_parents.add(final.parent)
 		self._check_path(final)
 		temp = self.root / "tmp" / (str(uuid4()) + ".tmp")
 		self._check_path(temp)
@@ -498,7 +502,8 @@ class FileJournal:
 			if final.exists():
 				# An exclusive owner never finds its next name taken: another
 				# writer exists. Refuse definitively and stop writing.
-				self._unknown = True
+				if kind != "hint":
+					self._unknown = True
 				raise JournalError("store_in_use", "Immutable destination already exists")
 			self._hit(kind + ".before_rename")
 			attempted = True
@@ -519,7 +524,7 @@ class FileJournal:
 			self._sync_dir(temp.parent)
 			self._hit(kind + ".directory_synced")
 		except JournalError as exc:
-			if exc.code in ("store_in_use", "durability_unsupported", "corruption"):
+			if exc.code in ("store_in_use", "durability_unsupported", "corruption") or kind == "hint":
 				raise
 			if attempted and kind == "record":
 				self._unknown = True
@@ -528,6 +533,8 @@ class FileJournal:
 				self._unknown = True
 			raise
 		except BaseException as exc:
+			if kind == "hint":
+				raise  # disposable: no record references a hint
 			if attempted and kind == "record":
 				self._unknown = True
 				raise CommitUnknown() from exc
@@ -859,6 +866,47 @@ class FileJournal:
 		ordered(value["desired_releases"], lambda item: (item["request"]["graph_id"], item["request"]["target_id"]))
 		ordered(value["receipts_index"], lambda item: (item["actor_ref"], item["idempotency_key"]))
 		ordered(value["blob_refs"], lambda item: (item["digest"], item["media_type"]))
+
+	_HINT_KEEP = 2
+
+	def write_hint(self, name: str, sequence: str, data: bytes) -> None:
+		"""Publish disposable acceleration data anchored to an accepted watermark.
+
+		Hints are never authority: readers must verify their anchor against the
+		record chain and fall back to full replay on any doubt. Only the newest
+		few per name are kept; backups do not carry them.
+		"""
+		with self._guard(write=True):
+			if not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", name) or type(data) is not bytes:
+				raise JournalError("schema_invalid", "Invalid hint")
+			count = parse_counter(sequence)
+			if not 1 <= count <= len(self._records):
+				raise JournalError("schema_invalid", "Hint must anchor an accepted record")
+			directory = self.root / "hints" / name
+			self._mkdir(directory)
+			path = directory / f"{count:020d}.json"
+			if not path.exists():
+				self._publish(path, data, "hint")
+			for stale in sorted(p for p in directory.iterdir() if _PAD.fullmatch(p.stem))[:-self._HINT_KEEP]:
+				self._check_path(stale)
+				stale.unlink()
+			self._sync_dir(directory)
+
+	def read_hints(self, name: str) -> list[tuple[str, bytes]]:
+		"""(watermark, bytes) of retained hints, newest first; unverified data."""
+		with self._guard():
+			directory = self.root / "hints" / name
+			if not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", name) or not directory.is_dir():
+				return []
+			self._check_path(directory, directory=True)
+			result: list[tuple[str, bytes]] = []
+			for path in sorted(directory.iterdir(), reverse=True):
+				if path.suffix == ".json" and _PAD.fullmatch(path.stem):
+					try:
+						result.append((str(int(path.stem)), self._read_bytes(path)))
+					except (JournalError, OSError):
+						continue
+			return result
 
 	def checkpoint(self) -> dict[str, Any]:
 		"""Publish full projections at the selected confirmed watermark.

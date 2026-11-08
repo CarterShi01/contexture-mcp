@@ -35,7 +35,12 @@ def test_offline_doctor_and_backup_never_modify_source(root):
     seed(root)
     before = contents(root)
     operations = StoreOperations(schema=SCHEMA, projector=empty_projector)
-    result = operations.doctor(root)
+    # Synthetic CommandCompleted fixtures are not a semantically valid graph.
+    in_place = operations.doctor(root, semantic=False)
+    assert in_place.code == "ok" and in_place.storage_verified and not in_place.isolated_restore_verified
+    assert operations.doctor(root).code == "corruption"  # semantic replay catches it
+    assert contents(root) == before
+    result = operations.doctor(root, isolated=True)
     assert result.code == "ok" and result.storage_verified
     assert result.isolated_restore_verified
     assert not result.serving_ready and not result.definition_loaded and not result.write_enabled
@@ -80,7 +85,8 @@ def test_budgets_are_admission_failures_not_partial_backups(root, kind):
     budget = {"file": StoreBudget(max_file_bytes=1), "bytes": StoreBudget(max_bytes=1),
               "entries": StoreBudget(max_files=1), "snapshot": StoreBudget(max_snapshot_bytes=1)}[kind]
     before = contents(root)
-    assert StoreOperations(schema=SCHEMA, budget=budget).doctor(root).code == "limit_exceeded"
+    # Byte/snapshot budgets bound the in-memory backup envelope (isolated mode).
+    assert StoreOperations(schema=SCHEMA, budget=budget).doctor(root, isolated=True).code == "limit_exceeded"
     assert contents(root) == before
 
 
@@ -114,8 +120,10 @@ def test_independent_anchor_and_restore_refuses_overwrite(root):
     operations = StoreOperations(schema=SCHEMA)
     artifact = operations.backup(root)
     anchor = {k: v for k, v in artifact.manifest.items() if k != "backup_digest"}
-    assert operations.doctor(root, expected_anchor=anchor).code == "ok"
-    assert operations.doctor(root, expected_anchor={**anchor, "journal_seq": "2"}).code == "history_unavailable"
+    for isolated in (False, True):
+        assert operations.doctor(root, expected_anchor=anchor, isolated=isolated, semantic=False).code == "ok"
+        assert operations.doctor(root, expected_anchor={**anchor, "journal_seq": "2"},
+                                 isolated=isolated, semantic=False).code == "history_unavailable"
     before = contents(root)
     with pytest.raises(JournalError, match="must not exist"):
         operations.restore(root, artifact.snapshot)
@@ -134,3 +142,19 @@ def test_exact_software_support_never_claims_serving_readiness(root):
     for field in ("store_formats", "record_formats", "event_types", "canonical_profiles", "durability_profiles"):
         assert check_software_compatibility(
             artifact.snapshot, replace(support, **{field: frozenset()})).code == "format_unsupported"
+
+
+def test_in_place_doctor_replays_real_graph_semantics_without_modifying(root):
+    from tests.test_managed_owner import LATER, Host, owner, request, seed as graph_seed
+    from contexture.application.managed_releases import PROJECTION_NAME, release_projection
+
+    with FileJournal.open(root, schema=SCHEMA) as journal:
+        manager = owner(journal, Host(), projections={PROJECTION_NAME: release_projection()})
+        manager.commit_bootstrap(manager.preview_bootstrap(graph_seed(), expires_at=LATER))
+        manager.commit(manager.preview(request(manager), expires_at=LATER))
+        manager.checkpoint()  # snapshots are hints: ignored by doctor, never trusted
+        manager.close()
+    before = contents(root)
+    result = StoreOperations(schema=SCHEMA).doctor(root)
+    assert result.code == "ok" and result.storage_verified
+    assert contents(root) == before

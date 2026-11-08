@@ -168,11 +168,19 @@ any registry, so retiring v1 later never makes the store unreadable.
   error during publication) and `store_in_use` (another writer, removed lock).
   Close and reopen; recovery resolves the durable suffix. Never retry with a new
   idempotency key to "make it work".
+* **Startup and snapshots**: every `snapshot_every` records (default 1000) and on
+  a clean close the host writes an owner snapshot (`GraphOwner.checkpoint()`).
+  Startup verifies the record chain, restores the snapshot when its anchor
+  (store id, sequence, record hash, package version) matches, and applies only
+  the journal tail; older revisions are rebuilt from the journal on first use.
+  Snapshots are disposable hints, never authority: any mismatch means full replay.
 * **Offline store tools** (with the service stopped):
-  `contexture store doctor --root STORE` verifies the record chain, receipts and
-  blobs; `backup --output FILE` / `restore --input FILE --allow-write` produce and
-  restore an isolated copy. Opening the store with `ManagedGraphHost` performs
-  the full semantic replay.
+  `contexture store doctor --root STORE` verifies in place without modifying the
+  store: layout and permissions, the full record chain and receipts, every
+  referenced blob, and a pure replay of graph semantics (snapshots ignored).
+  `--isolated` additionally restores a copy (needs ~2-3x the store size).
+  `backup --output FILE` / `restore --input FILE --allow-write` produce and
+  restore an isolated copy; `--max-store-mib` raises the backup size bound.
 * **Management CLI**: `contexture managed --project DIR ...` drives a Host-provided
   management service; refusals include the stable code and, for protection
   failures, the rule diagnostics.
@@ -180,7 +188,8 @@ any registry, so retiring v1 later never makes the store unreadable.
 ## Current limits
 
 * One writer process per store; no multi-replica rollout or cross-graph atomicity.
-* Restart replays the full journal (checkpoint-assisted recovery is planned);
-  measure your history size against restart time.
+* Startup still reads and hash-verifies every journal record (about 1 ms per
+  record on a small machine); snapshots remove the graph replay, not the chain
+  check. Backups are a single in-memory envelope bounded by `--max-store-mib`.
 * Only `python-managed-call/v1` execution is built in; other ABIs need an
   explicit `ExecutionAdapter`.

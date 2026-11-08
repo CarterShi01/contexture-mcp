@@ -30,6 +30,10 @@ def main(argv: Sequence[str]) -> int:
     parser.add_argument("--max-store-mib", type=int, default=StoreBudget.max_bytes // (1024 * 1024),
                         help="refuse stores larger than this (admission bound, not capacity)")
     parser.add_argument("--max-files", type=int, default=StoreBudget.max_files)
+    parser.add_argument("--isolated", action="store_true",
+                        help="doctor: also verify an isolated restore (needs ~2-3x store size)")
+    parser.add_argument("--no-semantic", action="store_true",
+                        help="doctor: skip the graph-semantics replay")
     parser.add_argument("--durability", choices=("strict", "process_crash"), default="strict")
     parser.add_argument("--input", type=Path, help="restore backup artifact")
     parser.add_argument("--output", type=Path, help="new private backup artifact")
@@ -47,7 +51,7 @@ def main(argv: Sequence[str]) -> int:
         operations = StoreOperations(schema=schema, durability=args.durability, budget=budget)
         extra: dict[str, object] = {}
         if args.command == "doctor":
-            result = operations.doctor(args.root)
+            result = operations.doctor(args.root, isolated=args.isolated, semantic=not args.no_semantic)
         elif args.command == "backup":
             artifact = operations.backup(args.root)
             publish_backup(args.output, artifact, durability=args.durability)

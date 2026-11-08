@@ -32,7 +32,7 @@ def run(command, root, *args):
 
 def test_real_doctor_backup_restore_journey_and_nonoverwrite(paths):
     root, backup, restored = paths
-    doctor = run("doctor", root)
+    doctor = run("doctor", root, "--no-semantic", "--isolated")
     assert doctor.returncode == 0
     result = json.loads(doctor.stdout)["result"]
     assert result["storage_verified"] and not result["serving_ready"] and not result["write_enabled"]

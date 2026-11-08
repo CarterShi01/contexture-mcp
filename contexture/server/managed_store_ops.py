@@ -109,6 +109,9 @@ _RECORD = re.compile(r"records/([0-9]{20})/([0-9]{20})\.json\Z")
 _BLOB = re.compile(r"blobs/sha256/([0-9a-f]{2})/([0-9a-f]{64})\.blob\Z")
 
 
+_REBUILDABLE = frozenset({"hints", "checkpoints", "indexes", "quarantine"})
+
+
 def _private(info: os.stat_result, *, directory: bool = False) -> None:
 	if (stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400
 			or not (stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode))
@@ -252,6 +255,8 @@ class StoreOperations:
 						stack.append(path)
 						continue
 					_private(info)
+					if relative.split("/", 1)[0] in _REBUILDABLE:
+						continue  # never carried by backups; privacy checked above
 					if info.st_size > self.budget.max_file_bytes:
 						raise JournalError("limit_exceeded", "Store file budget exceeded")
 					with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "rb") as stream:
@@ -333,12 +338,69 @@ class StoreOperations:
 			return BackupArtifact(snapshot, manifest, StoreResult(
 				"backup", "ok", storage_verified=True, isolated_restore_verified=True))
 
-	def doctor(self, root: Path | str, *, expected_anchor: Mapping[str, object] | None = None) -> StoreResult:
+	def doctor(self, root: Path | str, *, expected_anchor: Mapping[str, object] | None = None,
+			   isolated: bool = False, semantic: bool = True) -> StoreResult:
+		"""Verify a stopped store without modifying it.
+
+		Default (scalable): walk the layout/privacy without buffering contents,
+		open the store (full record chain and receipts), verify every referenced
+		blob, then replay graph semantics with a GraphOwner (release events
+		included). `isolated=True` additionally performs the historical
+		backup + isolated restore check, which needs ~2-3x the store size.
+		"""
+		if isolated:
+			try:
+				self.backup(root, expected_anchor=expected_anchor)
+			except (JournalError, OSError) as exc:
+				return _failure("doctor", exc)
+			return StoreResult("doctor", "ok", storage_verified=True, isolated_restore_verified=True)
 		try:
-			self.backup(root, expected_anchor=expected_anchor)
+			path = FileJournal.check_location(root, durability=self.durability)
+			self._walk(path)
+			with FileJournal.open(path, schema=self.schema, durability=self.durability) as journal:
+				records = journal.records()
+				anchor = {"store_id": journal.meta["store_id"], "journal_seq": journal.watermark,
+					"record_hash": records[-1]["record_hash"] if records else None}
+				if expected_anchor is not None and dict(expected_anchor) != anchor:
+					raise JournalError("history_unavailable", "Independent store anchor differs")
+				for ref in journal._blob_refs(records):
+					journal.get_blob(ref)
+				if semantic and records:
+					_semantic_replay(journal)
 		except (JournalError, OSError) as exc:
 			return _failure("doctor", exc)
-		return StoreResult("doctor", "ok", storage_verified=True, isolated_restore_verified=True)
+		except GraphError as exc:
+			return StoreResult("doctor", exc.code if exc.code in _SAFE_CODES else "corruption")
+		return StoreResult("doctor", "ok", storage_verified=True)
+
+	def _walk(self, root: Path) -> None:
+		"""Layout, privacy and pending-work checks without reading file contents."""
+		seen = 0
+		stack = [root]
+		while stack:
+			directory = stack.pop()
+			_private(directory.lstat(), directory=True)
+			with os.scandir(directory) as entries:
+				for entry in entries:
+					seen += 1
+					if seen > self.budget.max_files:
+						raise JournalError("limit_exceeded", "Store entry budget exceeded")
+					path = Path(entry.path)
+					relative = path.relative_to(root).as_posix()
+					info = entry.stat(follow_symlinks=False)
+					if stat.S_ISDIR(info.st_mode):
+						_private(info, directory=True)
+						if directory == root and entry.name not in _DIRECTORIES:
+							raise JournalError("format_unsupported", "Unknown store directory")
+						if relative.startswith("records/") and not re.fullmatch(r"records/[0-9]{20}", relative):
+							raise JournalError("corruption", "Invalid committed record directory")
+						stack.append(path)
+						continue
+					_private(info)
+					if relative.startswith("tmp/"):
+						raise JournalError("recovery_required", "Pending temporary assets require owner recovery")
+					if directory == root and entry.name not in {"META.json", "writer.lock"}:
+						raise JournalError("format_unsupported", "Unknown store asset")
 
 	def restore(self, root: Path | str, snapshot: bytes) -> StoreResult:
 		if len(snapshot) > self.budget.max_snapshot_bytes:
@@ -351,6 +413,32 @@ class StoreOperations:
 		except GraphError:
 			raise JournalError("backup_invalid", "Invalid restored store data") from None
 		return StoreResult("restore", "ok", storage_verified=True, isolated_restore_verified=True)
+
+
+class _OfflineReplay:
+	"""Replay-only ports: GraphOwner construction replays without any policy."""
+
+	def current(self) -> Any:
+		raise JournalError("permission_denied", "Offline replay performs no operations")
+
+	def actor_ref(self, context: Any) -> str:
+		raise JournalError("permission_denied", "Offline replay performs no operations")
+
+	def hold(self, context: Any) -> Any:
+		raise JournalError("permission_denied", "Offline replay performs no operations")
+
+	def decide(self, request: Any) -> Any:
+		raise JournalError("permission_denied", "Offline replay performs no operations")
+
+
+def _semantic_replay(journal: FileJournal) -> None:
+	from contexture.application.managed import GraphOwner
+	from contexture.application.managed_releases import PROJECTION_NAME, release_projection
+
+	offline = _OfflineReplay()
+	GraphOwner(journal, identities=offline, admission=offline, authority_fence=offline,
+		clock=lambda: "1970-01-01T00:00:00Z", use_snapshots=False,
+		projections={PROJECTION_NAME: release_projection()}).close()
 
 
 def check_software_compatibility(snapshot: bytes, support: SoftwareCompatibility) -> StoreResult:

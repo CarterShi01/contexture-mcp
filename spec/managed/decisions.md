@@ -146,3 +146,32 @@ Code/DTO appearance alone must not be reported as adoption or verification.
 Schema/vector paths and tests now exist and are indexed in the manifest. They do
 not establish implementation, native parity, durability or review acceptance.
 No fabricated native/Host/OC receipt is supplied.
+
+## Review-driven revisions (2026-11-08, Python reference, candidate)
+
+Recorded on branch `fix/managed-runtime-review` after an independent review.
+They revise the candidate target; none is an accepted spec revision. TS/Go
+must port each item before claiming parity (see "Port obligations").
+
+| ID | Revision | Rationale |
+| --- | --- | --- |
+| R01 | Mutability: a locked node protects only its own surface (definition with its locked members, path, parent/slot, plane, metadata, publications, presentations) and its locked members' presence/order. Mutable members of a locked non-barrier parent are fully editable/movable/deletable; new members of a locked parent must be effectively mutable; ordinary moves may not flip effective mutability (root promotion/demotion may). Fixed check order and rule diagnostics (model.md). | The previous fingerprint included member cards, so a `mutable: true` child under a default-locked root could not be renamed or deleted: the dynamic tree goal was unreachable for ordinary graphs. |
+| R02 | `protected_dependents`: locked nodes whose one-hop agent context changes (mutable member/use/template target card, definition or publications) are reported in the protection report and `PreviewReceipt.protected_dependents`, and are part of admission `impact`. | Governance through current admission/approval instead of refusing every change near a locked node. |
+| R03 | Registry evidence (`PublicationContract`) is indexed by exact binding descriptor (a collection, mapping values or resolver), checked only for new candidates (transaction final candidate, bootstrap seed, revert candidate). Replay, transaction bases and recovery never consult it. | A Tool binding upgrade made the journal unreplayable with any registry; replay must be a pure function of the journal. |
+| R04 | `History(records)` replays every link (and a bootstrap seed) and rejects records whose state is not their event's result; `append` verifies only the new link; revision lookup is O(log n). | The previous constructor checked only sequence and graph id. |
+| R05 | Granular `PresentationPut/Removed` facts are removed; `PresentationsAssigned` is the single encoding. | No accepted journal used them; two encodings of one change. |
+| R06 | `execution_diff(ExecutionManifest, ExecutionManifest)` and `surface_diff(StructuralPlan, StructuralPlan)` replace caller-JSON placeholders. | Real execution/effective-surface comparison. |
+| R07 | FileJournal publication never replaces a name (renameat2 RENAME_NOREPLACE on Linux; refuse if unavailable); the writer verifies before every write that `writer.lock` still names its locked inode. Existing destination => definite `store_in_use`. | Deleting `writer.lock` allowed a second owner to silently overwrite an acknowledged record. Go already used RENAME_NOREPLACE. |
+| R08 | Persistent collections (design deviation disposition): Python shares unchanged `NodeSpec` objects between revisions (validated node reuse, memoized JCS bytes) and keeps `rpds.List` only for history records. No persistent map dependency is used for nodes. | Measured: the copy/compare cost, not list structure, dominated; recommend accepting node sharing as an internal optimization with no wire change. |
+| R09 | Owner snapshots: anchored (store id, journal_seq, record_hash, package version) JSON in journal `hints/`, never authority; startup restores them and replays only the tail; older history is materialized from the journal on demand; any mismatch => full replay. | Startup must not require replay from genesis (original research input). |
+| R10 | Execution adapters may be attested per exact binding contract (`node_id=None`). | Tool nodes created at runtime against a deployed binding must execute without rebuilding the runtime. |
+| R11 | Offline doctor verifies in place by default (chain, receipts, blobs, graph-semantics replay); isolated restore is opt-in. | Scalable verification; the in-memory envelope bounded stores at ~40k records. |
+
+### Port obligations (TypeScript, Go)
+
+R01-R05 and R07 change observable contracts or shared bytes and are required for
+parity; R06, R08-R11 are API/implementation obligations for product parity.
+Additionally: TS/Go owner-level revert with current-protection recheck, bounded
+authorization retry across a concurrent local swap (as Python `_authorize`),
+TS `fs-ext` as an optional dependency, and loading shared vectors from files with
+digest checks instead of inline copies.

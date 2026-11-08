@@ -24,6 +24,7 @@ preemption or a wall-clock guarantee for an uncooperative admission callback.
 
 from __future__ import annotations
 
+from bisect import bisect_right
 from collections.abc import Callable
 from dataclasses import dataclass, field
 import hashlib
@@ -271,12 +272,11 @@ class ManagedWatchService:
                 # its exact before view it is unsafe to silently skip a suffix.
                 if position < parse_counter(history.records[0].journal_seq):
                     raise _resync()
-                before = history.records[0].state
-                for record in history.records:
-                    self._deadline(s, deadline)
-                    if parse_counter(record.journal_seq) > position:
-                        break
-                    before = record.state
+                # Records are ordered by journal_seq: binary search instead of
+                # scanning the whole retained history on every poll.
+                records = history.records
+                start = bisect_right(records, position, key=lambda r: parse_counter(r.journal_seq))
+                before = records[max(start - 1, 0)].state
                 previous = _material(before, s.scope, s.selection)
                 batches: list[dict[str, Any]] = []
                 examined = 0
@@ -324,7 +324,7 @@ class ManagedWatchService:
                 # History is immutable and already replayed from the owner's
                 # verified journal. Group equal seqs defensively for a future
                 # history port that supports multiple same-graph events/record.
-                for record in history.records:
+                for record in records[start:]:
                     self._deadline(s, deadline)
                     sequence = parse_counter(record.journal_seq)
                     if sequence <= position:

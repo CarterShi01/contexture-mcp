@@ -104,6 +104,10 @@ class History:
         return next(iter(self._entries)).state
 
     @property
+    def head_journal_seq(self) -> str:
+        return next(iter(self._entries)).journal_seq
+
+    @property
     def retained_lower_bound(self) -> str:
         return self._seed.state.revision
 
