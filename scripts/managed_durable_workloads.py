@@ -569,6 +569,11 @@ async def churn_workload(cycles, input_seed, profile, path):
         watch.shutdown()
         await releases.shutdown()
         records = port.records()
+        # Receipts live in the journal (the owner keeps no copy): read them
+        # while the original owner is still open.
+        receipt_keys = [(r["command_receipt"]["actor_ref"], r["command_receipt"]["idempotency_key"])
+                        for r in records if "command_receipt" in r]
+        expected_receipts = {key: manager._receipt(key) for key in receipt_keys}
         manager.close()
         journal.close()
     assert not execution.live
@@ -588,9 +593,6 @@ async def churn_workload(cycles, input_seed, profile, path):
         "ReplicaObserved": 1 + cycles,
     }
     expected_projections = manager._external.copy()
-    receipt_keys = [(r["command_receipt"]["actor_ref"], r["command_receipt"]["idempotency_key"])
-                    for r in records if "command_receipt" in r]
-    expected_receipts = {key: manager._receipt(key) for key in receipt_keys}
     reopened = LogicJournal(records) if profile == "logic" else FileJournal.open(path, schema=SCHEMA)
     replay_port = CountedPort(reopened)
     host.denied = True
