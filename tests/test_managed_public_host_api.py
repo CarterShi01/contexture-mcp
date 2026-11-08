@@ -85,3 +85,36 @@ async def test_selection_resolver_attenuates_each_managed_request() -> None:
     with pytest.raises(ToolError, match="permission_denied"):
         await wrong._call(ctx, "discover")  # type: ignore[arg-type]
 
+
+@pytest.mark.asyncio
+async def test_managed_calls_bind_the_verified_bearer_principal(monkeypatch) -> None:
+    from contextlib import asynccontextmanager
+    from types import SimpleNamespace
+
+    from contexture import Principal, current_principal
+    from contexture.server import managed as module
+    from contexture.server.identity import _as_access_token
+    from contexture.server.managed import ManagedMCPServer
+
+    seen = []
+
+    class Runtime:
+        @asynccontextmanager
+        async def request(self, *, run_context=None, selection=None, publication_audience=False):
+            seen.append(current_principal())
+
+            class Request:
+                async def discover(self):
+                    return {}
+            yield Request()
+
+    ctx = SimpleNamespace(request_context=SimpleNamespace(request=None, meta={}))
+    server = ManagedMCPServer(Runtime())  # type: ignore[arg-type]
+    monkeypatch.setattr(module, "get_access_token", lambda: None)
+    await server._call(ctx, "discover")  # type: ignore[arg-type]
+    alice = Principal(subject="alice", scopes=frozenset({"mcp"}))
+    monkeypatch.setattr(module, "get_access_token", lambda: _as_access_token("t", alice))
+    await server._call(ctx, "discover")  # type: ignore[arg-type]
+    assert seen[0] is None and seen[1] is not None and seen[1].subject == "alice"
+    assert current_principal() is None  # bound only for the call
+

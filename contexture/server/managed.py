@@ -15,6 +15,7 @@ from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 from typing import Any, Protocol
 
+from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.mcpserver import Context, MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp_types import ToolAnnotations
@@ -28,9 +29,18 @@ from ..core.run_context import (
     RunCarrierError, validate_run_carrier,
 )
 from ..core.graph.errors import GraphError
+from ..core.principal import bound
 from ..core.model.system_api import GATEWAY
 from ..core.types import CompiledContext
+from .identity import principal_of
 from .managed_publications import PUBLIC_ERROR_CODES, PublicationMCPServer, publication_call
+
+
+def _request_principal():
+    """Bind the verified bearer identity like the static gateway does per call."""
+    from contextlib import nullcontext
+    principal = principal_of(get_access_token())
+    return nullcontext() if principal is None else bound(principal)
 
 class RunContextResolver(Protocol):
     """Explicit trusted Host port, called once per tool request, never cached.
@@ -95,11 +105,12 @@ class ManagedMCPServer:
 
     async def _publication_call(self, ctx: Context, operation: str, key: str | None,
                                 arguments: dict[str, Any] | None) -> Any:
-        run = await self._resolve_run(ctx)
-        async with self._runtime.request(run_context=run, publication_audience=True) as request:
-            if operation == "unsupported_cursor":
-                raise GraphError("schema_invalid")
-            return await publication_call(request, operation, key, arguments)
+        with _request_principal():
+            run = await self._resolve_run(ctx)
+            async with self._runtime.request(run_context=run, publication_audience=True) as request:
+                if operation == "unsupported_cursor":
+                    raise GraphError("schema_invalid")
+                return await publication_call(request, operation, key, arguments)
 
     async def _selection(self, ctx: Context) -> frozenset[str] | None:
         if self._selection_resolver is None:
@@ -113,18 +124,19 @@ class ManagedMCPServer:
 
     async def _call(self, ctx: Context, operation: str, *args: Any) -> Any:
         try:
-            run = await self._resolve_run(ctx)
-            selection = await self._selection(ctx)
-            async with self._runtime.request(run_context=run, selection=selection) as request:
-                if operation == "discover":
-                    return await request.discover()
-                if operation == "inspect":
-                    return await request.inspect(args[0])
-                if operation == "open":
-                    return await request.open(args[0])
-                if operation == "invoke_read_only":
-                    return await request.invoke_read_only(args[0], args[1])
-                return await request.invoke(args[0], args[1])
+            with _request_principal():
+                run = await self._resolve_run(ctx)
+                selection = await self._selection(ctx)
+                async with self._runtime.request(run_context=run, selection=selection) as request:
+                    if operation == "discover":
+                        return await request.discover()
+                    if operation == "inspect":
+                        return await request.inspect(args[0])
+                    if operation == "open":
+                        return await request.open(args[0])
+                    if operation == "invoke_read_only":
+                        return await request.invoke_read_only(args[0], args[1])
+                    return await request.invoke(args[0], args[1])
         except GraphError as error:
             # Never render messages, locations, global diagnostics or reprs.
             code = error.code if error.code in PUBLIC_ERROR_CODES else "internal_error"
