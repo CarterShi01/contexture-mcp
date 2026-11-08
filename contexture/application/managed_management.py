@@ -11,17 +11,19 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from threading import RLock
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from uuid import uuid4
 
 from .managed import GraphOwner
 from .managed_releases import ReleaseIntentCoordinator
 from ..core.graph.canonical import canonical_json, decode_json, parse_counter, validate_id
+from ..core.graph.bundles import GraphBundle, HistoryBundle
 from ..core.graph.errors import GraphError
 from ..core.graph.transactions import Preview
 
-WRITE_COMMANDS = frozenset({"preview", "commit", "revert", "release"})
-READ_COMMANDS = frozenset({"head", "status", "history", "diff", "receipt", "release-status"})
+WRITE_COMMANDS = frozenset({"preview", "commit", "revert", "release", "import-history"})
+READ_COMMANDS = frozenset({"head", "status", "history", "diff", "receipt", "release-status",
+                           "export", "export-history", "plan-import", "plan-merge"})
 COMMANDS = READ_COMMANDS | WRITE_COMMANDS
 
 
@@ -106,7 +108,7 @@ class ManagedManagementService:
             result = self._dispatch(command, arguments)
             wire = {"schema": "contexture.management-result/v1", "command": command,
                     "stage": "preview" if command in {"preview", "revert"} else
-                        "committed" if command == "commit" else
+                        "committed" if command in {"commit", "import-history"} else
                         "requested" if command == "release" else "read",
                     "result": result}
             if len(canonical_json(wire)) > self.max_response_bytes:
@@ -162,6 +164,42 @@ class ManagedManagementService:
         if command == "receipt":
             args = _object(value, "graph_id idempotency_key")
             return self.owner.receipt(validate_id(args["graph_id"]), validate_id(args["idempotency_key"]))
+        if command == "export":
+            args = _object(value, "graph_id", "revision node_ids")
+            nodes = args.get("node_ids")
+            return self.owner.export_bundle(validate_id(args["graph_id"]),
+                revision=_text(args["revision"]) if "revision" in args else None,
+                node_ids=None if nodes is None else [validate_id(n) for n in cast(list[object], nodes)]
+            ).as_json()
+        if command == "export-history":
+            args = _object(value, "graph_id")
+            return self.owner.export_history(validate_id(args["graph_id"])).as_json()
+        if command == "plan-import":
+            args = _object(value, "graph_id bundle target idempotency_key reason correlation_id",
+                           "identity remap prefix external")
+            return {"transaction": self.owner.import_envelope(validate_id(args["graph_id"]),
+                GraphBundle.from_json(args["bundle"]), target=cast(dict[str, object], args["target"]),
+                idempotency_key=validate_id(args["idempotency_key"]), reason=_text(args["reason"]),
+                correlation_id=validate_id(args["correlation_id"]),
+                identity=_text(args.get("identity", "preserve")),
+                remap=cast(dict[str, str] | None, args.get("remap")),
+                prefix=_text(args["prefix"]) if "prefix" in args else None,
+                external=cast(dict[str, str] | None, args.get("external")))}
+        if command == "plan-merge":
+            args = _object(value, "graph_id bundle idempotency_key reason correlation_id",
+                           "base_revision resolutions")
+            merged, envelope = self.owner.merge_envelope(validate_id(args["graph_id"]),
+                GraphBundle.from_json(args["bundle"]),
+                base_revision=_text(args["base_revision"]) if "base_revision" in args else None,
+                resolutions=cast(dict[str, object] | None, args.get("resolutions")),
+                idempotency_key=validate_id(args["idempotency_key"]), reason=_text(args["reason"]),
+                correlation_id=validate_id(args["correlation_id"]))
+            return {"conflicts": [c.as_json() for c in merged.conflicts], "transaction": envelope}
+        if command == "import-history":
+            args = _object(value, "bundle approval_ref correlation_id")
+            return self.owner.import_history(HistoryBundle.from_json(args["bundle"]),
+                approval_ref=validate_id(args["approval_ref"]),
+                correlation_id=validate_id(args["correlation_id"]))
         if command == "preview":
             args = _object(value, "transaction expires_at")
             return self._retain(self.owner.preview(args["transaction"], expires_at=_text(args["expires_at"])))

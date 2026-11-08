@@ -7,7 +7,7 @@ only proposes a new candidate; it never appends or rewinds an accepted head.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import cast
 
@@ -261,3 +261,37 @@ def revert_candidate(base: RevisionState, target: RevisionState, *,
     if any(n not in base.definition.nodes and n not in retained for n in definition.nodes):
         raise GraphError("history_unavailable", "Historical restoration requires retained identity tombstones")
     return RevertCandidate(base.revision, target.revision, resolve_facts(base, definition))
+
+
+def apply_graph_event(histories: dict[str, History], event: Mapping[str, FrozenJSON], sequence: int) -> None:
+    """Reduce one accepted graph event into the per-graph History map."""
+    graph_id = validate_id(event.get("graph_id"))
+    history = histories.get(graph_id)
+    if history is None:
+        history = History.bootstrap(UnseededState(graph_id), event, journal_seq=str(sequence))
+    else:
+        # Tombstones are reconstructed from complete accepted facts;
+        # restorations retain evidence rather than erase it.
+        tombstones = {str(t["node_id"]): dict(t) for t in history.head.tombstones}
+        for fact in cast(tuple[Mapping[str, FrozenJSON], ...], event.get("resolved_facts", ())):
+            if fact["type"] == "NodeDeleted":
+                tombstone = cast(Mapping[str, FrozenJSON], fact["tombstone"])
+                tombstones[str(tombstone["node_id"])] = dict(tombstone)
+            elif fact["type"] == "CreationPolicyMigrated":
+                identity = str(fact["node_id"])
+                if identity in tombstones:
+                    tombstones[identity]["mutable"] = fact["after"]
+        history = history.append(event, journal_seq=str(sequence), tombstones=list(tombstones.values()))
+    histories[graph_id] = history
+
+
+def replay_events(graph_id: str, events: Sequence[Mapping[str, FrozenJSON]]) -> History:
+    """Pure replay of one graph's accepted events from its bootstrap."""
+    histories: dict[str, History] = {}
+    for sequence, event in enumerate(events, 1):
+        if event.get("graph_id") != graph_id:
+            raise GraphError("corrupt_facts", "Event belongs to another graph")
+        apply_graph_event(histories, event, sequence)
+    if graph_id not in histories:
+        raise GraphError("history_unavailable", "No events to replay")
+    return histories[graph_id]

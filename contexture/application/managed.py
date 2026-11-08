@@ -27,7 +27,11 @@ from contexture.core.graph.errors import GraphError
 from contexture.core.graph.events import (
     RevisionState, UnseededState, bootstrap_event, change_event,
 )
-from contexture.core.graph.history import History
+from contexture.core.graph.bundles import (
+    GraphBundle, HistoryBundle, export_bundle, export_history, plan_import,
+)
+from contexture.core.graph.history import History, apply_graph_event as _apply_graph_event
+from contexture.core.graph.merge import MergeResult, merge
 from contexture.core.graph.index import GraphIndex
 from contexture.core.graph.model import GraphDefinition, PublicationContracts, contract_lookup
 from contexture.core.graph.policy import (
@@ -148,27 +152,6 @@ class _Snapshot:
 _bindings_lock = RLock()
 _bindings: dict[int, weakref.ReferenceType[GraphOwner]] = {}
 _GRAPH_EVENTS = frozenset({"GraphChangeCommitted", "CommandCompleted"})
-
-
-def _apply_graph_event(histories: dict[str, History], event: FrozenObject, sequence: int) -> None:
-    graph_id = validate_id(event.get("graph_id"))
-    history = histories.get(graph_id)
-    if history is None:
-        history = History.bootstrap(UnseededState(graph_id), event, journal_seq=str(sequence))
-    else:
-        # Tombstones are reconstructed from complete accepted facts;
-        # restorations retain evidence rather than erase it.
-        tombstones = {str(t["node_id"]): dict(t) for t in history.head.tombstones}
-        for fact in cast(tuple[FrozenObject, ...], event.get("resolved_facts", ())):
-            if fact["type"] == "NodeDeleted":
-                tombstone = cast(FrozenObject, fact["tombstone"])
-                tombstones[str(tombstone["node_id"])] = dict(tombstone)
-            elif fact["type"] == "CreationPolicyMigrated":
-                identity = str(fact["node_id"])
-                if identity in tombstones:
-                    tombstones[identity]["mutable"] = fact["after"]
-        history = history.append(event, journal_seq=str(sequence), tombstones=list(tombstones.values()))
-    histories[graph_id] = history
 
 
 class _AuthorizedHistory:
@@ -692,6 +675,101 @@ class GraphOwner:
                 raise _error("limit_exceeded", "Bootstrap resolved facts exceed atomic budget")
             return self._append(event, context=context, graph_id=definition.graph_id, key=key,
                 digest=digest, revision="1", correlation_id=str(request["correlation_id"]))
+
+    # -- portable bundles and merge (no business semantics) -------------
+
+    def export_bundle(self, graph_id: str, *, revision: str | None = None,
+                      node_ids: Sequence[str] | None = None) -> GraphBundle:
+        """Whole graph or containment subtrees of a retained revision."""
+        state = self.read(graph_id, revision)
+        return export_bundle(state, node_ids=node_ids, producer={"package": PACKAGE_VERSION})
+
+    def export_history(self, graph_id: str) -> HistoryBundle:
+        """Every accepted event of one graph from bootstrap (read admission per revision)."""
+        return export_history(self.history(graph_id))
+
+    def import_history(self, bundle: HistoryBundle | bytes | Mapping[str, Any], *,
+                       approval_ref: str, correlation_id: str) -> Wire:
+        """Recreate a graph with its complete history in this store.
+
+        Host ``graph.bootstrap`` authority and an approval over the bundle
+        digest are required; the graph must not exist. Events are verified by
+        pure replay first and appended unchanged (one record per event; no
+        original receipts). Interrupted imports leave a valid prefix: discard
+        that store and retry rather than append to it.
+        """
+        verified = bundle if isinstance(bundle, HistoryBundle) else HistoryBundle.from_json(bundle)
+        head = verified.replay().head
+        graph_id = verified.graph_id
+        digest = str(verified.value["bundle_digest"])
+        with self._authorized(write=True) as context:
+            if graph_id in self._histories:
+                raise _error("revision_conflict", "History import requires an unseeded graph")
+            if "graph.bootstrap" not in context.host_permissions:
+                raise _error("permission_denied", "Independent Host bootstrap permission required")
+            now = self._clock()
+            proof = self._proof(context, approval_ref, digest, now, required=True)
+            check_admission(AdmissionRequest(context, graph_id, "graph.import_history", ("import_history",),
+                "0", UnseededState(graph_id).definition_digest, head.definition_digest,
+                tuple(sorted(head.definition.nodes)), (), digest, proof), self._admission)
+            for event in verified.events:
+                self._persist((event,), context=context, correlation_id=validate_id(correlation_id))
+            result = self._histories[graph_id].head
+            if result.definition_digest != head.definition_digest:
+                raise _error("journal_corrupt", "Imported history differs from its verified head")
+            _LOG.info("history imported", extra={"graph_id": graph_id, "events": len(verified.events)})
+            return {"graph_id": graph_id, "revision": result.revision,
+                    "definition_digest": result.definition_digest, "events": len(verified.events)}
+
+    def import_envelope(self, graph_id: str, bundle: GraphBundle, *, target: Mapping[str, object],
+                        idempotency_key: str, reason: str, correlation_id: str,
+                        identity: str = "preserve", remap: Mapping[str, str] | None = None,
+                        prefix: str | None = None, external: Mapping[str, str] | None = None) -> Wire:
+        """An ordinary transaction envelope importing a subtree bundle at the head.
+
+        Preview and commit it like any other change: protection, admission,
+        CAS and idempotency all apply.
+        """
+        head = self.read(graph_id)
+        commands = plan_import(head, bundle, target=target, identity=cast(Any, identity),
+                               remap=remap, prefix=prefix, external=external)
+        return {"schema": "contexture.transaction/v1", "graph_id": graph_id,
+                "base_revision": head.revision, "idempotency_key": idempotency_key,
+                "commands": commands, "reason": reason, "correlation_id": correlation_id}
+
+    def merge_envelope(self, graph_id: str, theirs: GraphDefinition | GraphBundle, *,
+                       base_revision: str | None = None,
+                       resolutions: Mapping[str, Any] | None = None,
+                       idempotency_key: str, reason: str, correlation_id: str,
+                       ) -> tuple[MergeResult, Wire | None]:
+        """Three-way merge of ``theirs`` into the head against a retained base.
+
+        ``base_revision`` defaults to a bundle's source revision. Returns the
+        merge result and, when it is clean, an ordinary reconcile transaction
+        envelope to preview and commit.
+        """
+        if isinstance(theirs, GraphBundle):
+            if base_revision is None:
+                base_revision = str(theirs.source["revision"])
+            if theirs.source.get("graph_id") != graph_id:
+                raise _error("schema_invalid", "Merge requires one graph lineage")
+            theirs = theirs.definition()
+        if base_revision is None:
+            raise _error("schema_invalid", "Merge base revision required")
+        head = self.read(graph_id)
+        base = self.read(graph_id, base_revision)
+        result = merge(base.definition, head.definition, theirs, resolutions=resolutions)
+        if result.candidate is None:
+            return result, None
+        candidate = result.candidate
+        old, new = set(head.definition.nodes), set(candidate.nodes)
+        return result, {"schema": "contexture.transaction/v1", "graph_id": graph_id,
+            "base_revision": head.revision, "idempotency_key": idempotency_key,
+            "reason": reason, "correlation_id": correlation_id,
+            "commands": [{"op": "reconcile", "scope_ids": sorted(old | new),
+                "id_mapping": {"retained_ids": sorted(old & new), "new_ids": sorted(new - old),
+                               "deleted_ids": sorted(old - new)},
+                "payload": {"inline": candidate.as_json()}}]}
 
     def projection(self, name: str, *, graph_id: str) -> FrozenObject:
         """Trusted release integration read; authorizes every represented graph.

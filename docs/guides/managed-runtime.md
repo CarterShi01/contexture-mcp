@@ -127,6 +127,52 @@ compiled artifacts: `execution_diff(manifest_a, manifest_b)` (compiler, registry
 and per-binding entries) and `surface_diff(plan_a, plan_b)` (effective
 instructions, presentations, processes) in `contexture.core.graph.diff`.
 
+## Export, import and merge
+
+All three are framework operations on graph objects only (nodes, relations,
+publications, presentations, binding *references*); no business data moves.
+Imports and merges produce ordinary transactions: preview, admission,
+mutability protection, CAS and idempotency all apply.
+
+```python
+bundle = host.export_bundle()                       # whole graph
+part = host.export_bundle(node_ids=["skills"])      # containment subtrees
+other.bootstrap_from(bundle.canonical_bytes())      # seed a new graph
+other.import_bundle(part, target={"parent_id": "area"}, reason="add skills")
+other.import_bundle(part, target={"parent_id": "area"}, reason="copy",
+                    identity="remap", prefix="copy-")
+result, receipt = host.merge(staged_bundle, base_revision="12", reason="merge staging")
+if not result.clean:
+    print([c.as_json() for c in result.conflicts])  # resolve explicitly and merge again
+history = host.export_history()                      # all events from bootstrap
+fresh_host.import_history(history.canonical_bytes()) # recreate graph + history in a new store
+```
+
+* **Bundles** (`contexture.graph-bundle/v1`) carry a self digest and their
+  source (graph id, revision, definition digest). Subtree bundles list
+  references that leave the exported scope as `external_refs`; on import each
+  must map to an existing node (`external={...}`, default: the same ID).
+* **Identity**: `identity="preserve"` (default) refuses any ID that is live or
+  retained (tombstoned) in the target. `identity="remap"` renames by `remap`
+  (explicit map) and/or `prefix` (also prefixing publication names) and
+  rewrites every in-bundle reference.
+* **Executables** are binding references; the target registry must vouch for
+  them or the import is refused (`binding_contract_required`).
+* **Three-way merge** aligns by stable ID (renames and moves keep identity):
+  one-sided changes are taken, identical changes accepted, differing changes and
+  delete/modify are conflicts. Ordered relations merge membership three-way and
+  keep the side whose order changed (both changed differently: conflict). The
+  merged graph must validate; otherwise a `structure` conflict. Resolve with
+  `resolutions={"node:s1:description": "theirs" | "ours" | {"value": ...}}`.
+  `base_revision` is the fork point in *this* graph's history (it defaults to
+  the bundle's source revision when the bundle came from this graph).
+* **History bundles** (`contexture.history-bundle/v1`) are verified by pure
+  replay. Import needs host `graph.bootstrap` authority, an approval over the
+  bundle digest, and a graph that does not exist yet.
+* **CLI**: `contexture managed` read commands `export`, `export-history`,
+  `plan-import`, `plan-merge` (the plans return a transaction to `preview` and
+  `commit`), and the write command `import-history`.
+
 ## Publish and hot swap
 
 ```python

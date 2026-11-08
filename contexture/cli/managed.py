@@ -31,7 +31,8 @@ _CODES = frozenset({"schema_invalid", "semantic_unsupported", "unsupported_contr
     "commit_unknown", "store_in_use", "journal_corrupt", "durability_unsupported",
     "binding_unavailable", "contract_mismatch", "prepare_failed", "release_superseded",
     "generation_unavailable", "stale_reference", "cursor_invalid", "resync_required",
-    "history_unavailable", "resource_busy", "too_large", "limit_exceeded", "not_ready"})
+    "history_unavailable", "resource_busy", "too_large", "limit_exceeded", "not_ready",
+    "corrupt_facts", "reference_not_found", "binding_contract_required"})
 
 
 class _Usage(Exception):

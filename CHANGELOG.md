@@ -17,6 +17,11 @@ public API changes require a new major version.
   managed schema ships with the package. See the
   [managed runtime guide](docs/guides/managed-runtime.md) and
   `examples/managed_dynamic_tree.py`.
+- Added framework-level export/import and three-way merge for managed graphs:
+  self-digested graph bundles (whole graph or subtrees with external refs),
+  identity `preserve` (default) or `remap`, imports and merges committed as
+  ordinary admitted transactions, conflict reports with explicit resolutions,
+  and verified history bundles importable into a fresh store.
 - Added the versioned, immutable `contexture.node-catalog/v1` read model over
   compiled Role, Skill, and Tool graphs, with deterministic JSON/digests,
   namespaced application contributors, `contexture catalog`, and common APIs

@@ -66,6 +66,26 @@ seed → publish → 在请求打开期间新增 Skill 和新 Tool → publish�
 要比较*实际执行*的差异，用 `contexture.core.graph.diff` 中的 `execution_diff`（编译清单）和
 `surface_diff`（有效说明、呈现、流程）。
 
+## 导出、导入与合并
+
+三者都是框架级操作，只涉及图对象（节点、关系、发布、呈现、binding *引用*），不搬运任何业务数据。
+导入与合并都生成普通事务：preview、准入、可修改性保护、CAS 与幂等全部生效。
+
+* `host.export_bundle()` 导出整图，`export_bundle(node_ids=[...])` 导出包含子树；包带自摘要与来源
+  （graph id、revision、定义摘要）。离开导出范围的引用列为 `external_refs`，导入时须映射到已有节点。
+* `host.bootstrap_from(bundle)` 用整图包初始化新图；`host.import_bundle(bundle, target={"parent_id": ...})`
+  导入子树。身份策略默认 `preserve`（与目标图中存活或已删除保留的 ID 冲突即拒绝）；`identity="remap"`
+  按 `remap` 映射表和/或 `prefix` 重命名（前缀同时作用于发布名），并改写包内所有引用。
+* 可执行部分只带 binding 引用，目标注册表不认可即拒绝（`binding_contract_required`）。
+* `host.merge(bundle, base_revision=...)` 三方合并：按稳定 ID 对齐；单侧修改采纳、相同修改接受，
+  不同修改与"删除/修改"为冲突；有序关系三方合并成员并保留顺序变化的一侧（两侧都变且不同为冲突）；
+  合并结果须通过完整校验，否则报 `structure` 冲突。用 `resolutions={"node:s1:description": "theirs"}`
+  显式裁决后重新合并。`base_revision` 是本图历史中的分叉点。
+* `host.export_history()` / `fresh.import_history(...)`：历史包经纯重放校验；导入需宿主 `graph.bootstrap`
+  权限、对包摘要的审批，且目标图尚不存在。
+* CLI：`contexture managed` 读命令 `export`、`export-history`、`plan-import`、`plan-merge`（plan 返回事务，
+  再走 `preview`/`commit`），写命令 `import-history`。
+
 ## 发布与热切换
 
 `await host.publish()` 用注册表编译 head，在 owner 锁外准备资源，原子切换本地指针。切换前打开的请求

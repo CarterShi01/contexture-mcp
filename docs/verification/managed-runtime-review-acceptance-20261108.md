@@ -22,7 +22,8 @@ interrupting in-flight requests; startup does not require replay from genesis.
 | `7b4a698` | M3 | No-replace publication; lock identity check; observable release refusals |
 | `1e08f45` | M5 | `ManagedGraphHost`; binding-scoped execution adapters; packaged schema; logging; guide + example; 1.2.0.dev0 |
 | `db138ca` | M4 (1) | Node sharing across revisions; incremental draft; cheaper recovery |
-| (this commit) | M4 (2), M6 | Owner snapshots; streaming digest; in-place doctor; watch bisect; decisions ledger; this report |
+| `41d93a8` | M4 (2), M6 | Owner snapshots; streaming digest; in-place doctor; watch bisect; decisions ledger; this report |
+| (M7 commit) | M7 | Export/import (graph and history bundles), identity preserve/remap, three-way merge; host, management CLI, guide |
 
 Spec decisions: `spec/managed/decisions.md` § "Review-driven revisions" (R01-R11)
 and port obligations for TS/Go.
@@ -49,6 +50,17 @@ and port obligations for TS/Go.
 | TS/Go: fs-ext hard dependency, revert, auth retry, inline vectors | open (phase 2) | port obligations in decisions ledger |
 | Catalog snapshot may retain an old generation until TTL | open (minor) | unchanged |
 
+## M7: export, import, merge
+
+Framework-level and business-neutral (graph objects and binding references
+only). Imports and merges are ordinary previewed, admitted transactions.
+Evidence: `tests/test_managed_bundles.py` (bundle digest/tamper, external refs,
+preserve conflicts with diagnostics, remap rewriting templates/uses/publications,
+locked-parent governance, field-level/list/delete-modify/structure merge
+conflicts and explicit resolutions, host bootstrap-from/merge-back across two
+stores, history bundle into a fresh store and tamper refusal, management
+plan -> preview -> commit).
+
 ## Measurements (2-core arm64, ext4 /tmp, strict durability)
 
 Same scripts as the review (`repro-core/perf.py`, `repro-durable/perf.py`).
@@ -63,7 +75,21 @@ Same scripts as the review (`repro-core/perf.py`, `repro-durable/perf.py`).
 | Reopen 2000 records: journal / owner replay | 14.8 s / 8.7 s | 1.7 s / 1.8 s |
 
 WP14 durable workload (`scripts/managed_durable_workloads.py`, tracemalloc on):
-WP14_RESULTS
+code `41d93a8`, `sources_unchanged: true`.
+
+| Workload | Repetitions | Result | Median wall time |
+| --- | --- | --- | --- |
+| history 2000 changing + 200 no-op commits | 5 | 5/5, 0 errors | writes 127 s; close/reopen/full replay 30 s |
+| churn 10 cycles (hot swap) | 5 | 5/5, 0 errors | churn 42 s; full replay 7.5 s |
+
+Each history repetition checks 2201 records, 2200 receipts, retained old
+revisions and an identical final export after close/reopen and fresh-process
+replay. The workload graph has 4 nodes and runs under tracemalloc, so it
+measures fixed per-commit overhead (about 63 ms/commit here), not graph-size
+scaling. Per-commit cost is flat in history length; the runner's linear
+forecast (10k about 16 min, 100k about 2.7 h on this machine) is an
+extrapolation, not a measured capacity. A 10k run was invalidated because
+sources were edited during it (the runner's source fingerprint check).
 
 ## Not verified here
 

@@ -59,11 +59,13 @@ from contexture.core.graph.bindings import (
 )
 from contexture.core.graph.canonical import canonical_json
 from contexture.core.graph.model import Portability
+from contexture.core.graph.bundles import GraphBundle, HistoryBundle, bootstrap_definition
 from contexture.core.graph.compiler import GraphCompiler, StructuralPlan
 from contexture.core.graph.diff import DefinitionDiff
 from contexture.core.graph.errors import GraphError
 from contexture.core.graph.events import RevisionState
 from contexture.core.graph.history import History, RevisionRecord
+from contexture.core.graph.merge import MergeResult
 from contexture.core.graph.model import GraphDefinition, PublicationContract
 from contexture.core.graph.policy import (
     AdmissionDecision, AdmissionRequest, VerifiedApproval, VerifiedContext,
@@ -458,6 +460,77 @@ class ManagedGraphHost:
     def node_history(self, node_id: str) -> tuple[RevisionRecord, ...]:
         """Revisions that changed one node (aligned by ID across renames/moves)."""
         return self.history().for_node(node_id)
+
+    # -- export / import / merge ----------------------------------------
+
+    def export_bundle(self, *, node_ids: Sequence[str] | None = None,
+                      revision: str | None = None) -> GraphBundle:
+        """The whole graph, or the containment subtrees of ``node_ids``."""
+        return self.owner.export_bundle(self.graph_id, revision=revision, node_ids=node_ids)
+
+    def bootstrap_from(self, bundle: GraphBundle | bytes, *, reason: str = "seed from bundle") -> dict[str, Any]:
+        """Seed this (empty) graph from a whole-graph bundle, under this graph_id."""
+        bundle = bundle if isinstance(bundle, GraphBundle) else GraphBundle.from_json(bundle)
+        return self.bootstrap(bootstrap_definition(bundle, graph_id=self.graph_id), reason=reason)
+
+    def import_bundle(self, bundle: GraphBundle | bytes, *, target: Mapping[str, object], reason: str,
+                      identity: str = "preserve", remap: Mapping[str, str] | None = None,
+                      prefix: str | None = None, external: Mapping[str, str] | None = None,
+                      preview: bool = False) -> Any:
+        """Import subtrees as one ordinary transaction (preview only if requested).
+
+        ``identity="preserve"`` (default) refuses any ID already live or retained
+        in this graph; ``"remap"`` renames via ``remap``/``prefix``. ``target`` is
+        ``{"parent_id": ...}`` or ``{"plane": "model"|"prompt"}``.
+        """
+        bundle = bundle if isinstance(bundle, GraphBundle) else GraphBundle.from_json(bundle)
+        envelope = self.owner.import_envelope(self.graph_id, bundle, target=target,
+            idempotency_key=str(uuid4()), reason=reason, correlation_id=str(uuid4()),
+            identity=identity, remap=remap, prefix=prefix, external=external)
+        proposal = self.owner.preview(envelope, expires_at=self._expires())
+        if preview:
+            return proposal
+        receipt = cast(dict[str, Any], self.owner.commit(proposal))
+        self._snapshot()
+        return receipt
+
+    def merge(self, theirs: GraphBundle | GraphDefinition | bytes, *, reason: str,
+              base_revision: str | None = None, resolutions: Mapping[str, Any] | None = None,
+              preview: bool = False) -> tuple[MergeResult, Any]:
+        """Three-way merge ``theirs`` into the head (base: the bundle's source revision).
+
+        Returns ``(result, None)`` with conflicts when unresolved, otherwise
+        ``(result, receipt)`` after an ordinary admitted commit, or
+        ``(result, preview)`` when ``preview=True``.
+        """
+        if isinstance(theirs, bytes):
+            theirs = GraphBundle.from_json(theirs)
+        result, envelope = self.owner.merge_envelope(self.graph_id, theirs, base_revision=base_revision,
+            resolutions=resolutions, idempotency_key=str(uuid4()), reason=reason,
+            correlation_id=str(uuid4()))
+        if envelope is None:
+            return result, None
+        proposal = self.owner.preview(envelope, expires_at=self._expires())
+        if preview:
+            return result, proposal
+        receipt = self.owner.commit(proposal)
+        self._snapshot()
+        return result, receipt
+
+    def export_history(self) -> HistoryBundle:
+        return self.owner.export_history(self.graph_id)
+
+    def import_history(self, bundle: HistoryBundle | bytes, *, approval_ref: str = "import") -> dict[str, Any]:
+        """Recreate this graph with its full history (the graph must not exist)."""
+        bundle = bundle if isinstance(bundle, HistoryBundle) else HistoryBundle.from_json(bundle)
+        if bundle.graph_id != self.graph_id:
+            raise GraphError("schema_invalid", "History bundle belongs to another graph")
+        receipt = cast(dict[str, Any], self.owner.import_history(bundle, approval_ref=approval_ref,
+                                                                 correlation_id=str(uuid4())))
+        if self._releases is None:
+            self._start_serving()
+        self._snapshot(force=True)
+        return receipt
 
     # -- serving ----------------------------------------------------------
 

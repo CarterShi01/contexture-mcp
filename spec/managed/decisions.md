@@ -166,10 +166,12 @@ must port each item before claiming parity (see "Port obligations").
 | R09 | Owner snapshots: anchored (store id, journal_seq, record_hash, package version) JSON in journal `hints/`, never authority; startup restores them and replays only the tail; older history is materialized from the journal on demand; any mismatch => full replay. | Startup must not require replay from genesis (original research input). |
 | R10 | Execution adapters may be attested per exact binding contract (`node_id=None`). | Tool nodes created at runtime against a deployed binding must execute without rebuilding the runtime. |
 | R11 | Offline doctor verifies in place by default (chain, receipts, blobs, graph-semantics replay); isolated restore is opt-in. | Scalable verification; the in-memory envelope bounded stores at ~40k records. |
+| R12 | Export/import: `contexture.graph-bundle/v1` (whole graph or containment subtrees with `external_refs`) and `contexture.history-bundle/v1` (all events from bootstrap), each with a self digest. Subtree import plans ordinary transaction commands; identity `preserve` (default) refuses live or retained IDs; `remap` renames by map/prefix and rewrites references. History import requires host `graph.bootstrap`, approval over the bundle digest and an unseeded graph. | Business-neutral portability without a governance bypass. |
+| R13 | Three-way merge by stable ID: one-sided changes taken, identical accepted, differing or delete/modify conflict; ordered relations merge membership three-way and keep the side whose order changed; the result must validate (else a `structure` conflict); resolutions are explicit; committed as a reconcile transaction. | Fork/merge of environments without rewriting history or auto-resolving. |
 
 ### Port obligations (TypeScript, Go)
 
-R01-R05 and R07 change observable contracts or shared bytes and are required for
+R01-R05, R07, R12 and R13 change observable contracts or shared bytes and are required for
 parity; R06, R08-R11 are API/implementation obligations for product parity.
 Additionally: TS/Go owner-level revert with current-protection recheck, bounded
 authorization retry across a concurrent local swap (as Python `_authorize`),
