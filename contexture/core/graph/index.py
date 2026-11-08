@@ -8,13 +8,15 @@ from caller JSON copying and output/digest node sorting in the model.
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
+from threading import Lock
 from types import MappingProxyType
 
 from .errors import GraphError
 from .model import (
-    GraphDefinition, NodeRefPart, NodeSpec, Plane, Presentation, PromptPublication,
+    ContractEvidence, GraphDefinition, NodeRefPart, NodeSpec, Plane, Presentation, PromptPublication,
     PublicationContracts, ResourcePublication, RoutePublication, Slot, _Value, _new,
     contract_lookup, normalize_locale,
 )
@@ -45,6 +47,51 @@ class TemplateReference:
     part_ordinal: int
 
 
+_CACHE_SIZE = 16
+_cache: OrderedDict[int, tuple[GraphDefinition, GraphIndex]] = OrderedDict()
+_cache_lock = Lock()
+
+
+def _cached(definition: GraphDefinition) -> GraphIndex | None:
+    with _cache_lock:
+        entry = _cache.get(id(definition))
+        if entry is None or entry[0] is not definition:
+            return None
+        _cache.move_to_end(id(definition))
+        return entry[1]
+
+
+def _remember(definition: GraphDefinition, index: GraphIndex) -> None:
+    # Bounded LRU keyed by identity (with an identity check), so a long
+    # History does not retain one index per revision.
+    with _cache_lock:
+        _cache[id(definition)] = (definition, index)
+        _cache.move_to_end(id(definition))
+        while len(_cache) > _CACHE_SIZE:
+            _cache.popitem(last=False)
+
+
+def _verify_contracts(definition: GraphDefinition, evidence: ContractEvidence) -> None:
+    """Current registry evidence for every executable publication of a candidate."""
+    for i, publication in enumerate(definition.publications):
+        if isinstance(publication, PromptPublication):
+            continue
+        loc = f"/publications/{i}"
+        binding = definition.nodes[publication.opens_id].binding
+        assert binding is not None  # structural pass guarantees a runtime Tool
+        contract = evidence.get(binding)
+        if contract is None:
+            raise _fail("Pinned registry contract required for executable publication", loc,
+                        "binding_contract_required")
+        if isinstance(publication, ResourcePublication):
+            if contract.effect != "read_only" or not contract.argument_free:
+                raise _fail("Resource requires an argument-free read-only Tool", loc)
+        elif isinstance(publication, RoutePublication):
+            expected_effect = "read_only" if publication.method in ("GET", "HEAD") else "write"
+            if contract.effect != expected_effect:
+                raise _fail("Route method and registry effect mismatch", loc)
+
+
 @dataclass(frozen=True, slots=True, init=False)
 class GraphIndex(_Value):
     definition: GraphDefinition
@@ -64,9 +111,24 @@ class GraphIndex(_Value):
         publication_contracts: PublicationContracts | None = None,
         verify_contracts: bool = True,
     ) -> GraphIndex:
-        """Validate one whole forest. See GraphDefinition.from_json for evidence modes."""
+        """Validate one whole forest. See GraphDefinition.from_json for evidence modes.
+
+        The structural index depends only on the immutable definition, so it is
+        memoized for recently used definitions; registry evidence is checked by
+        a separate pass on every call that asks for it.
+        """
         if not isinstance(definition, GraphDefinition):
             raise _fail("Expected GraphDefinition")
+        index = _cached(definition)
+        if index is None:
+            index = cls._structural(definition)
+            _remember(definition, index)
+        if verify_contracts:
+            _verify_contracts(definition, contract_lookup(publication_contracts))
+        return index
+
+    @classmethod
+    def _structural(cls, definition: GraphDefinition) -> GraphIndex:
         nodes = definition.nodes
         if not nodes or not definition.roots or not any(r.plane == "model" for r in definition.roots):
             raise _fail("Committed forest requires at least one model root", "/roots")
@@ -171,7 +233,6 @@ class GraphIndex(_Value):
                     if isinstance(part, NodeRefPart):
                         templates.setdefault(part.target_id, []).append(TemplateReference(node_id, i))
 
-        evidence = contract_lookup(publication_contracts)
         publication_ids: set[str] = set()
         public_names: set[str] = set()
         uris: set[str] = set()
@@ -191,33 +252,11 @@ class GraphIndex(_Value):
                 continue
             if definition.mode != "runtime" or node.kind != "tool" or node.binding is None:
                 raise _fail("Executable publication requires a runtime Tool", loc)
-            if not verify_contracts:
-                # Accepted history: effect/argument checks were admission-time
-                # registry evidence and are re-resolved by the compiler.
-                if isinstance(publication, ResourcePublication):
-                    if publication.uri in uris:
-                        raise _fail("Duplicate Resource URI", loc)
-                    uris.add(publication.uri)
-                elif isinstance(publication, RoutePublication):
-                    route = (publication.method, publication.path)
-                    if route in routes:
-                        raise _fail("Duplicate Route method/path", loc)
-                    routes.add(route)
-                continue
-            contract = evidence.get(node.binding)
-            if contract is None:
-                raise _fail("Pinned registry contract required for executable publication", loc,
-                            "binding_contract_required")
             if isinstance(publication, ResourcePublication):
-                if contract.effect != "read_only" or not contract.argument_free:
-                    raise _fail("Resource requires an argument-free read-only Tool", loc)
                 if publication.uri in uris:
                     raise _fail("Duplicate Resource URI", loc)
                 uris.add(publication.uri)
             elif isinstance(publication, RoutePublication):
-                expected_effect = "read_only" if publication.method in ("GET", "HEAD") else "write"
-                if contract.effect != expected_effect:
-                    raise _fail("Route method and registry effect mismatch", loc)
                 route = (publication.method, publication.path)
                 if route in routes:
                     raise _fail("Duplicate Route method/path", loc)

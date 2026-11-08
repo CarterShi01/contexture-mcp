@@ -99,7 +99,10 @@ def test_surface_work_counts_each_node_and_relation_once(size: int) -> None:
             GraphIndex, "path", side_effect=AssertionError("No repeated path materialization")):
         result = policy._surfaces(index, paths, frozenset())
     assert len(result) == len(paths) == size
-    assert encode.call_count == 3 * size + 1  # N nodes + P publications + T translations + metadata.
+    # Node bytes are memoized on NodeSpec (computed once per distinct node);
+    # here only P publications + T translations + metadata are encoded.
+    assert encode.call_count == 2 * size + 1
+    assert all(n._bytes is not None for n in graph.nodes.values())
 
 
 def test_same_names_under_replaced_ancestor_ids_keep_same_path_token() -> None:
@@ -145,3 +148,33 @@ def test_empty_reverse_index_keys_and_immutability_preserved() -> None:
         with pytest.raises(TypeError):
             target: Any = mapping
             target["a"] = ("tamper",)
+
+
+@pytest.mark.parametrize("seed", range(25))
+def test_spliced_definition_bytes_equal_whole_document_jcs(seed: int) -> None:
+    import random
+
+    from contexture.core.graph.canonical import canonical_digest
+
+    rng = random.Random(seed)
+    raw: Any = generate(Case(nodes=rng.randint(2, 60), shape=rng.choice(
+        ["balanced", "wide", "deep", "cyclic", "high_indegree", "text_schema"])))
+    # Adversarial: nested "nodes" keys and non-ASCII text outside the node pool.
+    raw["extensions"] = {"test:x": {"nodes": [], "nödes": " \U0001f600", "z": [1, True]}}
+    definition = GraphDefinition.from_json(raw)
+    assert definition.canonical_bytes() == canonical_json(definition.as_json())
+    assert definition.digest() == canonical_digest(definition.as_json(), "contexture.graph/v1")
+
+
+def test_unchanged_nodes_are_shared_across_revisions_and_replay() -> None:
+    from contexture.core.graph.events import apply_facts
+
+    base = state(node("r", mutable=True, members={"children": ["a", "b"]}), node("a"), node("b"))
+    prepared = build(base, {"op": "rename_node", "node_id": "a", "new_name": "renamed"})
+    candidate = prepared.change.candidate
+    assert candidate.nodes["b"] is base.definition.nodes["b"]
+    assert candidate.nodes["a"] is not base.definition.nodes["a"]
+    replayed = apply_facts(base, prepared.change.facts, tombstones=prepared.change.tombstones,
+        revision="2", before_digest=base.definition_digest, after_digest=candidate.digest())
+    assert replayed.definition.nodes["b"] is base.definition.nodes["b"]
+    assert replayed.definition_digest == candidate.digest()

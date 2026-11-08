@@ -14,7 +14,7 @@ from typing import Any, Literal, cast
 import jsonschema
 import pytest
 
-from contexture.core.graph.canonical import canonical_digest
+from contexture.core.graph.canonical import canonical_json, canonical_digest
 from contexture.core.graph.errors import GraphError
 from contexture.core.graph.index import GraphIndex
 from contexture.core.graph.model import (
@@ -255,27 +255,28 @@ def test_index_reverse_order_independent_of_node_pool_order() -> None:
 def test_immutable_definition_digest_is_computed_once_and_detached(monkeypatch: pytest.MonkeyPatch) -> None:
     from contexture.core.graph import model
     calls = 0
-    original = model.canonical_digest
+    original = model.canonical_json
 
-    def counted(value: object, domain: str) -> str:
+    def counted(value: object) -> bytes:
         nonlocal calls
         calls += 1
-        return original(value, domain)
+        return original(value)
 
-    monkeypatch.setattr(model, "canonical_digest", counted)
     raw = graph(node("r", instructions="Exact literal"))
     definition = load(raw)
     expected = canonical_digest(definition.as_json(), "contexture.graph/v1")
+    assert definition.canonical_bytes() == canonical_json(definition.as_json())
+    monkeypatch.setattr(model, "canonical_json", counted)
     for _ in range(100):
         assert definition.digest() == expected
         assert definition.definition_digest == expected
-    assert calls == 1
+    assert calls == 0  # memoized bytes/digest: no re-encoding after the first
     detached = wire(definition)
     detached["nodes"][0]["instructions"] = "Different"
     assert definition.digest() == expected
     changed = load(detached)
     assert changed.digest() != expected
-    assert calls == 2
+    assert calls == 3  # one new node + the graph header before/after "nodes"
     with pytest.raises(FrozenInstanceError):
         definition._cached_digest = "sha256:" + "0" * 64
     with ThreadPoolExecutor(max_workers=4) as executor:

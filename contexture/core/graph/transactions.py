@@ -13,7 +13,7 @@ Native JSON loses numeric lexemes; raw input must be UTF-8 bytes.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 import hashlib
@@ -29,7 +29,8 @@ from .errors import GraphError
 from .events import ResolvedChange, RevisionState, resolve_facts
 from .index import GraphIndex
 from .model import (
-    BindingDescriptor, GraphDefinition, InstructionTemplate, NodeSpec, PublicationContracts, RootEntry,
+    BindingDescriptor, GraphDefinition, InstructionTemplate, NodeRefPart, NodeSpec, PublicationContracts,
+    RootEntry,
     _extensions, _name, _publication, normalize_locale,
 )
 from .policy import (
@@ -400,6 +401,104 @@ def _check_scope(before: GraphDefinition, after: GraphDefinition,
     return a, b
 
 
+def _pool(candidate: GraphDefinition, base: Mapping[str, NodeSpec]) -> _NodePool:
+    """Pool for a whole replacement candidate, sharing nodes equal to the base."""
+    return _NodePool({n: base[n] if n in base and base[n].same(v) else v
+                      for n, v in candidate.nodes.items()})
+
+
+class _NodePool:
+    """Draft node pool sharing unchanged base NodeSpecs.
+
+    `pool[id]` returns a WRITABLE wire, materializing (and marking changed) that
+    node only. Read-only accessors (kind/uses/members/targets) never
+    materialize, so scans over a large graph stay cheap and unchanged nodes stay
+    the very same objects in the next revision.
+    """
+
+    __slots__ = ("_specs", "_wires")
+
+    def __init__(self, specs: Mapping[str, NodeSpec]) -> None:
+        self._specs: dict[str, NodeSpec] = dict(specs)
+        self._wires: dict[str, Wire] = {}
+
+    def __contains__(self, identity: object) -> bool:
+        return identity in self._wires or identity in self._specs
+
+    def __len__(self) -> int:
+        return len(self._wires) + len(self._specs)
+
+    def __iter__(self) -> Iterator[str]:
+        yield from list(self._specs)
+        yield from list(self._wires)
+
+    def __getitem__(self, identity: str) -> Wire:
+        wire = self._wires.get(identity)
+        if wire is None:
+            wire = self._wires[identity] = self._specs.pop(identity).as_json()
+        return wire
+
+    def __setitem__(self, identity: str, wire: Wire) -> None:
+        self._specs.pop(identity, None)
+        self._wires[identity] = wire
+
+    def __delitem__(self, identity: str) -> None:
+        if identity in self._wires:
+            del self._wires[identity]
+        else:
+            del self._specs[identity]
+
+    @property
+    def specs(self) -> Mapping[str, NodeSpec]:
+        return self._specs
+
+    @property
+    def wires(self) -> Mapping[str, Wire]:
+        return self._wires
+
+    def kind(self, identity: str) -> str:
+        wire = self._wires.get(identity)
+        return cast(str, wire["kind"]) if wire is not None else self._specs[identity].kind
+
+    def uses(self, identity: str) -> Sequence[str]:
+        wire = self._wires.get(identity)
+        return cast(list[str], wire["uses"]) if wire is not None else self._specs[identity].uses
+
+    def template_targets(self, identity: str) -> list[str]:
+        wire = self._wires.get(identity)
+        if wire is None:
+            template = self._specs[identity].instruction_template
+            return [] if template is None else [p.target_id for p in template.parts
+                                                if isinstance(p, NodeRefPart)]
+        raw = wire.get("instruction_template")
+        if not isinstance(raw, Mapping):
+            return []
+        return [cast(str, part["target_id"]) for part in _arr(raw["parts"])
+                if isinstance(part, Mapping) and part.get("kind") == "NodeRef"]
+
+    def members(self, identity: str) -> list[tuple[str, str]]:
+        """(slot, child) pairs in slot order, without materializing."""
+        wire = self._wires.get(identity)
+        if wire is None:
+            members = self._specs[identity].members
+            return [] if members is None else [(slot, child) for slot, _, child in members.placements()]
+        raw = wire.get("members")
+        if wire.get("kind") != "role" or not isinstance(raw, Mapping):
+            return []
+        result: list[tuple[str, str]] = []
+        for slot in ("pre_process", "children", "post_process", "skills", "tools"):
+            value = raw.get(slot)
+            if slot in SINGLE:
+                if isinstance(value, str):
+                    result.append((slot, value))
+            elif isinstance(value, list):
+                result.extend((slot, cast(str, child)) for child in value)
+        return result
+
+    def sequence(self, identity: str, slot: str) -> list[str]:
+        return [child for member_slot, child in self.members(identity) if member_slot == slot]
+
+
 class _Draft:
     def __init__(self, base: RevisionState, contracts: PublicationContracts | None,
                  limits: Limits, history: HistoryProvider | None, payloads: PayloadProvider | None):
@@ -410,7 +509,10 @@ class _Draft:
         self.wire: Wire = {"schema": graph.schema, "semantic_version": graph.semantic_version,
             "graph_id": graph.graph_id, "application_name": graph.application_name,
             "mode": graph.mode, "extensions": graph.extensions}
-        self.nodes = {n: v.as_json() for n, v in base.definition.nodes.items()}
+        self.nodes = _NodePool(base.definition.nodes)
+        # child -> [(parent or None for a root, slot)], built lazily, then kept
+        # current by assign/attach/detach so relation commands are not O(N).
+        self._owners: dict[str, list[tuple[str | None, str]]] | None = None
         self.roots = [r.as_json() for r in base.definition.roots]
         self.pubs = [p.as_json() for p in base.definition.publications]
         self.catalogs = {c.locale: [e.as_json() for e in c.entries]
@@ -455,6 +557,12 @@ class _Draft:
         return cast(list[str], members[slot])
 
     def assign(self, parent: object, slot: str, ids: list[str]) -> None:
+        if self._owners is not None:
+            owner = (cast(str, parent), slot)
+            for child in self.sequence(parent, slot):
+                self._owners[child].remove(owner)
+            for child in ids:
+                self._owners.setdefault(child, []).append(owner)
         members = self.members(parent)
         if slot in SINGLE:
             if len(ids) > 1:
@@ -465,14 +573,23 @@ class _Draft:
         else:
             members[slot] = ids
 
+    def _owner_index(self) -> dict[str, list[tuple[str | None, str]]]:
+        if self._owners is None:
+            owners: dict[str, list[tuple[str | None, str]]] = {}
+            for root in self.roots:
+                owners.setdefault(cast(str, root["node_id"]), []).append((None, "roots"))
+            for parent in self.nodes:
+                for slot, child in self.nodes.members(parent):
+                    owners.setdefault(child, []).append((parent, slot))
+            self._owners = owners
+        return self._owners
+
     def placements(self, identity: str) -> list[tuple[str | None, str, int]]:
-        found: list[tuple[str | None, str, int]] = [
-            (None, "roots", i) for i, r in enumerate(self.roots) if r["node_id"] == identity]
-        for parent, node in self.nodes.items():
-            if node["kind"] == "role":
-                for slot in SLOTS:
-                    found.extend((parent, slot, i) for i, n in enumerate(self.sequence(parent, slot))
-                                 if n == identity)
+        found: list[tuple[str | None, str, int]] = []
+        for parent, slot in dict.fromkeys(self._owner_index().get(identity, ())):
+            sequence = ([cast(str, r["node_id"]) for r in self.roots] if parent is None
+                        else self.nodes.sequence(parent, slot))
+            found.extend((parent, slot, i) for i, n in enumerate(sequence) if n == identity)
         if len(found) > 1:
             raise _fail("Draft has multiple containment owners")
         return found
@@ -490,6 +607,8 @@ class _Draft:
         if parent is None:
             self.roots.pop(position)
             self.root_operations = True
+            if self._owners is not None:
+                self._owners[identity].remove((None, "roots"))
         else:
             ids = list(self.sequence(parent, slot))
             ids.pop(position)
@@ -504,6 +623,8 @@ class _Draft:
             position = _position(target["position"], len(self.roots))
             self.roots.insert(position, {"node_id": identity, "plane": target["plane"]})
             self.root_operations = True
+            if self._owners is not None:
+                self._owners.setdefault(identity, []).append((None, "roots"))
         else:
             parent, slot = target["parent_id"], _slot(target["slot"])
             ids = list(self.sequence(parent, slot))
@@ -514,22 +635,25 @@ class _Draft:
     def definition(self, *, final: bool = True) -> GraphDefinition:
         """Validate the draft. Only the FINAL candidate needs registry evidence;
         a transient intermediate draft may still carry an old binding/route pair."""
-        wire = dict(self.wire)
-        wire.update(nodes=list(self.nodes.values()), roots=self.roots, publications=self.pubs,
-                    presentations={"default_locale": self.default_locale,
-                                   "catalogs": [{"locale": k, "entries": v}
-                                                for k, v in self.catalogs.items()]})
-        if len(self.nodes) > self.limits.max_nodes or len(canonical_json(wire)) > self.limits.max_definition_bytes:
+        header = {k: v for k, v in self.wire.items() if k != "nodes"}
+        header.update(roots=self.roots, publications=self.pubs,
+                      presentations={"default_locale": self.default_locale,
+                                     "catalogs": [{"locale": k, "entries": v}
+                                                  for k, v in self.catalogs.items()]})
+        if len(self.nodes) > self.limits.max_nodes:
             raise _fail("Candidate exceeds graph budget", "limit_exceeded")
-        definition = GraphDefinition.from_json(wire, publication_contracts=self.contracts,
-                                               verify_contracts=final)
+        definition = GraphDefinition.assemble(header, self.nodes.specs, self.nodes.wires,
+            reuse=self.base.definition.nodes, publication_contracts=self.contracts,
+            verify_contracts=final)
+        if len(definition.canonical_bytes()) > self.limits.max_definition_bytes:
+            raise _fail("Candidate exceeds graph budget", "limit_exceeded")
         index = GraphIndex.build(definition, verify_contracts=False)
         edges = len(definition.roots) + len(definition.publications)
         for identity, node in definition.nodes.items():
             edges += len(node.uses) + (len(node.members.placements()) if node.members else 0)
             edges += len(node.instruction_template.parts) if node.instruction_template else 0
             if (index.locations[identity].depth > self.limits.max_depth or
-                    len(canonical_json(node.as_json())) > self.limits.max_node_bytes):
+                    len(node.canonical_bytes()) > self.limits.max_node_bytes):
                 raise _fail("Node size/depth exceeds transaction validation budget", "limit_exceeded")
         if edges > self.limits.max_edges:
             raise _fail("Graph relation budget exceeded", "limit_exceeded")
@@ -552,6 +676,8 @@ class _Draft:
                 node["name"] = command["new_name"]
             else:
                 fields = cast(Wire, command["set_fields"])
+                if "members" in fields or "members" in cast(list[str], command["unset_fields"]):
+                    self._owners = None
                 if "instruction_template" in fields:
                     self.template_targets(fields["instruction_template"])
                 for key in cast(list[str], command["unset_fields"]):
@@ -633,10 +759,9 @@ class _Draft:
             identity = stack.pop()
             if identity in closure:
                 continue
-            node = self.node(identity)
+            self.node(identity)
             closure.add(identity)
-            if node["kind"] == "role":
-                stack.extend(n for slot in SLOTS for n in self.sequence(identity, slot))
+            stack.extend(child for _, child in self.nodes.members(identity))
         if deleted != closure:
             raise _fail("deleted_ids must exactly equal the target subtree closure")
         disconnections: list[Wire] = []
@@ -649,18 +774,18 @@ class _Draft:
                 if parent not in deleted:
                     relation(parent if parent is not None else self.base.definition.graph_id,
                              identity, "containment")
-        for source, node in self.nodes.items():
+        referrers: list[str] = []
+        for source in self.nodes:
             if source in deleted:
                 continue
-            for target in cast(list[str], node["uses"]):
-                if target in deleted:
-                    relation(source, target, "uses")
-            template = node.get("instruction_template")
-            if isinstance(template, Mapping):
-                for part in _arr(template["parts"]):
-                    if isinstance(part, Mapping) and part.get("kind") == "NodeRef" and part["target_id"] in deleted:
-                        # Do not silently rewrite programs. Repair explicitly before delete.
-                        raise _fail("Repair external NodeRef programs explicitly before delete")
+            uses = [target for target in self.nodes.uses(source) if target in deleted]
+            if uses:
+                referrers.append(source)
+            for target in uses:
+                relation(source, target, "uses")
+            if any(target in deleted for target in self.nodes.template_targets(source)):
+                # Do not silently rewrite programs. Repair explicitly before delete.
+                raise _fail("Repair external NodeRef programs explicitly before delete")
         for pub in self.pubs:
             if pub["opens_id"] in deleted:
                 relation(cast(str, pub["publication_id"]), cast(str, pub["opens_id"]), "publication")
@@ -678,11 +803,14 @@ class _Draft:
             raise _fail("Delete target has external references")
         for identity in sorted(deleted):
             self.detach(identity, required=False)
-        for node in self.nodes.values():
+        for source in referrers:
+            node = self.nodes[source]
             node["uses"] = [n for n in cast(list[str], node["uses"]) if n not in deleted]
         self.pubs = [p for p in self.pubs if p["opens_id"] not in deleted]
         for identity in deleted:
             del self.nodes[identity]
+            if self._owners is not None:
+                self._owners.pop(identity, None)
         self.deleted.update(deleted)
 
     def restore(self, command: Wire) -> None:
@@ -708,6 +836,7 @@ class _Draft:
             if (historical.kind, historical.mutable) != (kind, mutable):
                 raise _fail("Historical identity creation policy mismatch", "identity_conflict")
             self.nodes[identity] = historical.as_json()
+            self._owners = None
             self.restored.add(identity)
         # Historical relationships are exact, not automatic publication/locale
         # restoration. All missing members/uses must be restored in this batch.
@@ -757,14 +886,16 @@ class _Draft:
         if (new_ids - old_ids) & (retained | self.deleted):
             raise _fail("Replacement cannot resurrect deleted identities", "identity_conflict")
         for identity in old_ids & new_ids:
-            old = NodeSpec.from_json(self.nodes[identity])
+            old = (self.nodes.specs[identity] if identity in self.nodes.specs
+                   else NodeSpec.from_json(self.nodes[identity]))
             new = candidate.nodes[identity]
             if (old.kind, old.mutable, old.role_variant) != (new.kind, new.mutable, new.role_variant):
                 raise _fail("Replacement cannot reset creation identity", "identity_conflict")
         self.deleted.update(old_ids - new_ids)
         self.root_operations |= self.roots != [r.as_json() for r in candidate.roots]
-        self.wire = candidate.as_json()
-        self.nodes = {n: v.as_json() for n, v in candidate.nodes.items()}
+        self.wire = candidate.header()
+        self.nodes = _pool(candidate, self.base.definition.nodes)
+        self._owners = None
         self.roots = [r.as_json() for r in candidate.roots]
         self.pubs = [p.as_json() for p in candidate.publications]
         self.catalogs = {c.locale: [e.as_json() for e in c.entries]
@@ -898,8 +1029,9 @@ def prepare_revert(base: RevisionState, target_revision: str, *, context: Verifi
     # Reuse the full graph budget validator without bypassing the ordinary
     # protection gate. Only history-backed restoration can reuse tombstones.
     draft = _Draft(base, publication_contracts, limits, history, None)
-    draft.wire = candidate.as_json()
-    draft.nodes = {n: v.as_json() for n, v in candidate.nodes.items()}
+    draft.wire = candidate.header()
+    draft.nodes = _pool(candidate, base.definition.nodes)
+    draft._owners = None
     draft.roots = [r.as_json() for r in candidate.roots]
     draft.pubs = [p.as_json() for p in candidate.publications]
     draft.catalogs = {c.locale: [e.as_json() for e in c.entries] for c in candidate.presentations.catalogs}

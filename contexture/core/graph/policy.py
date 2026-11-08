@@ -209,7 +209,7 @@ def _surfaces(index: GraphIndex, paths: dict[tuple[int, str], int],
         for entry in catalog.entries:
             presentations.setdefault(entry.node_id, []).append((catalog.locale, canonical_json(entry.as_json())))
     metadata = (graph.presentations.default_locale, graph.mode, canonical_json(graph.extensions))
-    full = {identity: canonical_json(node.as_json()) for identity, node in graph.nodes.items()}
+    full = {identity: node.canonical_bytes() for identity, node in graph.nodes.items()}
     result: dict[str, _Surface] = {}
     for identity, node in graph.nodes.items():
         refs = list(node.uses)
@@ -218,7 +218,8 @@ def _surfaces(index: GraphIndex, paths: dict[tuple[int, str], int],
         if node.instruction_template:
             refs.extend(p.target_id for p in node.instruction_template.parts if isinstance(p, NodeRefPart))
         own = full[identity]
-        if node.members is not None and identity in locked:
+        if (node.members is not None and identity in locked
+                and any(child not in locked for _, _, child in node.members.placements())):
             own = canonical_json({**node.as_json(), "members": _locked_members(node, locked)})
         loc = index.locations[identity]
         own_surface = (own, tokens[identity], loc.parent_id, loc.slot, loc.plane,

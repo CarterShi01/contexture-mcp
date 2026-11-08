@@ -655,6 +655,10 @@ class FileJournal:
 				paths.append((seq, path))
 		previous = None
 		batches: set[str] = set()
+		# Publication fsyncs each file BEFORE its rename, so a visible record's
+		# bytes are durable; only directory entries can be pending after a crash.
+		# Confirm each distinct directory once instead of every file + parents.
+		confirm: set[Path] = set()
 		for expected, (seq, path) in enumerate(sorted(paths), 1):
 			if seq != expected:
 				raise JournalError("corruption", "Missing or duplicate committed record")
@@ -669,9 +673,13 @@ class FileJournal:
 				if key in self._receipts:
 					raise JournalError("corruption", "Duplicate accepted receipt key")
 				self._receipts[key] = receipt
-			self._confirm_file(path)
+			confirm.add(path.parent)
 			self._records.append(record)
 			previous = record["record_hash"]
+		for directory in sorted(confirm):
+			self._sync_dir(directory)
+		if confirm:
+			self._sync_dir(self.root / "records")
 		self._event_batch_ids = batches
 		# Unpublished work is never mistaken for a committed invalid tail.
 		for path in sorted((self.root / "tmp").iterdir()):

@@ -8,6 +8,7 @@ from an author's input_contract assertion. This is not compiler lowering.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping
+import hashlib
 from dataclasses import dataclass, field
 from ipaddress import IPv6Address
 import re
@@ -171,6 +172,8 @@ class Members(_Value):
     post_process: str | None
     skills: tuple[str, ...]
     tools: tuple[str, ...]
+    _placements: tuple[tuple[Slot, int, str], ...] | None = field(
+        default=None, init=False, repr=False, compare=False)
 
     @classmethod
     def from_json(cls, value: object) -> Members:
@@ -178,9 +181,17 @@ class Members(_Value):
         return _new(cls, pre_process=validate_id(obj["pre_process"]) if "pre_process" in obj else None,
                     children=_ids(obj.get("children", ())),
                     post_process=validate_id(obj["post_process"]) if "post_process" in obj else None,
-                    skills=_ids(obj.get("skills", ())), tools=_ids(obj.get("tools", ())))
+                    skills=_ids(obj.get("skills", ())), tools=_ids(obj.get("tools", ())),
+                    _placements=None)
 
     def placements(self) -> tuple[tuple[Slot, int, str], ...]:
+        cached = self._placements
+        if cached is None:
+            cached = self._compute_placements()
+            object.__setattr__(self, "_placements", cached)
+        return cached
+
+    def _compute_placements(self) -> tuple[tuple[Slot, int, str], ...]:
         result: list[tuple[Slot, int, str]] = []
         if self.pre_process is not None:
             result.append(("pre_process", 0, self.pre_process))
@@ -279,6 +290,23 @@ class NodeSpec(_Value):
     members: Members | None
     binding: BindingDescriptor | None
     input_contract: bool | Mapping[str, FrozenJSON] | None
+    _bytes: bytes | None = field(default=None, init=False, repr=False, compare=False)
+
+    def canonical_bytes(self) -> bytes:
+        """Memoized JCS bytes of as_json(): the node's exact semantic identity.
+
+        Equal bytes mean an equal node (JCS keeps True and 1 distinct, unlike
+        Python ==). Unchanged nodes are shared between revisions, so this is
+        computed once per distinct node, not once per revision.
+        """
+        cached = self._bytes
+        if cached is None:
+            cached = canonical_json(self.as_json())
+            object.__setattr__(self, "_bytes", cached)
+        return cached
+
+    def same(self, other: NodeSpec) -> bool:
+        return self is other or self.canonical_bytes() == other.canonical_bytes()
 
     @classmethod
     def from_json(cls, value: object) -> NodeSpec:
@@ -323,7 +351,7 @@ class NodeSpec(_Value):
                 "ordinary pre_process post_process") if kind == "role" else None,
             members=Members.from_json(obj.get("members", {})) if kind == "role" else None,
             binding=BindingDescriptor.from_json(obj["binding"]) if "binding" in obj else None,
-            input_contract=contract)
+            input_contract=contract, _bytes=None)
 
     def as_json(self) -> dict[str, object]:
         value: dict[str, object] = {"node_id": self.node_id, "kind": self.kind,
@@ -692,6 +720,7 @@ class GraphDefinition(_Value):
     presentations: Presentations
     extensions: Mapping[str, FrozenJSON]
     _cached_digest: str | None = field(default=None, init=False, repr=False, compare=False)
+    _cached_bytes: bytes | None = field(default=None, init=False, repr=False, compare=False)
 
     @classmethod
     def from_json(
@@ -713,8 +742,6 @@ class GraphDefinition(_Value):
         value = freeze_json(value)
         obj = _obj(value, "schema semantic_version graph_id application_name mode nodes roots presentations",
                    "publications extensions")
-        if obj["schema"] != "contexture.graph/v1" or obj["semantic_version"] != "1":
-            raise _error("Unsupported graph schema or semantic version")
         nodes: dict[str, NodeSpec] = {}
         for i, raw in enumerate(_array(obj["nodes"], "/nodes")):
             try:
@@ -724,6 +751,51 @@ class GraphDefinition(_Value):
             if node.node_id in nodes:
                 raise _error("Duplicate node identity", f"/nodes/{i}/node_id")
             nodes[node.node_id] = node
+        return cls._from_parts(obj, nodes, publication_contracts=publication_contracts,
+                               verify_contracts=verify_contracts)
+
+    @classmethod
+    def assemble(
+        cls, header: Mapping[str, object], base: Mapping[str, NodeSpec],
+        changed: Mapping[str, Mapping[str, object] | None], *,
+        reuse: Mapping[str, NodeSpec] | None = None,
+        publication_contracts: PublicationContracts | None = None, verify_contracts: bool = True,
+    ) -> GraphDefinition:
+        """Build a definition from shared validated nodes plus changed node wires.
+
+        `header` is the graph wire WITHOUT `nodes`; `base` are already validated
+        NodeSpecs kept as-is. `changed` maps an identity to its new node wire, or
+        None to remove it. Every changed wire is fully validated; one equal to
+        its `reuse` (default: `base`) node reuses that object, so unchanged nodes
+        are shared across revisions. Forest validation is identical to from_json.
+        """
+        reuse = base if reuse is None else reuse
+        value = freeze_json(header)
+        obj = _obj(value, "schema semantic_version graph_id application_name mode roots presentations",
+                   "publications extensions")
+        nodes = dict(base)
+        for identity in sorted(changed):
+            raw = changed[identity]
+            if raw is None:
+                nodes.pop(identity, None)
+                continue
+            try:
+                node = NodeSpec.from_json(raw)
+            except GraphError as exc:
+                raise _error(str(exc), "/nodes", exc.code) from None
+            if node.node_id != identity:
+                raise _error("Duplicate node identity", "/nodes")
+            previous = reuse.get(identity)
+            nodes[identity] = previous if previous is not None and previous.same(node) else node
+        return cls._from_parts(obj, nodes, publication_contracts=publication_contracts,
+                               verify_contracts=verify_contracts)
+
+    @classmethod
+    def _from_parts(cls, obj: Object, nodes: dict[str, NodeSpec], *,
+                    publication_contracts: PublicationContracts | None,
+                    verify_contracts: bool) -> GraphDefinition:
+        if obj["schema"] != "contexture.graph/v1" or obj["semantic_version"] != "1":
+            raise _error("Unsupported graph schema or semantic version")
         definition = _new(cls, schema="contexture.graph/v1", semantic_version="1",
             graph_id=validate_id(obj["graph_id"], location="/graph_id"),
             application_name=_name(obj["application_name"], "/application_name"),
@@ -732,7 +804,8 @@ class GraphDefinition(_Value):
             roots=tuple(RootEntry.from_json(r) for r in _array(obj["roots"], "/roots")),
             publications=tuple(_publication(p) for p in _array(obj.get("publications", ()))),
             presentations=Presentations.from_json(obj["presentations"]),
-            extensions=_extensions(obj.get("extensions", {}), "/extensions"), _cached_digest=None)
+            extensions=_extensions(obj.get("extensions", {}), "/extensions"), _cached_digest=None,
+            _cached_bytes=None)
         # Local import avoids a module initialization cycle. Build is pure and
         # uses the same whole-forest validator as callers' explicit indexes.
         from .index import GraphIndex
@@ -750,10 +823,35 @@ class GraphDefinition(_Value):
             "publications": [p.as_json() for p in self.publications],
             "presentations": self.presentations.as_json(), "extensions": thaw_json(self.extensions)}
 
+    def header(self) -> dict[str, object]:
+        """Detached graph wire without `nodes` (for assemble and graph-level facts)."""
+        return {"schema": self.schema, "semantic_version": self.semantic_version,
+            "graph_id": self.graph_id, "application_name": self.application_name, "mode": self.mode,
+            "roots": [r.as_json() for r in self.roots],
+            "publications": [p.as_json() for p in self.publications],
+            "presentations": self.presentations.as_json(), "extensions": thaw_json(self.extensions)}
+
+    def canonical_bytes(self) -> bytes:
+        """JCS bytes of as_json(), spliced from memoized node bytes.
+
+        JCS sorts object keys, so the top-level object is exactly the keys
+        before "nodes", then "nodes", then the keys after it.
+        """
+        cached = self._cached_bytes
+        if cached is None:
+            header = self.header()
+            before = canonical_json({k: v for k, v in header.items() if k < "nodes"})
+            after = canonical_json({k: v for k, v in header.items() if k > "nodes"})
+            body = b",".join(self.nodes[n].canonical_bytes() for n in sorted(self.nodes))
+            cached = before[:-1] + b',"nodes":[' + body + b"]," + after[1:]
+            object.__setattr__(self, "_cached_bytes", cached)
+        return cached
+
     def digest(self) -> str:
         digest = self._cached_digest
         if digest is None:
-            digest = canonical_digest(self.as_json(), "contexture.graph/v1")
+            digest = "sha256:" + hashlib.sha256(
+                b"contexture.graph/v1\0" + self.canonical_bytes()).hexdigest()
             object.__setattr__(self, "_cached_digest", digest)
         return digest
 

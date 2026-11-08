@@ -280,15 +280,19 @@ def resolve_facts(base: RevisionState, candidate: GraphDefinition) -> ResolvedCh
 
 def _resolve(base: RevisionState, candidate: GraphDefinition, *, migration_id: str | None = None,
              source_mapping: Mapping[str, FrozenJSON] | None = None) -> ResolvedChange:
-    old, new = base.definition.as_json(), candidate.as_json()
+    old, new = base.definition.header(), candidate.header()
     for field in ("schema", "semantic_version", "graph_id"):
         if not _equal(old[field], new[field]):
             raise _fail("Unsupported graph identity/schema/version transition", "unsupported_contract")
     retained = _tombstones(base.tombstones, base.revision)
     facts: list[Wire] = []
-    a = {n: v.as_json() for n, v in base.definition.nodes.items()}
-    b = {n: v.as_json() for n, v in candidate.nodes.items()}
-    for identity in sorted(b.keys() - a.keys()):
+    an, bn = base.definition.nodes, candidate.nodes
+    # Only nodes whose exact JCS bytes differ can produce node facts; unchanged
+    # nodes are usually the very same shared object. Fact order is unchanged.
+    common = [n for n in sorted(an.keys() & bn.keys()) if not an[n].same(bn[n])]
+    a = {n: an[n].as_json() for n in (*common, *(an.keys() - bn.keys()))}
+    b = {n: bn[n].as_json() for n in (*common, *(bn.keys() - an.keys()))}
+    for identity in sorted(bn.keys() - an.keys()):
         node = b[identity]
         if identity in retained:
             t = retained[identity]
@@ -297,7 +301,7 @@ def _resolve(base: RevisionState, candidate: GraphDefinition, *, migration_id: s
             facts.append({"type": "NodeRestored", "node": node, "tombstone": t})
         else:
             facts.append({"type": "NodeCreated", "node": node})
-    for identity in sorted(a.keys() & b.keys()):
+    for identity in common:
         for field in ("kind", "role_variant"):
             if not _equal(optional(a[identity], field), optional(b[identity], field)):
                 raise _fail("Ordinary facts cannot change identity, variant or creation policy")
@@ -322,7 +326,7 @@ def _resolve(base: RevisionState, candidate: GraphDefinition, *, migration_id: s
     if not _equal(old["roots"], new["roots"]):
         facts.append({"type": "RootsAssigned", "before": old["roots"], "after": new["roots"]})
     for field, tag in (("members", "MembersAssigned"), ("uses", "UsesAssigned")):
-        for identity in sorted(a.keys() & b.keys()):
+        for identity in common:
             if field in a[identity] and not _equal(a[identity][field], b[identity][field]):
                 facts.append({"type": tag, "node_id": identity,
                               "before": a[identity][field], "after": b[identity][field]})
@@ -340,7 +344,7 @@ def _resolve(base: RevisionState, candidate: GraphDefinition, *, migration_id: s
     if not _equal(old["presentations"], new["presentations"]):
         facts.append({"type": "PresentationsAssigned", "before": old["presentations"],
                       "after": new["presentations"]})
-    for identity in sorted(a.keys() - b.keys()):
+    for identity in sorted(an.keys() - bn.keys()):
         revision = parse_counter(base.revision) + 1
         if revision > MAX_COUNTER:
             raise _fail("Revision counter exhausted", "limit_exceeded")
@@ -388,8 +392,16 @@ def apply_facts(
         raise _fail("No-op must not produce a graph revision")
     if resolved_fact_digest is not None and _digest(resolved_fact_digest) != facts_digest(raw_facts):
         raise _fail("Resolved fact digest mismatch")
-    wire = base.definition.as_json()
-    nodes = {n: v.as_json() for n, v in base.definition.nodes.items()}
+    wire = base.definition.header()
+    # Shared base nodes; only nodes named by facts are materialized as wires.
+    specs = dict(base.definition.nodes)
+    nodes: dict[str, Wire] = {}
+
+    def node(identity: str) -> Wire:
+        if identity not in nodes:
+            nodes[identity] = specs.pop(identity).as_json()
+        return nodes[identity]
+
     publications = {p.publication_id: p.as_json() for p in base.definition.publications}
     positions = {p.publication_id: i for i, p in enumerate(base.definition.publications)}
     presentations: object = None
@@ -408,40 +420,42 @@ def apply_facts(
             source_mapping = _frozen_object(f.get("source_mapping"))
         elif tag == "CreationPolicyMigrated":
             identity = validate_id(f.get("node_id"))
-            if migration_id is None or f.get("migration_id") != migration_id or identity not in nodes:
+            if migration_id is None or f.get("migration_id") != migration_id or (
+                    identity not in nodes and identity not in specs):
                 raise _fail("Policy migration requires matching provenance and base identity")
-            nodes[identity]["mutable"] = f.get("after")
+            node(identity)["mutable"] = f.get("after")
         elif tag == "GraphFieldsSet":
             wire.update(_object(f.get("after"), "", " ".join(GRAPH_FIELDS)))
         elif tag == "PresentationsAssigned":
             presentations = f.get("after")
         elif tag in ("NodeCreated", "NodeRestored"):
-            node = NodeSpec.from_json(f.get("node")).as_json()
-            identity = cast(str, node["node_id"])
-            if identity in nodes:
+            created = NodeSpec.from_json(f.get("node")).as_json()
+            identity = cast(str, created["node_id"])
+            if identity in nodes or identity in specs:
                 raise _fail("Creation/restoration identity already exists")
-            nodes[identity] = node
+            nodes[identity] = created
         elif tag == "NodeFieldsSet":
             identity = validate_id(f.get("node_id"))
-            if identity not in nodes:
+            if identity not in nodes and identity not in specs:
                 raise _fail("Field target does not exist in base")
             fields = _object(f.get("after"), "", " ".join(FIELD_NAMES))
+            target = node(identity)
             for key, value in fields.items():
                 present, item = _unwrap(value)
                 if present:
-                    nodes[identity][key] = item
+                    target[key] = item
                 else:
-                    nodes[identity].pop(key, None)
+                    target.pop(key, None)
         elif tag in ("MembersAssigned", "UsesAssigned"):
             identity = validate_id(f.get("node_id"))
-            if identity not in nodes:
+            if identity not in nodes and identity not in specs:
                 raise _fail("Relation target does not exist")
-            nodes[identity]["members" if tag == "MembersAssigned" else "uses"] = f.get("after")
+            node(identity)["members" if tag == "MembersAssigned" else "uses"] = f.get("after")
         elif tag == "RootsAssigned":
             wire["roots"] = f.get("after")
         elif tag == "NodeDeleted":
             identity = validate_id(f.get("node_id"))
-            if identity not in nodes or identity in deleted:
+            if (identity not in nodes and identity not in specs) or identity in deleted:
                 raise _fail("Deletion target does not exist or is duplicated")
             deleted.add(identity)
         elif tag in ("PublicationPut", "PublicationRemoved"):
@@ -461,7 +475,6 @@ def apply_facts(
                 del positions[identity]
         else:
             raise _fail("Unknown or unsupported required fact type", "unsupported_contract")
-    wire["nodes"] = [nodes[n] for n in sorted(nodes) if n not in deleted]
     # Every unchanged publication whose index shifts is emitted as a Put, so
     # final positions must be a complete permutation, never sequential inserts.
     if sorted(positions.values()) != list(range(len(positions))):
@@ -469,7 +482,11 @@ def apply_facts(
     wire["publications"] = [publications[n] for n in sorted(publications, key=lambda n: positions[n])]
     wire["presentations"] = (presentations if presentations is not None
                              else base.definition.presentations.as_json())
-    candidate = GraphDefinition.from_json(wire, verify_contracts=False)
+    for identity in deleted:
+        specs.pop(identity, None)
+        nodes.pop(identity, None)
+    candidate = GraphDefinition.assemble(wire, specs, nodes, reuse=base.definition.nodes,
+                                         verify_contracts=False)
     if migration_id is not None:
         expected = resolve_migration(base, candidate, migration_id=migration_id,
             exact_diff=_provenance(migration, "migration", base.definition_digest)["exact_diff"],

@@ -70,7 +70,7 @@ def definition_diff(base: GraphDefinition, candidate: GraphDefinition) -> Defini
     if base.graph_id != candidate.graph_id:
         raise GraphError("schema_invalid", "Cannot align different graph identities")
     groups: dict[str, list[Wire]] = {k: [] for k in GROUPS}
-    a, b = base.as_json(), candidate.as_json()
+    a, b = base.header(), candidate.header()
     for field in ("schema", "semantic_version", "application_name", "mode", "extensions"):
         entry = _entry(base.graph_id, _pointer(field), a, b, field)
         if entry:
@@ -78,9 +78,13 @@ def definition_diff(base: GraphDefinition, candidate: GraphDefinition) -> Defini
     entry = _entry(base.graph_id, "/roots", a, b, "roots")
     if entry:
         groups["membership"].append(entry)
-    an = {n: v.as_json() for n, v in base.nodes.items()}
-    bn = {n: v.as_json() for n, v in candidate.nodes.items()}
-    for identity in sorted(an.keys() | bn.keys()):
+    # Unchanged (usually shared) nodes contribute nothing; expand only the rest.
+    changed = [n for n in sorted(base.nodes.keys() | candidate.nodes.keys())
+               if n not in base.nodes or n not in candidate.nodes
+               or not base.nodes[n].same(candidate.nodes[n])]
+    an = {n: base.nodes[n].as_json() for n in changed if n in base.nodes}
+    bn = {n: candidate.nodes[n].as_json() for n in changed if n in candidate.nodes}
+    for identity in changed:
         if identity not in an or identity not in bn:
             entry = _entry(identity, "", {"node": an[identity]} if identity in an else {},
                            {"node": bn[identity]} if identity in bn else {}, "node")
