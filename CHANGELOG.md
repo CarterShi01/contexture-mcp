@@ -6,7 +6,34 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-08
+
+The managed (dynamic, versioned) runtime becomes the 2.0 line. The static
+`Contexture(...).compile()` API is unchanged; breaking changes affect the
+managed graph APIs that were introduced as candidates after 1.1.
+
+### Breaking
+
+- Replay is registry-free: `apply_event`, `apply_facts`, `History.bootstrap`
+  and `History.append` no longer accept `publication_contracts`. Registry
+  evidence is indexed by exact binding descriptor (collection, mapping values
+  or resolver) and is checked only for new candidates.
+- Mutability: a locked node protects only its own surface; mutable members of
+  a locked parent are fully editable; new members of a locked parent must be
+  mutable. Locked nodes whose agent context changes are reported as
+  `protected_dependents` (preview receipt field, part of admission impact).
+- Granular `PresentationPut`/`PresentationRemoved` facts were removed.
+- `diff.behavior_diff` and the `diff` alias were removed; `execution_diff` and
+  `surface_diff` take ExecutionManifests / StructuralPlans.
+- `GraphOwner` keeps no receipt copy and a bounded `history_window`; older
+  revisions are rebuilt from the journal. `History(records)` verifies every link.
+- The managed specification is accepted as the v1 baseline.
+
 ### Added
+
+- `settle()` (public), `ManagedRuntime.graph_id`, `TypeHintBinding.call_contract` and
+  `ManagedMCPServer.build(auth=...)`
+  for hosts composing managed runtimes from static Tools.
 
 - Added the candidate managed runtime for trees that change while agents use
   them: `ManagedGraphHost` (`contexture.server.managed_host`) composes a durable
@@ -235,7 +262,8 @@ public API changes require a new major version.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/CarterShi01/contexture-mcp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.11.0...v1.0.0
 [0.16.0]: https://github.com/CarterShi01/contexture-mcp/compare/v0.15.0...v0.16.0

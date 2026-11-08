@@ -67,6 +67,7 @@ class ManagedMCPServer:
         self._run_header = enable_run_header
         self._name, self._version, self._lifespan = name, version, lifespan
         self._wire: MCPServer | None = None
+        self._auth: Any = None
 
     async def _resolve_run(self, ctx: Context) -> RunLeaseContext | None:
         request = ctx.request_context.request
@@ -119,10 +120,17 @@ class ManagedMCPServer:
             # Prevent SDK crash logging from exposing handler/port tracebacks.
             raise ToolError("internal_error: Managed request failed") from None
 
-    def build(self) -> MCPServer:
-        """Return the same SDK object on every call; never snapshot discover roots."""
+    def build(self, *, auth: Any = None) -> MCPServer:
+        """Return the same SDK object on every call; never snapshot discover roots.
+
+        ``auth`` (a Contexture ``Auth``) protects the wire exactly like the static
+        server's ``build(auth=...)``; a different auth on a later call is refused.
+        """
         if self._wire is not None:
+            if auth is not None and auth is not self._auth:
+                raise ValueError("This managed server was already built with a different auth")
             return self._wire
+        self._auth = auth
         wire = PublicationMCPServer(
             publication_dispatch=self._publication_call,
             name=self._name, version=self._version,
@@ -135,6 +143,8 @@ class ManagedMCPServer:
                 "no prompt arguments, caching, change notifications or implicit run session."
             ),
             lifespan=self._lifespan,
+            **({"auth": auth.settings(), "token_verifier": auth.sdk_verifier()}
+               if auth is not None else {}),
         )
 
         async def contexture_discover(ctx: Context) -> CompiledContext:

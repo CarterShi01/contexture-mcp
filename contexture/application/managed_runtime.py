@@ -178,6 +178,11 @@ class ManagedRuntime:
             captured[key] = registration
         self._adapters = MappingProxyType(captured)
 
+    @property
+    def graph_id(self) -> str:
+        """The managed graph this runtime serves."""
+        return self._coordinator.graph_id
+
     def _context(self) -> VerifiedContext:
         context = self._contexts.current()
         if not isinstance(context, VerifiedContext):

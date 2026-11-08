@@ -387,7 +387,9 @@ def test_local_markdown_links_and_no_acceptance_claim():
             if "://" not in target:
                 assert (path.parent / target.split("#")[0]).is_file(), (path, target)
     manifest = json.loads((MANAGED / "manifest.json").read_text())
-    assert manifest["accepted_spec_revision"] is None
+    # Owner accepted the candidate as the v1 baseline (2.0.0); vectors keep
+    # their recorded provenance labels, the manifest is the acceptance record.
+    assert manifest["accepted_spec_revision"].startswith("managed-v1-baseline")
     assert VECTORS["status"] == "candidate-not-review-accepted"
 
 
@@ -521,4 +523,4 @@ def test_closure_fact_shapes_and_candidate_manifest_coverage():
     manifest = json.loads((MANAGED / "manifest.json").read_text())
     assert "spec/managed/referencevectors/closure.json" in {a["path"] for a in manifest["assets"]}
     assert CLOSURE["status"] == "candidate-not-review-accepted"
-    assert manifest["accepted_spec_revision"] is None
+    assert manifest["accepted_spec_revision"].startswith("managed-v1-baseline")

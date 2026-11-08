@@ -30,6 +30,13 @@ from ..core.model.tool import ExplicitSchemaTool, Tool
 from ..core.types import JsonObject
 
 
+@dataclass(frozen=True, slots=True)
+class TypeHintCallContract:
+    validate_arguments: Any
+    uses_resolvers: bool
+    context_kwarg: str | None
+
+
 @dataclass(slots=True)
 class TypeHintBinding:
     """One tool, derived once from its `invoke` signature.
@@ -56,6 +63,19 @@ class TypeHintBinding:
     @property
     def schema(self) -> JsonObject:
         return self._schema
+
+    @property
+    def call_contract(self) -> TypeHintCallContract:
+        """Public description of this binding's SDK call ABI (for managed hosts).
+
+        `validate_arguments` decodes/coerces raw arguments exactly as `call`
+        does; `uses_resolvers`/`context_kwarg` flag signatures needing an
+        explicitly supported ABI beyond plain JSON keyword arguments.
+        """
+        metadata = self._derived.fn_metadata
+        return TypeHintCallContract(validate_arguments=metadata.validate_arguments,
+            uses_resolvers=bool(self._derived.resolved_params),
+            context_kwarg=self._derived.context_kwarg)
 
     async def call(
         self,

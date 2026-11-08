@@ -100,7 +100,7 @@ class PreparationAdapterRegistration:
 T = TypeVar("T")
 
 
-async def _settle(task: asyncio.Task[T]) -> T:
+async def settle(task: asyncio.Task[T]) -> T:
     """Join owned cleanup despite repeated caller cancellation; never detach it.
 
     Cancellation is re-raised AFTER real completion. Cleanup errors and caller
@@ -124,6 +124,10 @@ async def _settle(task: asyncio.Task[T]) -> T:
     if cancelled is not None:
         raise cancelled
     return result
+
+
+# Backward-compatible private spelling used inside the framework.
+_settle = settle
 
 
 class _Resources:

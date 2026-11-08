@@ -14,8 +14,9 @@ on one auditable version chain:
 | **Release** | An explicit request to serve a revision. Committing a change never silently changes what agents get. |
 | **Generation** | The immutable compiled snapshot actually serving. Requests pin one generation for their whole lifetime. |
 
-Status: candidate (`1.2.0.dev0`). The wire/journal format is not yet a frozen
-spec revision; see [`spec/managed`](../../spec/managed/).
+Status: 2.0.0. The managed specification in [`spec/managed`](../../spec/managed/)
+is accepted as the v1 baseline with this Python implementation as reference;
+TypeScript/Go ports follow its port obligations.
 
 ## Run the example
 

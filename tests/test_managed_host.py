@@ -58,6 +58,7 @@ async def test_reopen_resumes_serving_and_empty_store_waits_for_bootstrap() -> N
         async with ManagedGraphHost.open(store, graph_id="assistant", policy=SingleActorPolicy(),
                                          registry=module.REGISTRY, profile=profile) as host:
             await host.wait_ready(timeout=5)
+            assert host.runtime.graph_id == "assistant"
             assert (await module.call(host, "search", query="x"))["version"] == 1
 
 

@@ -12,7 +12,8 @@
 | **发布（Release）** | 显式请求服务某个 revision。提交变更不会悄悄改变 Agent 拿到的内容。 |
 | **代（Generation）** | 实际在服务的不可变编译快照。每个请求在整个生命周期固定一个代。 |
 
-状态：候选（`1.2.0.dev0`）。wire/日志格式尚非冻结的规范版本，见 [`spec/managed`](../../spec/managed/)。
+状态：2.0.0。[`spec/managed`](../../spec/managed/) 中的 managed 规范已作为 v1 基线接受，本 Python 实现为参考；
+TypeScript/Go 按其移植义务跟进。
 
 ## 运行示例
 

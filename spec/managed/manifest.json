@@ -2,7 +2,7 @@
   "manifest_format": "contexture.managed-product-tracking/v1-draft",
   "target": "managed-v1-draft",
   "status": "specified",
-  "accepted_spec_revision": null,
+  "accepted_spec_revision": "managed-v1-baseline (contexture-mcp 2.0.0; owner decision 2026-11-08; see decisions.md R01-R14)",
   "evidence": [
     {"scope":"M17-M21 pure events/history/schema closure","status":"executed-not-accepted","environment":"WSL Ubuntu CPython 3.14.7; /tmp/contexture-stdio-baseline-20261105; Node22 for pyright","managed_suite":"541 passed, 1 failed in 20.87s","remaining_failure":"tests/test_managed_transactions.py::test_contract_gaps_refuse_not_lossy_or_implicit expects full import default-locale change to remain unsupported; now supported by PresentationsAssigned. Transaction owner must update this old gap assertion, not regress support.","ruff":"owned events/diff/history and three owned test files: passed","pyright":"repository-configured full check: 0 errors, 0 warnings, 0 informations","notes":"No transactions/policy/model file edited; no skipped/deselected tests; final focused check recorded in schema-contracts.md."}
   ],
