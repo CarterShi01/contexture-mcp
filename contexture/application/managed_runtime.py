@@ -90,9 +90,15 @@ class ExecutionAdapter(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class ExecutionAdapterRegistration:
-    """Local support attestation, node-keyed and exact, never authored JSON."""
+    """Local support attestation for one exact binding contract, never authored JSON.
 
-    node_id: str
+    node_id=None attests the binding for ANY node bound to exactly this
+    binding_id/version/abi/contract_digest, so a Tool node created at runtime
+    against an already deployed binding executes without rebuilding the
+    runtime. A node-keyed registration takes precedence for its node.
+    """
+
+    node_id: str | None
     binding_id: str
     version: str
     abi: str
@@ -101,7 +107,8 @@ class ExecutionAdapterRegistration:
 
     def verify(self, node_id: str, binding: ResolvedBinding) -> None:
         entry, registration = binding.entry, binding.registration
-        if ((self.node_id, self.binding_id, self.version, self.abi, self.contract_digest) !=
+        if ((self.node_id if self.node_id is not None else node_id, self.binding_id,
+                self.version, self.abi, self.contract_digest) !=
                 (node_id, entry.binding.binding_id, entry.binding.version,
                  entry.abi, entry.contract_digest)
                 or (registration.binding_id, registration.version, registration.abi,
@@ -158,11 +165,12 @@ class ManagedRuntime:
                  contexts: CurrentRequestContext, authority: RequestAuthority,
                  adapters: tuple[ExecutionAdapterRegistration, ...]) -> None:
         self._coordinator, self._contexts, self._authority = coordinator, contexts, authority
-        captured: dict[tuple[str, str, str, str, str], ExecutionAdapterRegistration] = {}
+        captured: dict[tuple[str | None, str, str, str, str], ExecutionAdapterRegistration] = {}
         for registration in adapters:
             if not isinstance(registration, ExecutionAdapterRegistration):
                 raise _deny("Trusted execution registration required", "binding_contract_invalid")
-            validate_id(registration.node_id)
+            if registration.node_id is not None:
+                validate_id(registration.node_id)
             key = (registration.node_id, registration.binding_id, registration.version,
                    registration.abi, registration.contract_digest)
             if key in captured:
@@ -185,7 +193,7 @@ class ManagedRuntime:
             entry = binding.entry
             key = (node_id, entry.binding.binding_id, entry.binding.version,
                    entry.abi, entry.contract_digest)
-            registration = self._adapters.get(key)
+            registration = self._adapters.get(key) or self._adapters.get((None, *key[1:]))
             if registration is None:
                 raise _deny("No exact execution adapter", "binding_contract_invalid")
             registration.verify(node_id, binding)
@@ -289,6 +297,12 @@ class ManagedRequest:
     @property
     def generation_uuid(self) -> str:
         return self._lease.generation.context.generation_uuid
+
+    def reference(self, node_id: str) -> ManagedReference:
+        """Generation-qualified reference to a node in THIS request's pinned graph."""
+        self._check_navigation()
+        return ManagedReference(self._lease.generation.plan.definition.graph_id,
+                                self.generation_uuid, validate_id(node_id))
 
     @property
     def is_run_pinned(self) -> bool:

@@ -7,7 +7,7 @@ from an author's input_contract assertion. This is not compiler lowering.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from ipaddress import IPv6Address
 import re
@@ -617,27 +617,66 @@ class PublicationContract:
             raise _error("Invalid publication contract evidence")
 
 
-PublicationContracts = Mapping[str, PublicationContract] | Iterable[PublicationContract]
-"""Registry evidence: a collection of contracts, or a mapping whose values are.
+ContractResolver = Callable[["BindingDescriptor"], "PublicationContract | None"]
 
-Evidence is indexed by the EXACT binding descriptor, never by node identity, so
-a registry may vouch for several versions of a binding at once (e.g. while a
-Tool is upgraded in one transaction). Mapping keys are not semantic.
+class ContractEvidence:
+    """Normalized registry evidence: get(binding) -> exact contract or None."""
+
+    __slots__ = ("_static", "_resolver")
+
+    def __init__(self, contracts: PublicationContracts | None = None) -> None:
+        self._resolver: ContractResolver | None = None
+        self._static: dict[bytes, PublicationContract] = {}
+        if contracts is None:
+            return
+        if isinstance(contracts, ContractEvidence):
+            self._resolver, self._static = contracts._resolver, dict(contracts._static)
+            return
+        if callable(contracts) and not isinstance(contracts, Mapping):
+            self._resolver = contracts
+            return
+        values: Iterable[object] = contracts.values() if isinstance(contracts, Mapping) else contracts
+        for contract in values:
+            if not isinstance(contract, PublicationContract):
+                raise _error("Invalid publication contract evidence", code="contract_mismatch")
+            key = canonical_json(contract.binding.as_json())
+            if self._static.setdefault(key, contract) != contract:
+                raise _error("Conflicting registry evidence for one binding", code="contract_mismatch")
+
+    def __len__(self) -> int:
+        return len(self._static)
+
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, ContractEvidence) and self._static == other._static
+                and self._resolver is other._resolver)
+
+    __hash__ = None  # type: ignore[assignment]
+
+    def get(self, binding: BindingDescriptor) -> PublicationContract | None:
+        contract = self._static.get(canonical_json(binding.as_json()))
+        if contract is None and self._resolver is not None:
+            contract = self._resolver(binding)
+        if contract is not None and (not isinstance(contract, PublicationContract)
+                                     or contract.binding != binding):
+            raise _error("Registry evidence does not match the exact binding", code="contract_mismatch")
+        return contract
+
+
+PublicationContracts = (Mapping[str, PublicationContract] | Iterable[PublicationContract]
+                        | ContractResolver | ContractEvidence)
+"""Registry evidence: contracts, a mapping whose values are contracts, or a
+resolver (e.g. backed by a pinned RegistryGeneration) for exact descriptors.
+
+Evidence is indexed by the EXACT binding descriptor (including config), never
+by node identity, so a registry may vouch for several versions of a binding at
+once (e.g. while a Tool is upgraded in one transaction). Mapping keys are not
+semantic.
 """
 
 
-def contract_lookup(contracts: PublicationContracts | None) -> dict[bytes, PublicationContract]:
-    """Index registry evidence by canonical binding descriptor bytes."""
-    values: Iterable[object] = (() if contracts is None else
-        contracts.values() if isinstance(contracts, Mapping) else contracts)
-    result: dict[bytes, PublicationContract] = {}
-    for contract in values:
-        if not isinstance(contract, PublicationContract):
-            raise _error("Invalid publication contract evidence", code="contract_mismatch")
-        key = canonical_json(contract.binding.as_json())
-        if result.setdefault(key, contract) != contract:
-            raise _error("Conflicting registry evidence for one binding", code="contract_mismatch")
-    return result
+def contract_lookup(contracts: PublicationContracts | None) -> ContractEvidence:
+    """Normalize registry evidence once (idempotent)."""
+    return contracts if isinstance(contracts, ContractEvidence) else ContractEvidence(contracts)
 
 
 @dataclass(frozen=True, slots=True, init=False)

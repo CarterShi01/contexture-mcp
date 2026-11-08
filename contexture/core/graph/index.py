@@ -18,7 +18,6 @@ from .model import (
     PublicationContracts, ResourcePublication, RoutePublication, Slot, _Value, _new,
     contract_lookup, normalize_locale,
 )
-from .canonical import canonical_json
 
 
 def _fail(message: str, location: str = "", code: str = "schema_invalid") -> GraphError:
@@ -172,7 +171,7 @@ class GraphIndex(_Value):
                     if isinstance(part, NodeRefPart):
                         templates.setdefault(part.target_id, []).append(TemplateReference(node_id, i))
 
-        evidence = contract_lookup(publication_contracts) if verify_contracts else {}
+        evidence = contract_lookup(publication_contracts)
         publication_ids: set[str] = set()
         public_names: set[str] = set()
         uris: set[str] = set()
@@ -205,7 +204,7 @@ class GraphIndex(_Value):
                         raise _fail("Duplicate Route method/path", loc)
                     routes.add(route)
                 continue
-            contract = evidence.get(canonical_json(node.binding.as_json()))
+            contract = evidence.get(node.binding)
             if contract is None:
                 raise _fail("Pinned registry contract required for executable publication", loc,
                             "binding_contract_required")

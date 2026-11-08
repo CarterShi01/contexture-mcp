@@ -8,6 +8,7 @@ dispatch complete calls, not hold this thread lock across await boundaries.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
@@ -36,6 +37,9 @@ from contexture.core.graph.transactions import (
     Limits, PayloadProvider, Preview, TransactionEnvelope, admit_transition,
     prepare, prepare_revert, preview as make_preview,
 )
+
+_LOG = logging.getLogger("contexture.managed.owner")
+
 
 Wire = dict[str, Any]
 FrozenObject = Mapping[str, FrozenJSON]
@@ -166,7 +170,7 @@ class GraphOwner:
         self._payloads, self._limits = payloads, limits
         # Validated once; indexed by exact binding descriptor, not node identity.
         self._contracts = (None if publication_contracts is None
-                           else tuple(contract_lookup(publication_contracts).values()))
+                           else contract_lookup(publication_contracts))
         self._projections = dict(projections or {})
         self._tags: dict[str, str] = {}
         for name, projection in self._projections.items():
@@ -371,8 +375,10 @@ class GraphOwner:
             last_hash = tail[0]["record_hash"]
             for key, value in receipt_updates.items():
                 self._receipts[key] = value
-        except BaseException:
+        except BaseException as exc:
             self._stopped = True
+            _LOG.error("graph owner writes stopped; close and reopen to recover",
+                       extra={"error_code": getattr(exc, "code", type(exc).__name__)})
             # These keys were proven absent from the accepted prefix. Undo even
             # an index allocation failure after partial publication.
             for key in receipt_updates:

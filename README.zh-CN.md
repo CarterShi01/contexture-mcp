@@ -118,6 +118,7 @@ Open 披露指导与 Schema，Invoke 执行 Tool；业务授权仍由应用与 H
 | 组合 Role、Skill 与 Tool | [应用声明指南](docs/guides/authoring.zh-CN.md) |
 | 本地化 Server、网关和路由文案 | [本地化展示](docs/guides/authoring.zh-CN.md#本地化展示) |
 | 连接 Host 或提供 MCP／REST | [托管指南](docs/guides/hosting.zh-CN.md) |
+| 在 Agent 使用中修改树（版本化、热加载） | [Managed 运行时](docs/guides/managed-runtime.zh-CN.md) |
 | 理解设计及其他方案 | [设计与取舍](docs/design.zh-CN.md) |
 | 探索可运行示例 | [事故 Demo](contexture/demo/README.zh-CN.md) |
 | 查看后续方向 | [路线图](docs/roadmap.zh-CN.md) |

@@ -53,6 +53,12 @@ class DefinitionDiff:
     def empty(self) -> bool:
         return all(not self.value[k] for k in GROUPS)
 
+    def entries(self, group: str) -> list[Wire]:
+        """Detached entries of one group: nodes, membership, uses, publications, locales."""
+        if group not in GROUPS:
+            raise GraphError("schema_invalid", "Unknown DefinitionDiff group")
+        return cast(list[Wire], thaw_json(self.value[group]))
+
 
 def definition_diff(base: GraphDefinition, candidate: GraphDefinition) -> DefinitionDiff:
     """Net endpoint diff. Whole relation lists avoid ordinal-shift fake moves.

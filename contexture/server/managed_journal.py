@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import errno
 import hashlib
+import logging
 import os
 import re
 import stat
@@ -39,6 +40,8 @@ from contexture.core.graph.canonical import (
 	parse_counter,
 )
 
+_LOG = logging.getLogger("contexture.managed.journal")
+
 # Backward-compatible adapter aliases; canonical.py owns the exact registry.
 PAYLOAD_DOMAIN = JOURNAL_PAYLOAD_DOMAIN
 RECORD_DOMAIN = JOURNAL_RECORD_DOMAIN
@@ -48,6 +51,23 @@ PROJECTIONS = frozenset({
 })
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _PAD = re.compile(r"[0-9]{20}\Z")
+
+
+@lru_cache(maxsize=1)
+def _packaged_schema_bytes() -> bytes:
+	from importlib.resources import files
+
+	return files("contexture.server").joinpath("managed.schema.json").read_bytes()
+
+
+def managed_schema() -> dict[str, Any]:
+	"""The managed.schema.json shipped with this package (a fresh detached copy).
+
+	Byte-identical to spec/managed/schemas/managed.schema.json (enforced by tests).
+	"""
+	import json
+
+	return json.loads(_packaged_schema_bytes())
 
 
 @lru_cache(maxsize=1)
@@ -198,15 +218,16 @@ class FileJournal:
 
 	@classmethod
 	def open(
-		cls, root: Path | str, *, schema: Mapping[str, Any],
+		cls, root: Path | str, *, schema: Mapping[str, Any] | None = None,
 		durability: str = "strict", projector: ProjectionPort | None = None,
 		fault: Callable[[str], None] | None = None,
 		_restore_bytes: bytes | None = None,
 	) -> FileJournal:
 		"""Open/create a private store; never seed over an unreadable META.
 
-		schema is the host's local registered managed.schema.json document.
-		No remote references are permitted. An existing profile must match
+		schema is the host's local registered managed.schema.json document;
+		None uses the copy shipped with this package. No remote references
+		are permitted. An existing profile must match
 		exactly; callers cannot silently weaken or relabel durability.
 		"""
 		owner = cls()
@@ -218,7 +239,7 @@ class FileJournal:
 		owner.durability = durability
 		owner._fault = fault
 		owner._projector = projector
-		owner._schema = _detach(schema)
+		owner._schema = _detach(managed_schema() if schema is None else schema)
 		try:
 			owner._validators = owner._make_validators()
 			owner._check_platform()
@@ -395,6 +416,7 @@ class FileJournal:
 			info = None
 		if info is None or (info.st_dev, info.st_ino) != self._lock_identity:
 			self._unknown = True
+			_LOG.error("writer lock removed or replaced; journal owner stopped")
 			raise JournalError("store_in_use", "Writer lock was removed or replaced; owner stopped")
 
 	def close(self) -> None:
@@ -666,6 +688,8 @@ class FileJournal:
 			self._sync_dir(target.parent)
 			self._sync_dir(path.parent)
 			self.recovery_actions.append(evidence)
+			_LOG.warning("journal recovery quarantined unpublished work",
+				extra={"artifact": target.name, "digest": digest})
 		# Indexes are in-memory and entirely rebuilt from accepted records.
 		# Arbitrary stale disposable files never become authority.
 
@@ -759,6 +783,8 @@ class FileJournal:
 					dict.pop(self._receipts, key, None)
 				while len(self._records) >= sequence:
 					list.pop(self._records)
+				_LOG.error("journal index update failed after publication; writes stopped",
+					extra={"journal_seq": str(sequence)})
 				raise CommitUnknown() from exc
 			return returned
 

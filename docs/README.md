@@ -24,6 +24,8 @@ install → generate → inspect → call → extend → connect a host.
 - [Authoring](guides/authoring.md): complete Python declaration, vocabulary,
   development commands, and public API boundaries.
 - [Hosting](guides/hosting.md): Claude Code / Codex, MCP gateways, HTTP, and REST.
+- [Managed runtime](guides/managed-runtime.md): edit a live tree with transactions,
+  history/diff/revert, and hot-swapped releases.
 - [External dependencies](handbook.md#7-connect-external-systems-only-when-needed): Channels and lifecycle.
 - [Prompts and resources](handbook.md#8-publish-optional-entrances): additional entrances to existing capabilities.
 - [Safety and troubleshooting](handbook.md#10-local-safety-and-troubleshooting).

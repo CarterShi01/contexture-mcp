@@ -17,7 +17,7 @@ import io
 from pathlib import Path
 import sys
 import tomllib
-from typing import NoReturn, Sequence
+from typing import NoReturn, Sequence, cast
 
 from ..application.managed_management import (
     COMMANDS, WRITE_COMMANDS, ManagedManagementService, decode_request, encode_result,
@@ -57,8 +57,18 @@ def _failure(exc: Exception) -> tuple[dict[str, object], int]:
     if isinstance(exc, _Usage):
         code = "schema_invalid"
     status = 2 if code in {"schema_invalid", "unsupported_contract", "limit_exceeded", "too_large"} else 1
-    return {"schema": "contexture.management-error/v1", "error": {
-        "code": code, "message": "Managed command refused; consult trusted Host diagnostics."}}, status
+    error: dict[str, object] = {"code": code,
+                                "message": "Managed command refused; consult trusted Host diagnostics."}
+    if (code != "management_failed" and not isinstance(exc, _Usage)
+            and type(exc).__module__.startswith("contexture.")):
+        # Framework-authored, bounded text only (never Host exception text).
+        # Rule diagnostics name nodes the caller was already admitted to read:
+        # every transaction preview first requires full-graph read admission.
+        error["message"] = str(exc)
+        to_dict = getattr(exc, "to_dict", None)
+        if getattr(exc, "diagnostics", None) and callable(to_dict):
+            error["diagnostics"] = cast(dict[str, object], to_dict())["diagnostics"]
+    return {"schema": "contexture.management-error/v1", "error": error}, status
 
 
 def _factory(project: Path) -> AbstractContextManager[ManagedManagementService]:

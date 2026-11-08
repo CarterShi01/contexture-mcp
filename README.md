@@ -127,6 +127,7 @@ the Tool. Business authorization stays with the application and host.
 | Localize server, gateway, and routing copy | [Localized presentation](docs/guides/authoring.md#localized-presentation) |
 | Integrate or browse compiled node metadata | [Node Catalog and debug inspector](docs/handbook.md#10-local-safety-and-troubleshooting) |
 | Connect a host or serve MCP / REST | [Hosting guide](docs/guides/hosting.md) |
+| Change the tree while agents use it (versioned, hot reload) | [Managed runtime](docs/guides/managed-runtime.md) |
 | Understand the design and alternatives | [Design and trade-offs](docs/design.md) |
 | Explore a working example | [Incident demo](contexture/demo/README.md) |
 | See planned improvements | [Roadmap](docs/roadmap.md) |

@@ -8,6 +8,15 @@ public API changes require a new major version.
 
 ### Added
 
+- Added the candidate managed runtime for trees that change while agents use
+  them: `ManagedGraphHost` (`contexture.server.managed_host`) composes a durable
+  single-owner FileJournal, admitted idempotent graph transactions, replayable
+  history with per-node history, stable-ID/execution/surface diffs and revert,
+  explicit releases, and atomic hot swap where each request pins one immutable
+  generation. `python_tool` registers an async Python handler as a binding; the
+  managed schema ships with the package. See the
+  [managed runtime guide](docs/guides/managed-runtime.md) and
+  `examples/managed_dynamic_tree.py`.
 - Added the versioned, immutable `contexture.node-catalog/v1` read model over
   compiled Role, Skill, and Tool graphs, with deterministic JSON/digests,
   namespaced application contributors, `contexture catalog`, and common APIs

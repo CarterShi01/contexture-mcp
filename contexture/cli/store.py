@@ -10,7 +10,7 @@ import sys
 from typing import NoReturn, Sequence
 
 from ..application.managed_management import encode_result
-from ..server.managed_journal import JournalError
+from ..server.managed_journal import JournalError, managed_schema
 from ..server.managed_store_ops import (
     StoreBudget, StoreOperations, StoreResult, load_schema, publish_backup, read_artifact,
 )
@@ -25,8 +25,11 @@ def main(argv: Sequence[str]) -> int:
     parser = _Parser(prog="contexture store", description=__doc__)
     parser.add_argument("command", choices=("doctor", "backup", "restore"))
     parser.add_argument("--root", required=True, type=Path)
-    parser.add_argument("--schema", required=True, type=Path,
-                        help="trusted local candidate schema, not a remote reference")
+    parser.add_argument("--schema", type=Path,
+                        help="trusted local schema (default: the schema shipped with contexture)")
+    parser.add_argument("--max-store-mib", type=int, default=StoreBudget.max_bytes // (1024 * 1024),
+                        help="refuse stores larger than this (admission bound, not capacity)")
+    parser.add_argument("--max-files", type=int, default=StoreBudget.max_files)
     parser.add_argument("--durability", choices=("strict", "process_crash"), default="strict")
     parser.add_argument("--input", type=Path, help="restore backup artifact")
     parser.add_argument("--output", type=Path, help="new private backup artifact")
@@ -37,7 +40,11 @@ def main(argv: Sequence[str]) -> int:
                 or (args.command == "restore") != (args.input is not None)
                 or (args.command == "restore" and not args.allow_write)):
             raise JournalError("schema_invalid", "Explicit artifact and restore profile required")
-        operations = StoreOperations(schema=load_schema(args.schema), durability=args.durability)
+        budget = StoreBudget(max_files=args.max_files, max_bytes=args.max_store_mib * 1024 * 1024,
+                             max_snapshot_bytes=max(StoreBudget.max_snapshot_bytes,
+                                                    3 * args.max_store_mib * 1024 * 1024))
+        schema = managed_schema() if args.schema is None else load_schema(args.schema)
+        operations = StoreOperations(schema=schema, durability=args.durability, budget=budget)
         extra: dict[str, object] = {}
         if args.command == "doctor":
             result = operations.doctor(args.root)
@@ -53,13 +60,13 @@ def main(argv: Sequence[str]) -> int:
         target = sys.stdout if result.code == "ok" else sys.stderr
         target.write(encode_result(wire).decode("utf-8") + "\n")
         return 0 if result.code == "ok" else 1
-    except (JournalError, OSError) as exc:
+    except (JournalError, OSError, ValueError) as exc:
         if isinstance(exc, OSError):
             code = {errno.EEXIST: "restore_conflict", errno.ENOENT: "store_missing",
                     errno.EACCES: "permission_denied", errno.ENOSPC: "disk_full"}.get(
                         exc.errno if exc.errno is not None else -1, "storage_error")
         else:
-            code = exc.code
+            code = exc.code if isinstance(exc, JournalError) else "schema_invalid"
         status = 2 if code in {"schema_invalid", "limit_exceeded"} else 1
         wire = {"schema": "contexture.store-result/v1",
                 "result": asdict(StoreResult("offline", code))}

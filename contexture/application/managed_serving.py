@@ -10,6 +10,7 @@ No owner boundary spans an await. Retirement is owned, bounded and observable.
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import AsyncIterator, Mapping
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from dataclasses import dataclass
@@ -30,6 +31,8 @@ from contexture.core.graph.policy import AdmissionRequest, VerifiedContext
 from contexture.core.graph.releases import (
     DesiredRelease, ReleaseRequest, import_release_state,
 )
+
+_LOG = logging.getLogger("contexture.managed.serving")
 
 
 def _uuid(value: str) -> str:
@@ -266,6 +269,8 @@ class LocalServingCoordinator:
                     self._active = replacement
                 swapped = True
                 self._pending_observation = captured
+            _LOG.info("generation activated", extra={"graph_id": self.graph_id,
+                      "release_epoch": captured.epoch, "generation_id": captured.generation_id})
             if previous is not None:
                 self._retire(previous[1])
             return self.retry_observation()
@@ -288,6 +293,9 @@ class LocalServingCoordinator:
                     self._errors.append(journal_error)
             if isinstance(exc, asyncio.CancelledError):
                 raise
+            _LOG.warning("generation preparation failed; last known good kept",
+                         extra={"graph_id": self.graph_id, "release_epoch": captured.epoch,
+                                "error_code": getattr(exc, "code", type(exc).__name__)})
             return LocalServingResult(captured, "failed", exc)
         finally:
             if isinstance(ready, ReadyGeneration) and not swapped:

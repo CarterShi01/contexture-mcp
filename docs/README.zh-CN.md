@@ -23,6 +23,7 @@
 
 - [应用声明](guides/authoring.zh-CN.md)：完整 Python 示例、声明词汇、开发命令和 API 边界。
 - [托管](guides/hosting.zh-CN.md)：Claude Code／Codex、MCP 网关、HTTP 与 REST。
+- [Managed 运行时](guides/managed-runtime.zh-CN.md)：用事务修改运行中的树，历史/diff/revert 与热切换发布。
 - [外部依赖](handbook.zh-CN.md#7-只在需要时连接外部系统)：Channels 与生命周期。
 - [Prompt 和 Resource](handbook.zh-CN.md#8-添加可选入口)：已有能力的其他入口。
 - [安全与故障处理](handbook.zh-CN.md#10-本地安全与故障处理)。
