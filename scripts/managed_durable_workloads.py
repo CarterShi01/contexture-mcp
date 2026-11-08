@@ -130,9 +130,12 @@ class CountedOwner(GraphOwner):
         super().__init__(*args, **kwargs)
 
     def _replay(self, records, **kwargs):
-        self.work["reducer_records"] += len(records)
-        self.work["reducer_events"] += sum(len(r["events"]) for r in records)
-        return super()._replay(records, **kwargs)
+        def counted():
+            for record in records:
+                self.work["reducer_records"] += 1
+                self.work["reducer_events"] += len(record["events"])
+                yield record
+        return super()._replay(counted(), **kwargs)
 
 
 def make_owner(journal, host, *, releases=False):
@@ -585,7 +588,9 @@ async def churn_workload(cycles, input_seed, profile, path):
         "ReplicaObserved": 1 + cycles,
     }
     expected_projections = manager._external.copy()
-    expected_receipts = manager._receipts.copy()
+    receipt_keys = [(r["command_receipt"]["actor_ref"], r["command_receipt"]["idempotency_key"])
+                    for r in records if "command_receipt" in r]
+    expected_receipts = {key: manager._receipt(key) for key in receipt_keys}
     reopened = LogicJournal(records) if profile == "logic" else FileJournal.open(path, schema=SCHEMA)
     replay_port = CountedPort(reopened)
     host.denied = True
@@ -595,7 +600,8 @@ async def churn_workload(cycles, input_seed, profile, path):
     replay_metrics = dict(wall_seconds=time.perf_counter() - start,
                           cpu_seconds=time.process_time() - cpu)
     assert not host.calls
-    assert recovered._external == expected_projections and recovered._receipts == expected_receipts
+    assert recovered._external == expected_projections
+    assert {key: recovered._receipt(key) for key in receipt_keys} == expected_receipts
     assert recovered._histories["g"] == manager._histories["g"]
     replay_counts = dict(recovered.work)
     recovered.close()
@@ -607,7 +613,7 @@ async def churn_workload(cycles, input_seed, profile, path):
         retained_identity_metadata=dict(attempt_ids=len(releases.serving._attempts),
             generation_ids=len(releases.serving._generations),
             graph_history_records=len(manager._histories["g"].records),
-            receipts=len(manager._receipts)),
+            receipts=len(receipt_keys)),
         peak_live=dict(peaks), final_resources=dict(resource_handles=0, resource_fds=0,
             open_fds=len(os.listdir("/proc/self/fd")), runs=runs.counts, catalog=catalog.counts,
             watch_sessions=len(watch._sessions), serving=releases.serving.counts),

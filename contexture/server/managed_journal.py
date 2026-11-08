@@ -15,6 +15,7 @@ import os
 import re
 import stat
 import sys
+from collections import OrderedDict
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -51,6 +52,91 @@ PROJECTIONS = frozenset({
 })
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _PAD = re.compile(r"[0-9]{20}\Z")
+_INDEX = "journal-index"
+
+
+class _RecordStore:
+	"""Accepted records as a sequence, keeping only each record's hash in memory.
+
+	Bodies are read from disk on demand and re-verified against the hash
+	chain established when the store was opened (so a file altered after open
+	is detected); a small LRU keeps recent bodies. Memory per record is a hash
+	string instead of the whole record, so long journals stay bounded.
+	"""
+
+	CACHE = 256
+
+	def __init__(self, load: Callable[[int, str | None, str], dict[str, Any]]) -> None:
+		self._hashes: list[str] = []
+		self._load = load
+		self._cache: OrderedDict[int, dict[str, Any]] = OrderedDict()
+
+	def __len__(self) -> int:
+		return len(self._hashes)
+
+	def __bool__(self) -> bool:
+		return bool(self._hashes)
+
+	def hash(self, index: int) -> str:
+		return self._hashes[index]
+
+	def append(self, record: dict[str, Any]) -> None:
+		self._hashes.append(record["record_hash"])
+		self._remember(len(self._hashes) - 1, record)
+
+	def pop(self) -> None:
+		self._cache.pop(len(self._hashes) - 1, None)
+		self._hashes.pop()
+
+	def _remember(self, index: int, record: dict[str, Any]) -> None:
+		self._cache[index] = record
+		self._cache.move_to_end(index)
+		while len(self._cache) > self.CACHE:
+			self._cache.popitem(last=False)
+
+	def _get(self, index: int) -> dict[str, Any]:
+		record = self._cache.get(index)
+		if record is None:
+			previous = self._hashes[index - 1] if index else None
+			record = self._load(index + 1, previous, self._hashes[index])
+			self._remember(index, record)
+		else:
+			self._cache.move_to_end(index)
+		return record
+
+	def __getitem__(self, key: int | slice) -> Any:
+		if isinstance(key, slice):
+			return [self._get(i) for i in range(*key.indices(len(self._hashes)))]
+		if key < 0:
+			key += len(self._hashes)
+		if not 0 <= key < len(self._hashes):
+			raise IndexError(key)
+		return self._get(key)
+
+	def __iter__(self) -> Iterator[dict[str, Any]]:
+		for index in range(len(self._hashes)):
+			yield self._get(index)
+
+
+class _ReceiptIndex:
+	"""(actor_ref, idempotency_key) -> journal_seq; receipts load with records."""
+
+	def __init__(self, records: _RecordStore) -> None:
+		self._seq: dict[tuple[str, str], int] = {}
+		self._records = records
+
+	def __contains__(self, key: object) -> bool:
+		return key in self._seq
+
+	def __setitem__(self, key: tuple[str, str], receipt: Mapping[str, Any]) -> None:
+		self._seq[key] = int(receipt["journal_seq"])
+
+	def get(self, key: tuple[str, str]) -> dict[str, Any] | None:
+		sequence = self._seq.get(key)
+		return None if sequence is None else self._records[sequence - 1]["command_receipt"]
+
+	def pop(self, key: tuple[str, str], default: object = None) -> object:
+		return self._seq.pop(key, default)
 
 
 @lru_cache(maxsize=1)
@@ -196,9 +282,11 @@ class FileJournal:
 		self._confirmed_parents: set[Path] = set()
 		self._closed = False
 		self._unknown = False
-		self._records: list[dict[str, Any]] = []
+		self._records: Any = _RecordStore(self._reload)
 		self._event_batch_ids: set[str] = set()
-		self._receipts: dict[tuple[str, str], dict[str, Any]] = {}
+		self._batch_by_seq: dict[int, str] = {}
+		self._trust_index = True
+		self._receipts: Any = _ReceiptIndex(self._records)
 		self.recovery_actions: list[dict[str, str]] = []
 
 	@classmethod
@@ -222,6 +310,7 @@ class FileJournal:
 		cls, root: Path | str, *, schema: Mapping[str, Any] | None = None,
 		durability: str = "strict", projector: ProjectionPort | None = None,
 		fault: Callable[[str], None] | None = None,
+		trust_index: bool = True,
 		_restore_bytes: bytes | None = None,
 	) -> FileJournal:
 		"""Open/create a private store; never seed over an unreadable META.
@@ -239,6 +328,7 @@ class FileJournal:
 			raise JournalError("unsafe_path", "Journal stores must stay outside source worktrees")
 		owner.durability = durability
 		owner._fault = fault
+		owner._trust_index = trust_index
 		owner._projector = projector
 		owner._schema = _detach(managed_schema() if schema is None else schema)
 		try:
@@ -618,6 +708,19 @@ class FileJournal:
 		if path.parent != self.root:
 			self._sync_dir(path.parent.parent)
 
+	def _reload(self, sequence: int, previous: str | None, expected: str) -> dict[str, Any]:
+		"""Re-read one accepted record and prove it is the one verified at open."""
+		record = self._read_json(self._record_path(sequence))
+		payload = {key: record[key] for key in ("events", "command_receipt") if key in record}
+		subject = {key: value for key, value in record.items() if key != "record_hash"}
+		if (record.get("record_hash") != expected or record.get("prev_record_hash") != previous
+				or record.get("journal_seq") != str(sequence)
+				or record.get("payload_digest") != _digest(PAYLOAD_DOMAIN, payload)
+				or expected != _digest(RECORD_DOMAIN, subject)):
+			self._unknown = True
+			raise JournalError("corruption", "Accepted record changed after it was verified")
+		return record
+
 	def _verify_record(self, record: dict[str, Any], sequence: int, previous: str | None) -> None:
 		self._validate("CommitRecord", record)
 		if (record["store_id"] != self.meta["store_id"] or record["journal_seq"] != str(sequence)
@@ -643,10 +746,59 @@ class FileJournal:
 		for ref in self._blob_refs(record):
 			self.get_blob(ref)
 
+	def _load_index(self, count: int) -> tuple[int, dict[str, Any], dict[str, Any]] | None:
+		"""Newest sealed index whose anchor record verifies; None means full scrub.
+
+		The index is acceleration data, never authority: it is accepted only if
+		its self digest, store id and anchor record (fully verified, linked to
+		the index's previous hash) agree; prefix bodies are re-verified against
+		its hashes whenever they are later loaded. Any doubt => full scrub.
+		"""
+		directory = self.root / "hints" / _INDEX
+		if not directory.is_dir():
+			return None
+		for path in sorted(directory.iterdir(), reverse=True):
+			try:
+				if path.suffix != ".json" or not _PAD.fullmatch(path.stem):
+					continue
+				value = self._read_json(path)
+				sequence = int(path.stem)
+				subject = {k: v for k, v in value.items() if k != "index_digest"}
+				hashes, batches = value["hashes"], value["batches"]
+				if (value.get("schema") != "contexture.journal-index/v1"
+						or value["index_digest"] != _digest(CHECKPOINT_DOMAIN, subject)
+						or value["store_id"] != self.meta["store_id"] or value["journal_seq"] != str(sequence)
+						or not 1 <= sequence <= count or len(hashes) != sequence or len(batches) != sequence):
+					continue
+				anchor = self._read_json(self._record_path(sequence))
+				self._verify_record(anchor, sequence, hashes[sequence - 2] if sequence > 1 else None)
+				if anchor["record_hash"] != hashes[-1]:
+					continue
+				return sequence, value, anchor
+			except (JournalError, KeyError, TypeError, ValueError, OSError):
+				_LOG.warning("ignoring journal index hint; full verification")
+		return None
+
+	def seal(self) -> None:
+		"""Write a sealed index of the accepted chain so the next open is O(tail)."""
+		with self._guard(write=True):
+			if not self._records:
+				return
+			count = len(self._records)
+			hashes = list(self._records._hashes)
+			batches: list[str | None] = [None] * count
+			receipts = sorted([actor, key, seq] for (actor, key), seq in self._receipts._seq.items())
+			for index, batch in self._batch_by_seq.items():
+				batches[index - 1] = batch
+			if any(b is None for b in batches):
+				return  # indexes rebuilt by an older path; skip rather than guess
+			subject = {"schema": "contexture.journal-index/v1", "store_id": self.meta["store_id"],
+					   "journal_seq": str(count), "hashes": hashes, "batches": batches, "receipts": receipts}
+			data = canonical_json({**subject, "index_digest": _digest(CHECKPOINT_DOMAIN, subject)})
+		self.write_hint(_INDEX, str(count), data)
+
 	def _recover(self) -> None:
-		"""Full-chain discovery ignores hints/indexes, including later buckets."""
-		for path in self.root.rglob("*"):
-			self._check_path(path, directory=path.is_dir())
+		"""Full-chain discovery, or sealed index + full verification of the tail."""
 		if "restored_from" in self.meta:
 			self.get_blob(self.meta["restored_from"])
 		paths: list[tuple[int, Path]] = []
@@ -660,8 +812,29 @@ class FileJournal:
 				if path != self._record_path(seq):
 					raise JournalError("corruption", "Record in wrong deterministic bucket")
 				paths.append((seq, path))
+		sealed = self._load_index(len(paths)) if self._trust_index else None
+		trusted = 0 if sealed is None else sealed[0]
+		for path in self.root.rglob("*"):
+			if trusted and path.parent.parent.name == "records" and _PAD.fullmatch(path.stem) \
+					and int(path.stem) <= trusted:
+				continue  # sealed prefix: re-verified whenever its body is loaded
+			self._check_path(path, directory=path.is_dir())
 		previous = None
 		batches: set[str] = set()
+		if sealed is not None:
+			index = sealed[1]
+			for seq, (record_hash, batch) in enumerate(zip(index["hashes"], index["batches"]), 1):
+				if batch in batches:
+					raise JournalError("corruption", "Duplicate event batch identity")
+				batches.add(batch)
+				self._batch_by_seq[seq] = batch
+				self._records._hashes.append(record_hash)
+			for actor, key, seq in index["receipts"]:
+				if (actor, key) in self._receipts or not 1 <= seq <= trusted:
+					raise JournalError("corruption", "Invalid sealed receipt index")
+				self._receipts._seq[(actor, key)] = seq
+			previous = index["hashes"][-1]
+			self._records._remember(trusted - 1, sealed[2])
 		# Publication fsyncs each file BEFORE its rename, so a visible record's
 		# bytes are durable; only directory entries can be pending after a crash.
 		# Confirm each distinct directory once instead of every file + parents.
@@ -669,11 +842,14 @@ class FileJournal:
 		for expected, (seq, path) in enumerate(sorted(paths), 1):
 			if seq != expected:
 				raise JournalError("corruption", "Missing or duplicate committed record")
+			if seq <= trusted:
+				continue
 			record = self._read_json(path)
 			self._verify_record(record, seq, previous)
 			if record["event_batch_id"] in batches:
 				raise JournalError("corruption", "Duplicate event batch identity")
 			batches.add(record["event_batch_id"])
+			self._batch_by_seq[seq] = record["event_batch_id"]
 			receipt = record.get("command_receipt")
 			if receipt is not None:
 				key = (receipt["actor_ref"], receipt["idempotency_key"])
@@ -734,6 +910,23 @@ class FileJournal:
 				raise JournalError("schema_invalid", "Cursor exceeds durable watermark")
 			return tuple(_detach(record) for record in self._records[offset:])
 
+	def iter_records(self, *, after: str = "0", chunk: int = 256) -> Iterator[dict[str, Any]]:
+		"""Stream accepted records after a cursor without materializing them all.
+
+		Chunks are read under the store mutex; the lock is never held across a
+		yield. The stream ends at the watermark observed when it started.
+		"""
+		with self._guard():
+			offset = parse_counter(after)
+			end = len(self._records)
+			if offset > end:
+				raise JournalError("schema_invalid", "Cursor exceeds durable watermark")
+		while offset < end:
+			with self._guard():
+				batch = [_detach(record) for record in self._records[offset:min(offset + chunk, end)]]
+			yield from batch
+			offset += len(batch)
+
 	def get_receipt(self, actor_ref: str, idempotency_key: str) -> dict[str, Any] | None:
 		with self._guard():
 			receipt = self._receipts.get((actor_ref, idempotency_key))
@@ -769,7 +962,7 @@ class FileJournal:
 					return _detach(self._records[int(prior["journal_seq"]) - 1])
 			record = {"schema": "contexture.journal-record/v1", "store_id": self.meta["store_id"],
 					  "journal_seq": str(sequence), "event_batch_id": event_batch_id or str(uuid4()),
-					  "prev_record_hash": self._records[-1]["record_hash"] if self._records else None,
+					  "prev_record_hash": self._records.hash(-1) if self._records else None,
 					  "events": _detach(events), "written_at": written_at or _utc(),
 					  "actor_ref": actor_ref, "correlation_id": correlation_id or str(uuid4())}
 			if receipt is not None:
@@ -788,16 +981,18 @@ class FileJournal:
 				# Private indexes are fenced by _mutex; append only the verified
 				# suffix and undo it on failure before any reader can observe it.
 				self._event_batch_ids.add(record["event_batch_id"])
+				self._batch_by_seq[sequence] = record["event_batch_id"]
 				if receipt is not None:
 					self._receipts[(receipt["actor_ref"], receipt["idempotency_key"])] = receipt
 				self._records.append(record)
 			except BaseException as exc:
 				self._unknown = True
 				set.discard(self._event_batch_ids, record["event_batch_id"])
+				self._batch_by_seq.pop(sequence, None)
 				if key is not None:
-					dict.pop(self._receipts, key, None)
+					self._receipts.pop(key, None)
 				while len(self._records) >= sequence:
-					list.pop(self._records)
+					self._records.pop()
 				_LOG.error("journal index update failed after publication; writes stopped",
 					extra={"journal_seq": str(sequence)})
 				raise CommitUnknown() from exc
@@ -915,7 +1110,7 @@ class FileJournal:
 		No receipt-only faux graph/release engine is supplied by the adapter.
 		"""
 		with self._guard(write=True):
-			projections = self._project(self._records)
+			projections = self._project(list(self._records))
 			subject = self._checkpoint_subject(projections, len(self._records))
 			value = {**subject, "checkpoint_digest": _digest(CHECKPOINT_DOMAIN, subject)}
 			self._check_checkpoint(value)
@@ -970,7 +1165,7 @@ class FileJournal:
 		checkpoint state + tail and proves its equivalence for all projections.
 		"""
 		with self._guard():
-			return _detach(self._project(self._records))
+			return _detach(self._project(list(self._records)))
 
 	def export_snapshot(self) -> bytes:
 		"""Consistent canonical backup envelope, while holding the owner mutex.
@@ -980,7 +1175,7 @@ class FileJournal:
 		Its format is adapter-local, not a new managed wire-schema declaration.
 		"""
 		with self._guard(write=True):
-			refs = self._blob_refs(self._records)
+			refs = self._blob_refs(list(self._records))
 			if "restored_from" in self.meta:
 				refs.append(self.meta["restored_from"])
 			checkpoint = self.read_checkpoint() if self._projector is not None else None
@@ -988,7 +1183,7 @@ class FileJournal:
 				refs.extend(self._blob_refs(checkpoint))
 			blobs = {ref["digest"]: self.get_blob(ref).hex() for ref in refs}
 			subject = {"schema": "contexture.file-journal-backup/v1", "meta": _detach(self.meta),
-					   "records": _detach(self._records), "blobs": blobs, "checkpoint": checkpoint}
+					   "records": _detach(list(self._records)), "blobs": blobs, "checkpoint": checkpoint}
 			return canonical_json({**subject, "backup_digest": _digest(JOURNAL_BACKUP_DOMAIN, subject)})
 
 	@classmethod
@@ -1068,7 +1263,7 @@ class FileJournal:
 			previous = record["record_hash"]
 		if "restored_from" in verifier.meta:
 			read_blob(verifier.meta["restored_from"])
-		verifier._records = value["records"]
+		verifier._records = list(value["records"])
 		verifier._projector = projector
 		if value["checkpoint"] is not None:
 			verifier._check_checkpoint(value["checkpoint"])

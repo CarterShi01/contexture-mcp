@@ -341,6 +341,7 @@ class ManagedGraphHost:
                    execution_adapters: Mapping[str, ExecutionAdapter] | None = None,
                    clock: Callable[[], str] = utc_clock, preview_seconds: int = 300,
                    prepare_timeout: float = 30, snapshot_every: int = 1000,
+                   history_window: int = 256,
                    ) -> AsyncIterator[ManagedGraphHost]:
         """Open (or create) a store and start serving its desired release, if any.
 
@@ -350,6 +351,8 @@ class ManagedGraphHost:
         maps an ABI to its ExecutionAdapter; ``python-managed-call/v1`` is built in.
         Every ``snapshot_every`` records (and on a clean close) an owner snapshot
         is written so startup replays only the journal tail (0 disables).
+        ``history_window`` revisions per graph stay in memory; older revisions
+        are rebuilt from the journal on demand, so memory stays bounded.
         Bindings are attested per exact contract, not per node, so Tools created
         at runtime against a deployed binding execute without a restart.
         """
@@ -366,7 +369,7 @@ class ManagedGraphHost:
         try:
             owner = GraphOwner(journal, identities=policy, admission=policy, authority_fence=policy,
                 clock=clock, approvals=_Approvals(policy), publication_contracts=provider.contract,
-                projections={PROJECTION_NAME: release_projection()})
+                projections={PROJECTION_NAME: release_projection()}, history_window=history_window)
             host = cls(journal, owner, provider, policy=policy, graph_id=graph_id,
                        target_id=target_id, instance_id=instance_id, registrations=registrations,
                        clock=clock, preview_seconds=preview_seconds, prepare_timeout=prepare_timeout,

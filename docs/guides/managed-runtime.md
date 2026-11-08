@@ -215,11 +215,18 @@ any registry, so retiring v1 later never makes the store unreadable.
   Close and reopen; recovery resolves the durable suffix. Never retry with a new
   idempotency key to "make it work".
 * **Startup and snapshots**: every `snapshot_every` records (default 1000) and on
-  a clean close the host writes an owner snapshot (`GraphOwner.checkpoint()`).
-  Startup verifies the record chain, restores the snapshot when its anchor
-  (store id, sequence, record hash, package version) matches, and applies only
-  the journal tail; older revisions are rebuilt from the journal on first use.
-  Snapshots are disposable hints, never authority: any mismatch means full replay.
+  a clean close the host writes an owner snapshot and a sealed journal index
+  (`GraphOwner.checkpoint()`). On open, the journal checks the record sequence
+  is contiguous, fully verifies the seal's anchor and every record after it,
+  and takes the prefix hashes/receipt keys from the seal; the owner restores
+  the snapshot and replays only the tail. Both are disposable hints, never
+  authority: any mismatch means full verification and replay. Prefix record
+  bodies are re-verified against the sealed hashes whenever they are loaded.
+* **Bounded memory**: the journal keeps one hash (plus batch id and receipt
+  key) per record and an LRU of recent bodies; each graph keeps the newest
+  `history_window` revisions (default 256). Older revisions, full history,
+  node history and reverts are rebuilt from the journal on demand and not
+  retained; a watch cursor older than the window gets `resync_required`.
 * **Offline store tools** (with the service stopped):
   `contexture store doctor --root STORE` verifies in place without modifying the
   store: layout and permissions, the full record chain and receipts, every
@@ -234,8 +241,10 @@ any registry, so retiring v1 later never makes the store unreadable.
 ## Current limits
 
 * One writer process per store; no multi-replica rollout or cross-graph atomicity.
-* Startup still reads and hash-verifies every journal record (about 1 ms per
-  record on a small machine); snapshots remove the graph replay, not the chain
-  check. Backups are a single in-memory envelope bounded by `--max-store-mib`.
+* Startup after a seal is O(tail) plus a directory listing; without a seal (or
+  with `trust_index=False`) every record is read and verified (about 1 ms per
+  record on a small machine). Disk use grows with history (one file per
+  record; no compaction yet). Backups are a single in-memory envelope bounded
+  by `--max-store-mib`.
 * Only `python-managed-call/v1` execution is built in; other ABIs need an
   explicit `ExecutionAdapter`.

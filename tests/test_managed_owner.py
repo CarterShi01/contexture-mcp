@@ -144,18 +144,12 @@ def test_actual_file_journal_bootstrap_preview_commit_reopen(store):
 
 
 def test_incremental_owner_receipts_do_not_copy_prefix(store):
-    class NoCopyDict(dict):
-        def __iter__(self):
-            raise AssertionError("Full accepted receipt index copied")
-
-        def keys(self):
-            raise AssertionError("Full accepted receipt index copied")
-
     _, journal, host = store
     manager = owner(journal, host)
     boot(manager)
     original = manager.history("g")
-    manager._receipts = NoCopyDict(manager._receipts)
+    # The journal is the receipt index; the owner keeps no receipt copy at all.
+    assert not hasattr(manager, "_receipts")
     for i in range(1, 101):
         proposal = manager.preview(request(manager, key=f"edit-{i}", name=f"edit-{i}"), expires_at=LATER)
         assert manager.commit(proposal)["revision"] == str(i + 1)
@@ -164,24 +158,25 @@ def test_incremental_owner_receipts_do_not_copy_prefix(store):
     assert len(manager.history("g").records) == 101
 
 
-def test_partial_owner_receipt_publication_preserves_prefix_until_reopen(store):
-    class FailingDict(dict):
-        def __setitem__(self, key, value):
-            super().__setitem__(key, value)
-            raise MemoryError("receipt publication")
-
+def test_partial_owner_receipt_publication_preserves_prefix_until_reopen(store, monkeypatch):
     path, journal, host = store
     manager = owner(journal, host)
     boot(manager)
     proposal = manager.preview(request(manager), expires_at=LATER)
     previous_history = manager._histories["g"]
-    previous_receipts = dict(manager._receipts)
-    manager._receipts = FailingDict(manager._receipts)
+    original = manager._replay
+
+    def failing(records, **kwargs):
+        if kwargs.get("incremental"):
+            raise MemoryError("post-publication reduction")
+        return original(records, **kwargs)
+
+    monkeypatch.setattr(manager, "_replay", failing)
     with pytest.raises(MemoryError):
         manager.commit(proposal)
     assert manager.writes_stopped and manager._watermark == "1"
     assert manager._histories["g"] is previous_history
-    assert manager._receipts == previous_receipts
+    assert manager._receipt(("tenant:actor", "key")) is None  # durable, not yet reduced
     assert journal.watermark == "2"
     with pytest.raises(GraphError):
         manager.commit(proposal)

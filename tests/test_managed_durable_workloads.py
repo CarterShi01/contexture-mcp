@@ -70,7 +70,6 @@ def test_suffix_reducer_rejects_bad_tail_without_mutating_accepted_prefix(damage
     journal, _, _, owner = booted()
     try:
         accepted_history = owner._histories["g"]
-        accepted_receipts = owner._receipts.copy()
         proposal = owner.preview(request(owner), expires_at=LATER)
         owner.commit(proposal)
         tail = journal.records(after="1")[0]
@@ -90,8 +89,7 @@ def test_suffix_reducer_rejects_bad_tail_without_mutating_accepted_prefix(damage
         with pytest.raises(GraphError):
             prefix_owner._replay([tail], incremental=True)
         assert prefix_owner._histories["g"].head == accepted_history.head
-        assert prefix_owner._receipts == accepted_receipts
-        assert prefix_owner._watermark == "1"
+        assert prefix_owner._watermark == "1" and prefix_owner._journal.watermark == "1"
         prefix_owner.close()
     finally:
         owner.close()
@@ -118,7 +116,7 @@ def test_confirmed_append_mismatch_stops_writes_and_preserves_lkg(damage):
             owner.commit(proposal)
         assert owner.writes_stopped
         assert owner._histories["g"] is before and owner._watermark == "1"
-        assert ("tenant:actor", "key") not in owner._receipts
+        assert owner._receipt(("tenant:actor", "key")) is None  # beyond the owner watermark
         owner.close()
         recovered = make_owner(CountedPort(LogicJournal(journal.records())), Host())
         assert recovered.read("g").revision == "2"

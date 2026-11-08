@@ -114,3 +114,49 @@ def test_snapshot_survives_more_commits_and_restores_release_projection(store: P
         assert manager.read("g").definition.nodes["r"].name == "later"
         manager.close()
     assert len(list((store / "hints" / "owner-snapshot").iterdir())) == 2  # bounded retention
+
+
+def test_history_window_bounds_memory_and_old_revisions_rebuild(store: Path) -> None:
+    host = Host()
+    with FileJournal.open(store, schema=SCHEMA) as journal:
+        manager = make(journal, host, history_window=8)
+        manager.commit_bootstrap(manager.preview_bootstrap(seed(), expires_at=LATER))
+        for i in range(60):
+            manager.commit(manager.preview(request(manager, key=f"k{i}", name=f"n{i}"), expires_at=LATER))
+        retained = manager._histories["g"]
+        assert retained.size <= 16 and retained.head.revision == "61"
+        assert parse(retained.retained_lower_bound) > 1
+        # Older revisions are rebuilt from the journal, exactly.
+        assert manager.read("g", "2").definition.nodes["r"].name == "n0"
+        assert len(manager.history("g").records) == 61
+        preview = manager.preview_revert("g", "3", idempotency_key="undo", reason="r",
+                                         correlation_id="c", expires_at=LATER)
+        manager.commit(preview)
+        assert manager.read("g").definition.nodes["r"].name == "n1"
+        assert manager.receipt("g", "k0") is not None  # receipts come from the journal
+        manager.close()
+
+
+def test_snapshot_startup_streams_only_the_tail(store: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    host = Host()
+    populate(store, host, 40, snapshot_at=35)
+    seen: list[str] = []
+    original = FileJournal.iter_records
+
+    def counted(self: Any, *, after: str = "0", chunk: int = 256) -> Any:
+        for record in original(self, after=after, chunk=chunk):
+            seen.append(record["journal_seq"])
+            yield record
+
+    monkeypatch.setattr(FileJournal, "iter_records", counted)
+    with FileJournal.open(store, schema=SCHEMA) as journal:
+        manager = make(journal, host)
+        # First record (store origin), the snapshot anchor, then only the tail.
+        replayed = sorted({int(s) for s in seen})
+        assert replayed[-5:] == [37, 38, 39, 40, 41] and len([s for s in replayed if s < 36]) <= 1
+        assert manager.read("g").revision == "41"
+        manager.close()
+
+
+def parse(value: str) -> int:
+    return int(value)

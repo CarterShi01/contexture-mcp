@@ -108,12 +108,14 @@ def test_incremental_index_failure_rolls_back_all_readable_indexes(store_path, f
 			super().add(value)
 			raise MemoryError("batch allocation")
 
-	class FailingDict(dict):
+	from contexture.server.managed_journal import _ReceiptIndex, _RecordStore
+
+	class FailingIndex(_ReceiptIndex):
 		def __setitem__(self, key, value):
 			super().__setitem__(key, value)
 			raise MemoryError("receipt allocation")
 
-	class FailingList(list):
+	class FailingStore(_RecordStore):
 		def append(self, value):
 			super().append(value)
 			raise MemoryError("record allocation")
@@ -125,9 +127,14 @@ def test_incremental_index_failure_rolls_back_all_readable_indexes(store_path, f
 		if failed_index == "batch":
 			journal._event_batch_ids = FailingSet(journal._event_batch_ids)
 		elif failed_index == "receipt":
-			journal._receipts = FailingDict(journal._receipts)
+			index = FailingIndex(journal._records)
+			index._seq = dict(journal._receipts._seq)
+			journal._receipts = index
 		else:
-			journal._records = FailingList(journal._records)
+			store = FailingStore(journal._reload)
+			store._hashes, store._cache = list(journal._records._hashes), journal._records._cache.copy()
+			journal._records = store
+			journal._receipts._records = store
 		with pytest.raises(CommitUnknown):
 			journal.append([event()], actor_ref="actor", command_receipt=receipt("2", "two"),
 						   event_batch_id="batch-two")
@@ -143,26 +150,38 @@ def test_incremental_index_failure_rolls_back_all_readable_indexes(store_path, f
 
 
 def test_append_does_not_copy_accepted_record_or_receipt_indexes(store_path):
-	class NoCopyDict(dict):
-		def __iter__(self):
-			raise AssertionError("Full receipt index copied")
+	from contexture.server.managed_journal import _RecordStore
 
-		def keys(self):
-			raise AssertionError("Full receipt index copied")
-
-	class NoCopyList(list):
+	class NoCopyStore(_RecordStore):
 		def __iter__(self):
 			raise AssertionError("Full record index copied")
 
 	with open_store(store_path) as journal:
 		journal.append([event()], actor_ref="actor", command_receipt=receipt())
-		journal._receipts = NoCopyDict(journal._receipts)
-		journal._records = NoCopyList(journal._records)
+		store = NoCopyStore(journal._reload)
+		store._hashes, store._cache = list(journal._records._hashes), journal._records._cache.copy()
+		journal._records = journal._receipts._records = store
 		for sequence in range(2, 102):
 			journal.append([event()], actor_ref="actor",
 						   command_receipt=receipt(str(sequence), f"key-{sequence}"))
 		assert journal.watermark == "101"
 		assert journal.get_receipt("actor", "key-101") == receipt("101", "key-101")
+		# Bounded memory: only hashes for every record, bodies only in the LRU.
+		assert len(store._hashes) == 101 and len(store._cache) <= store.CACHE
+
+
+def test_lazy_record_bodies_are_reverified_against_the_open_chain(store_path):
+	with open_store(store_path) as journal:
+		for sequence in range(1, 4):
+			journal.append([event()], actor_ref="actor", command_receipt=receipt(str(sequence), f"k{sequence}"))
+		journal._records._cache.clear()
+		assert [r["journal_seq"] for r in journal.records()] == ["1", "2", "3"]
+		journal._records._cache.clear()
+		path = journal._record_path(2)
+		path.write_bytes(path.read_bytes().replace(b'"k2"', b'"kX"'))
+		with pytest.raises(JournalError) as error:
+			journal.records()
+		assert error.value.code == "corruption"
 
 
 def test_real_immutable_chain_receipts_and_reopen(store_path):
@@ -617,3 +636,53 @@ def test_source_worktree_refused_and_projection_failure_pauses_writes(store_path
 			journal.projections()
 		assert journal.watermark == "1"
 		with pytest.raises(CommitUnknown): journal.append([event()], actor_ref="actor")
+
+
+def _sealed_store(store_path, count=30, seal_at=25):
+	with open_store(store_path) as journal:
+		for sequence in range(1, count + 1):
+			journal.append([event()], actor_ref="actor", command_receipt=receipt(str(sequence), f"k{sequence}"))
+			if sequence == seal_at:
+				journal.seal()
+		return journal.records()
+
+
+def test_sealed_index_opens_with_tail_verification_only(store_path):
+	records = _sealed_store(store_path)
+	reads = []
+	original = FileJournal._read_json
+
+	def counted(self, path):
+		if path.parent.parent.name == "records":
+			reads.append(path.name)
+		return original(self, path)
+
+	with patch.object(FileJournal, "_read_json", counted):
+		with open_store(store_path) as journal:
+			opened = [n for n in reads if n.endswith(".json") and n[:-5].isdigit()]
+	# Anchor (25) and the five tail records only, not the 24-record prefix.
+	assert sorted(int(n[:-5]) for n in opened) == [25, 26, 27, 28, 29, 30]
+	with open_store(store_path) as journal:
+		assert journal.records() == records
+		assert journal.get_receipt("actor", "k3") == receipt("3", "k3")
+		journal.append([event()], actor_ref="actor", command_receipt=receipt("31", "k31"))
+	with open_store(store_path, trust_index=False) as full:
+		assert full.watermark == "31" and full.get_receipt("actor", "k3") == receipt("3", "k3")
+
+
+def test_bad_index_falls_back_and_tampered_prefix_is_detected(store_path):
+	_sealed_store(store_path)
+	(index,) = (store_path / "hints" / "journal-index").iterdir()
+	original = index.read_bytes()
+	index.write_bytes(original.replace(b'"k3"', b'"kX"'))  # digest no longer matches
+	with open_store(store_path) as journal:
+		assert journal.watermark == "30"  # full verification instead
+	index.write_bytes(original)
+	path = store_path / "records" / ("0" * 20) / f"{3:020d}.json"
+	path.write_bytes(path.read_bytes().replace(b'"k3"', b'"kY"'))
+	with open_store(store_path) as journal:  # sealed: prefix not read at open
+		with pytest.raises(JournalError) as error:
+			journal.records()
+		assert error.value.code == "corruption"
+	with pytest.raises(JournalError):
+		open_store(store_path, trust_index=False)  # a full scrub refuses outright

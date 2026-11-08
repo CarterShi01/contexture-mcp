@@ -61,6 +61,23 @@ conflicts and explicit resolutions, host bootstrap-from/merge-back across two
 stores, history bundle into a fresh store and tamper refusal, management
 plan -> preview -> commit).
 
+## M8: bounded memory and startup
+
+Same scripts, 4-node graph, strict ext4:
+
+| Metric | Before M8 | After M8 |
+| --- | --- | --- |
+| Retained memory per commit (1000 / 3000 commits) | 12.4 / ~12 KiB | 4.3 / 1.7 KiB (window + LRU constant, ~0.3 KiB/record index) |
+| Startup, 5000 records: journal open | 5.6 s | 0.32 s (sealed index) |
+| Startup, 5000 records: owner | 8.0 s (full replay) | 0.25 s (snapshot + tail) |
+
+Evidence: `test_history_window_bounds_memory_and_old_revisions_rebuild`,
+`test_snapshot_startup_streams_only_the_tail`,
+`test_sealed_index_opens_with_tail_verification_only`,
+`test_bad_index_falls_back_and_tampered_prefix_is_detected`,
+`test_lazy_record_bodies_are_reverified_against_the_open_chain`.
+Not done: disk compaction/archival (one file per record keeps growing).
+
 ## Measurements (2-core arm64, ext4 /tmp, strict durability)
 
 Same scripts as the review (`repro-core/perf.py`, `repro-durable/perf.py`).

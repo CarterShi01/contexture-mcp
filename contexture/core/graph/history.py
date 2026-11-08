@@ -104,6 +104,35 @@ class History:
         return next(iter(self._entries)).state
 
     @property
+    def size(self) -> int:
+        return len(self._entries)
+
+    def window(self, keep: int) -> History:
+        """The newest ``keep`` records as a History (oldest kept becomes the seed).
+
+        Trusted, already verified records: no re-verification. Used to bound
+        retained memory; older revisions are rebuilt from the journal on demand.
+        """
+        if keep < 1:
+            raise GraphError("schema_invalid", "History window must retain the head")
+        if keep >= len(self._entries):
+            return self
+        newest: list[RevisionRecord] = []
+        for record in self._entries:
+            newest.append(record)
+            if len(newest) == keep:
+                break
+        by_revision: HashTrieMap[str, RevisionState] = HashTrieMap()
+        for record in reversed(newest):
+            by_revision = by_revision.insert(record.state.revision, record.state)
+        result = object.__new__(History)
+        object.__setattr__(result, "_entries", PersistentList(newest))
+        object.__setattr__(result, "_seed", newest[-1])
+        object.__setattr__(result, "_by_revision", by_revision)
+        object.__setattr__(result, "_cached_records", None)
+        return result
+
+    @property
     def head_journal_seq(self) -> str:
         return next(iter(self._entries)).journal_seq
 

@@ -273,8 +273,10 @@ async def test_history_current_deleted_id_never_reappears_and_retention_is_owned
         change(system, [{"op": "rename_node", "node_id": "w", "new_name": "new-w"}])
         system[0]._histories["g"] = History.seed(system[0]._histories["g"].head, journal_seq="2")
         assert (await read(catalog, retained, revision="1"))[1]["name"] == "w"
-        with pytest.raises(GraphError):
-            await catalog.start("g", source="revision", revision="1")
+        # The in-memory window is not retention: older revisions are rebuilt
+        # from the journal on demand, never served from a stale cache.
+        rebuilt = await catalog.start("g", source="revision", revision="1")
+        assert (await read(catalog, rebuilt, revision="1"))[1]["name"] == "w"
         system[0]._histories["g"] = history
     finally:
         catalog.shutdown()

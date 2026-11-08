@@ -357,7 +357,9 @@ class StoreOperations:
 		try:
 			path = FileJournal.check_location(root, durability=self.durability)
 			self._walk(path)
-			with FileJournal.open(path, schema=self.schema, durability=self.durability) as journal:
+			# Doctor is a full scrub: never trust a sealed index.
+			with FileJournal.open(path, schema=self.schema, durability=self.durability,
+								  trust_index=False) as journal:
 				records = journal.records()
 				anchor = {"store_id": journal.meta["store_id"], "journal_seq": journal.watermark,
 					"record_hash": records[-1]["record_hash"] if records else None}

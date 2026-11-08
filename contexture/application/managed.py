@@ -9,7 +9,7 @@ dispatch complete calls, not hold this thread lock across await boundaries.
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from datetime import datetime
@@ -145,6 +145,8 @@ class _Snapshot:
     """A verified, anchored owner state; disposable acceleration, not authority."""
 
     sequence: int
+    record_hash: str
+    store_id: str
     histories: dict[str, History]
     external: dict[str, FrozenObject]
 
@@ -159,9 +161,9 @@ class _AuthorizedHistory:
         self.owner, self.graph_id, self.context = owner, graph_id, context
 
     def at(self, revision: str) -> RevisionState:
-        history = self.owner._history(self.graph_id, full=True)
+        history = self.owner._history(self.graph_id)
         read_snapshot(history.head, context=self.context, admission=self.owner._admission)
-        return read_snapshot(history.at(revision), context=self.context,
+        return read_snapshot(self.owner._state_at(self.graph_id, revision), context=self.context,
                              admission=self.owner._admission)
 
 
@@ -180,7 +182,7 @@ class GraphOwner:
                  publication_contracts: PublicationContracts | None = None,
                  limits: Limits = Limits(),
                  projections: Mapping[str, EventProjection] | None = None,
-                 use_snapshots: bool = True):
+                 use_snapshots: bool = True, history_window: int = 256):
         self._lock = RLock()
         self._operation_thread: int | None = None
         self._journal, self._identities, self._admission = journal, identities, admission
@@ -205,19 +207,32 @@ class GraphOwner:
             if previous is not None and previous() is not None:
                 raise _error("store_in_use", "Journal already has a graph owner")
             # Replay has no policy, registry, approval or release effects. A
-            # verified snapshot (see checkpoint()) lets startup apply only the
-            # tail; older history is materialized from the journal on demand.
-            records = journal.records()
-            snapshot = self._load_snapshot(records) if use_snapshots else None
-            self._partial: set[str] = set() if snapshot is None else set(snapshot.histories)
+            # verified snapshot (see checkpoint()) lets startup stream only the
+            # journal tail. Memory stays bounded: the journal is the receipt
+            # index, each graph retains `history_window` revisions, and older
+            # revisions are rebuilt from the journal on demand.
+            if type(history_window) is not int or history_window < 1:
+                raise _error("schema_invalid", "History window must be a positive integer")
+            self._window = history_window
+            self._watermark = "0"
+            self._store_id = self._first_record_hash = self._last_record_hash = None
+            self._histories, self._external = {}, {}
+            count = parse_counter(journal.watermark)
+            first = next(self._stream("0"), None) if count else None
+            snapshot = self._load_snapshot(count, first) if use_snapshots and first else None
             self._snapshot_seq = 0 if snapshot is None else snapshot.sequence
-            self._histories, self._external, self._receipts = self._replay(records, snapshot=snapshot)
+            if snapshot is not None:
+                self._watermark = str(snapshot.sequence)
+                self._store_id, self._last_record_hash = snapshot.store_id, snapshot.record_hash
+            self._histories, self._external, last = self._replay(
+                self._stream(self._watermark), incremental=snapshot is not None, snapshot=snapshot)
             self._watermark = journal.watermark
-            if len(records) != parse_counter(self._watermark):
+            if self._watermark != str(count):
                 raise _error("journal_corrupt", "Journal changed during owner construction")
-            self._store_id = records[0]["store_id"] if records else None
-            self._first_record_hash = records[0]["record_hash"] if records else None
-            self._last_record_hash = records[-1]["record_hash"] if records else None
+            if first is not None:
+                self._store_id, self._first_record_hash = first["store_id"], first["record_hash"]
+                self._last_record_hash = last or self._last_record_hash
+            self._trim()
             _bindings[id(journal)] = weakref.ref(self)
 
     @property
@@ -259,34 +274,69 @@ class GraphOwner:
             finally:
                 self._operation_thread = None
 
-    def _history(self, graph_id: str, *, full: bool = False) -> History:
+    def _stream(self, after: str) -> Iterator[Mapping[str, Any]]:
+        stream = getattr(self._journal, "iter_records", None)
+        return iter(stream(after=after) if stream is not None else self._journal.records(after=after))
+
+    def _history(self, graph_id: str) -> History:
+        """The retained window (always includes the head)."""
         validate_id(graph_id)
         if graph_id not in self._histories:
             raise _error("history_unavailable", "Graph has no accepted definition")
-        if full and graph_id in self._partial:
-            self._histories[graph_id] = self._full_history(graph_id)
-            self._partial.discard(graph_id)
         return self._histories[graph_id]
 
-    def _full_history(self, graph_id: str) -> History:
-        """Rebuild a snapshot-seeded graph's complete history from the journal."""
+    def _trim(self) -> None:
+        # Amortized: trim to the window once it has doubled.
+        for graph_id, history in self._histories.items():
+            if history.size > 2 * self._window:
+                self._histories[graph_id] = history.window(self._window)
+
+    def _state_at(self, graph_id: str, revision: str) -> RevisionState:
+        """A retained revision, or one rebuilt transiently from the journal."""
+        history = self._history(graph_id)
+        parse_counter(revision)
+        if parse_counter(revision) >= parse_counter(history.retained_lower_bound):
+            return history.at(revision)
+        return self._full_history(graph_id, until=revision).at(revision)
+
+    def _full_history(self, graph_id: str, *, until: str | None = None) -> History:
+        """Rebuild one graph's history from its bootstrap by streaming the journal.
+
+        Transient (never retained), so memory stays bounded; the rebuilt head
+        must equal the owner's head when no `until` cut is requested.
+        """
+        stop = None if until is None else parse_counter(until)
         histories: dict[str, History] = {}
-        for sequence, raw in enumerate(self._journal.records(), 1):
+        for sequence, raw in enumerate(self._stream("0"), 1):
             if sequence > parse_counter(self._watermark):
                 break
             record = _freeze(raw)
             for event in cast(tuple[FrozenObject, ...], record.get("events", ())):
                 if event.get("type") in _GRAPH_EVENTS and event.get("graph_id") == graph_id:
                     _apply_graph_event(histories, event, sequence)
+            rebuilt = histories.get(graph_id)
+            if stop is not None and rebuilt is not None and parse_counter(rebuilt.head.revision) >= stop:
+                return rebuilt
         rebuilt = histories.get(graph_id)
         current = self._histories[graph_id]
         if rebuilt is None or rebuilt.head.definition_digest != current.head.definition_digest:
-            raise _error("journal_corrupt", "Full history disagrees with the snapshot-seeded head")
+            raise _error("journal_corrupt", "Full history disagrees with the owner head")
         return rebuilt
 
-    def _load_snapshot(self, records: Sequence[Mapping[str, Any]]) -> _Snapshot | None:
+    def _receipt(self, key: tuple[str, str]) -> FrozenObject | None:
+        """The journal's accepted receipt, bounded by this owner's watermark.
+
+        A record the owner has not reduced (e.g. after a stopped write) is not
+        exposed until close+reopen reconciles it.
+        """
+        value = self._journal.get_receipt(*key)
+        if value is None or parse_counter(value["journal_seq"]) > parse_counter(self._watermark):
+            return None
+        return _freeze(value)
+
+    def _load_snapshot(self, count: int, first: Mapping[str, Any]) -> _Snapshot | None:
         read = getattr(self._journal, "read_hints", None)
-        if read is None or not records:
+        if read is None:
             return None
         for _, data in read(_SNAPSHOT):
             try:
@@ -295,10 +345,12 @@ class GraphOwner:
                     continue
                 value = cast(dict[str, Any], raw)
                 sequence = parse_counter(value["journal_seq"])
-                if (not 1 <= sequence <= len(records) or value.get("package") != PACKAGE_VERSION
-                        or records[sequence - 1]["record_hash"] != value["record_hash"]
-                        or records[0]["store_id"] != value["store_id"]
+                if (not 1 <= sequence <= count or value.get("package") != PACKAGE_VERSION
+                        or first["store_id"] != value["store_id"]
                         or sorted(value["external"]) != sorted(self._projections)):
+                    continue
+                anchor = next(self._stream(str(sequence - 1)), None)
+                if anchor is None or anchor["record_hash"] != value["record_hash"]:
                     continue
                 histories: dict[str, History] = {}
                 for item in value["graphs"]:
@@ -309,7 +361,7 @@ class GraphOwner:
                         raise _error("journal_corrupt", "Snapshot graph state mismatch")
                     histories[definition.graph_id] = History.seed(state, journal_seq=item["journal_seq"])
                 external = {name: _freeze(state) for name, state in value["external"].items()}
-                return _Snapshot(sequence, histories, external)
+                return _Snapshot(sequence, value["record_hash"], value["store_id"], histories, external)
             except (GraphError, KeyError, TypeError, ValueError) as exc:
                 _LOG.warning("ignoring invalid owner snapshot; full replay",
                              extra={"error_code": getattr(exc, "code", type(exc).__name__)})
@@ -343,6 +395,9 @@ class GraphOwner:
                 "external": {name: thaw_json(state) for name, state in sorted(self._external.items())}}
             data = canonical_json(value)
             write(_SNAPSHOT, self._watermark, data)
+            seal = getattr(self._journal, "seal", None)
+            if seal is not None:
+                seal()  # next open verifies only the records after this point
             self._snapshot_seq = parse_counter(self._watermark)
             _LOG.info("owner snapshot written", extra={"journal_seq": self._watermark,
                       "bytes": len(data)})
@@ -354,21 +409,28 @@ class GraphOwner:
         """Accepted records not covered by the newest snapshot (0 = none needed)."""
         return parse_counter(self._watermark) - self._snapshot_seq
 
-    def _replay(self, records: Sequence[Mapping[str, Any]], *, incremental: bool = False,
+    def _replay(self, records: Iterable[Mapping[str, Any]], *, incremental: bool = False,
                 snapshot: _Snapshot | None = None) -> tuple[
-            dict[str, History], dict[str, FrozenObject], dict[tuple[str, str], FrozenObject]]:
+            dict[str, History], dict[str, FrozenObject], str | None]:
+        """Reduce records after the current watermark; returns the last record hash.
+
+        Receipts are not copied: the journal is the authoritative receipt index
+        (uniqueness enforced at append and recovery); this checks each record's
+        receipt ownership/sequence as it passes.
+        """
         # Immutable graph/external values are staged in detached maps.
-        # Incremental receipt output is only a delta, published under _lock.
-        histories: dict[str, History] = (dict(self._histories) if incremental else
-                                         {} if snapshot is None else dict(snapshot.histories))
-        external = (dict(self._external) if incremental else
-                    {name: _freeze(p.initial) for name, p in self._projections.items()}
-                    if snapshot is None else dict(snapshot.external))
-        covered = 0 if snapshot is None or incremental else snapshot.sequence
-        receipts: dict[tuple[str, str], FrozenObject] = {}
+        if snapshot is not None:
+            histories, external = dict(snapshot.histories), dict(snapshot.external)
+        elif incremental:
+            histories, external = dict(self._histories), dict(self._external)
+        else:
+            histories = {}
+            external = {name: _freeze(p.initial) for name, p in self._projections.items()}
+        seen: set[tuple[str, str]] = set()
         store_id: object = self._store_id if incremental else None
         previous: object = self._last_record_hash if incremental else None
         start = parse_counter(self._watermark) + 1 if incremental else 1
+        last: str | None = None
         for sequence, raw in enumerate(records, start):
             record = _freeze(raw)
             if (record.get("journal_seq") != str(sequence) or
@@ -378,7 +440,7 @@ class GraphOwner:
                 store_id = record.get("store_id")
             if record.get("store_id") != store_id:
                 raise _error("journal_corrupt", "Replay store identity changed")
-            previous = record.get("record_hash")
+            previous = last = cast(str, record.get("record_hash"))
             events = record.get("events")
             if not isinstance(events, tuple) or not events:
                 raise _error("journal_corrupt", "Complete event batch required")
@@ -388,13 +450,11 @@ class GraphOwner:
                 event = cast(FrozenObject, value)
                 tag = event.get("type")
                 if tag in _GRAPH_EVENTS:
-                    if sequence > covered:
-                        _apply_graph_event(histories, event, sequence)
+                    _apply_graph_event(histories, event, sequence)
                 elif isinstance(tag, str) and tag in self._tags:
-                    if sequence > covered:
-                        name = self._tags[tag]
-                        external[name] = _freeze(self._projections[name].reduce(
-                            external[name], event, record))
+                    name = self._tags[tag]
+                    external[name] = _freeze(self._projections[name].reduce(
+                        external[name], event, record))
                 else:
                     raise _error("unsupported_contract", "Unregistered required event projection")
             receipt = record.get("command_receipt")
@@ -403,18 +463,18 @@ class GraphOwner:
                     raise _error("schema_invalid", "Expected JSON object")
                 receipt = cast(FrozenObject, receipt)
                 key = (validate_id(receipt.get("actor_ref")), validate_id(receipt.get("idempotency_key")))
-                if (key in receipts or (incremental and key in self._receipts)
-                        or receipt.get("journal_seq") != str(sequence) or key[0] != record["actor_ref"]):
+                if (key in seen or receipt.get("journal_seq") != str(sequence)
+                        or key[0] != record["actor_ref"]):
                     raise _error("journal_corrupt", "Receipt ownership or sequence mismatch")
-                receipts[key] = receipt
-        return histories, external, receipts
+                seen.add(key)
+        return histories, external, last
 
     def _actor(self, context: VerifiedContext) -> str:
         return validate_id(self._identities.actor_ref(context))
 
     def _prior(self, context: VerifiedContext, graph_id: str, key: str,
                digest: str) -> Wire | None:
-        receipt = self._receipts.get((self._actor(context), validate_id(key)))
+        receipt = self._receipt((self._actor(context), validate_id(key)))
         if receipt is None:
             return None
         # Current read permission, not historical mutation approval, controls
@@ -452,12 +512,14 @@ class GraphOwner:
                 "definition_digest": event.get("after_digest",
                     self._histories[graph_id].head.definition_digest if graph_id in self._histories else None)}}}
         self._persist((event,), context=context, receipt=receipt, correlation_id=correlation_id)
-        return cast(Wire, thaw_json(self._receipts[(self._actor(context), key)]))
+        stored = self._receipt((self._actor(context), key))
+        if stored is None:
+            raise _error("commit_unknown", "Accepted receipt is not readable")
+        return cast(Wire, thaw_json(stored))
 
     def _persist(self, events: Sequence[Mapping[str, Any]], *, context: VerifiedContext,
                  receipt: Mapping[str, Any] | None = None, correlation_id: str) -> None:
         self._ready(write=True)
-        receipt_updates: dict[tuple[str, str], FrozenObject] = {}
         try:
             record = self._journal.append(events, actor_ref=self._actor(context),
                 command_receipt=receipt, correlation_id=correlation_id, written_at=self._clock())
@@ -466,43 +528,40 @@ class GraphOwner:
             tail = self._journal.records(after=self._watermark)
             if len(tail) != 1 or canonical_json(tail[0]) != canonical_json(record):
                 raise _error("commit_unknown", "Confirmed append differs from journal suffix")
-            histories, external, receipt_updates = self._replay(tail, incremental=True)
+            histories, external, _ = self._replay(tail, incremental=True)
             watermark = self._journal.watermark
             if watermark != record["journal_seq"]:
                 raise _error("commit_unknown", "Unexpected append watermark")
             store_id = tail[0]["store_id"] if self._store_id is None else self._store_id
             first_hash = tail[0]["record_hash"] if self._store_id is None else self._first_record_hash
             last_hash = tail[0]["record_hash"]
-            for key, value in receipt_updates.items():
-                self._receipts[key] = value
         except BaseException as exc:
             self._stopped = True
             _LOG.error("graph owner writes stopped; close and reopen to recover",
                        extra={"error_code": getattr(exc, "code", type(exc).__name__)})
-            # These keys were proven absent from the accepted prefix. Undo even
-            # an index allocation failure after partial publication.
-            for key in receipt_updates:
-                dict.pop(self._receipts, key, None)
             # Conservative even for certain pre-publication errors: no blind
             # retry, release swap, or second sequence until close+recover.
             raise
         self._histories, self._external = histories, external
+        self._trim()
         self._watermark = watermark
         self._store_id, self._first_record_hash, self._last_record_hash = store_id, first_hash, last_hash
 
     def read(self, graph_id: str, revision: str | None = None) -> RevisionState:
         with self._authorized() as context:
-            history = self._history(graph_id, full=revision is not None)
+            history = self._history(graph_id)
             read_snapshot(history.head, context=context, admission=self._admission)
-            return read_snapshot(history.head if revision is None else history.at(revision),
+            return read_snapshot(history.head if revision is None else self._state_at(graph_id, revision),
                                  context=context, admission=self._admission)
 
     def export(self, graph_id: str, revision: str | None = None) -> bytes:
         return canonical_json(self.read(graph_id, revision).definition.as_json())
 
     def history(self, graph_id: str) -> History:
+        """The complete history, rebuilt from the journal (not retained)."""
         with self._authorized() as context:
-            history = self._history(graph_id, full=True)
+            self._history(graph_id)
+            history = self._full_history(graph_id)
             for record in history.records:
                 read_snapshot(record.state, context=context, admission=self._admission)
             return history
@@ -510,7 +569,7 @@ class GraphOwner:
     def receipt(self, graph_id: str, idempotency_key: str) -> Wire | None:
         with self._authorized() as context:
             read_snapshot(self._history(graph_id).head, context=context, admission=self._admission)
-            value = self._receipts.get((self._actor(context), validate_id(idempotency_key)))
+            value = self._receipt((self._actor(context), validate_id(idempotency_key)))
             if value is None or value["graph_id"] != graph_id:
                 return None
             return cast(Wire, thaw_json(value))
@@ -854,8 +913,8 @@ class ReleaseBoundary:
         definition without granting blanket graph.read on this or other graphs.
         """
         self.check()
-        history = self._owner._history(graph_id, full=revision is not None)
-        return history.head if revision is None else history.at(revision)
+        history = self._owner._history(graph_id)
+        return history.head if revision is None else self._owner._state_at(graph_id, revision)
 
     def authorize_read(self, graph_id: str) -> None:
         self.check()
@@ -876,7 +935,7 @@ class ReleaseBoundary:
         """
         self.check()
         validate_id(graph_id)
-        value = self._owner._receipts.get((self.actor_ref, validate_id(key)))
+        value = self._owner._receipt((self.actor_ref, validate_id(key)))
         if value is None:
             return None
         if value["graph_id"] != graph_id:
