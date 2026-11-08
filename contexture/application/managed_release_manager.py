@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
+import logging
 import math
 from typing import Literal, cast
 from uuid import uuid4
@@ -28,6 +29,8 @@ from contexture.application.managed_serving import (
 )
 from contexture.core.graph.errors import GraphError
 from contexture.core.graph.releases import ReleaseReceipt, ReleaseRequest
+
+_LOG = logging.getLogger("contexture.managed.release")
 
 
 def _duration(value: float) -> float:
@@ -51,6 +54,10 @@ class ReleaseManagerStatus:
     pending_epoch: str | None
     last_attempt: tuple[str, str] | None
     closed: bool
+    # Stable error code of the last refused attempt (e.g. "commit_unknown",
+    # "permission_denied", "resource_busy"; "internal_error" for a bug), so an
+    # operator can tell "busy" from "the journal needs recovery".
+    last_error: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,6 +103,7 @@ class ReleaseManager:
         self._attempt: asyncio.Task[LocalServingResult] | None = None
         self._active: LocalServingResult | None = None
         self._last: tuple[str, str] | None = None
+        self._last_error: str | None = None
         self._cancel_reason: str | None = None
         self._scheduled_epoch = 0
         self._changed = asyncio.Event()
@@ -177,6 +185,7 @@ class ReleaseManager:
         while self._pending is not None and not self._closed:
             work, self._pending = self._pending, None
             self._running, self._cancel_reason = work, None
+            self._last_error = None
             self._notify()
             timer: asyncio.TimerHandle | None = None
             try:
@@ -199,8 +208,18 @@ class ReleaseManager:
                 self._last = (work.epoch, result.status)
             except asyncio.CancelledError:
                 self._last = (work.epoch, self._cancel_reason or "cancelled")
-            except Exception:
-                # Pre-admission/capacity refusal is not durable failed evidence.
+            except Exception as exc:
+                # Pre-admission/capacity refusal is not durable failed evidence,
+                # but its cause must stay observable (never a silent "refused").
+                code = getattr(exc, "code", None)
+                if isinstance(code, str) and code:
+                    self._last_error = code
+                    _LOG.warning("release attempt refused", extra={
+                        "release_epoch": work.epoch, "error_code": code})
+                else:
+                    self._last_error = "internal_error"
+                    _LOG.exception("release attempt failed unexpectedly", extra={
+                        "release_epoch": work.epoch})
                 self._last = (work.epoch, "refused")
             finally:
                 if timer is not None:
@@ -237,7 +256,8 @@ class ReleaseManager:
             "not_ready" if active is None else "ready" if serving_epoch == epoch else "lkg",
             active is not None and active.status == "local_observed",
             None if self._running is None else self._running.epoch,
-            None if self._pending is None else self._pending.epoch, self._last, self._closed)
+            None if self._pending is None else self._pending.epoch, self._last, self._closed,
+            self._last_error)
 
     async def wait(self, receipt: ReleaseReceipt, *, timeout: float) -> ReleaseWaitResult:
         """Wait only for this instance/current boot; timeout is pending+receipt.

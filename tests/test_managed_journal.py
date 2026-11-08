@@ -260,6 +260,69 @@ def test_lifetime_lock_is_real_and_never_deleted(store_path):
 	with open_store(store_path): pass
 
 
+
+def test_removed_or_replaced_lock_stops_the_original_owner(store_path):
+	# flock guards an inode, not a name. An operator "clearing a stale lock"
+	# must not let two owners write: the original refuses its next write.
+	first = open_store(store_path)
+	first.append([event()], actor_ref="actor", command_receipt=receipt(seq="1", key="a"))
+	os.unlink(store_path / "writer.lock")
+	with pytest.raises(JournalError) as error:
+		first.append([event()], actor_ref="actor", command_receipt=receipt(seq="2", key="b"))
+	assert error.value.code == "store_in_use"
+	with pytest.raises(JournalError):  # stays stopped
+		first.append([event()], actor_ref="actor", command_receipt=receipt(seq="2", key="c"))
+	second = open_store(store_path)  # a new lifetime owner on the new lock inode
+	second.append([event()], actor_ref="actor", command_receipt=receipt(seq="2", key="d"))
+	first.close(); second.close()
+	with open_store(store_path) as journal:
+		assert journal.watermark == "2"
+		assert journal.get_receipt("actor", "a") and journal.get_receipt("actor", "d")
+		assert journal.get_receipt("actor", "b") is None
+
+
+def test_racing_writers_never_overwrite_an_acknowledged_record(store_path):
+	# Even if two writers bypass locking entirely, publication is no-replace:
+	# the loser gets a definite store_in_use and the winner's bytes survive.
+	first = open_store(store_path)
+	os.unlink(store_path / "writer.lock")
+	acknowledged: dict[str, Any] = {}
+
+	def interleave(step: str) -> None:
+		# Between the loser's existence check and its rename, the winner publishes.
+		if step == "record.before_rename" and not acknowledged:
+			acknowledged.update(first.append([event()], actor_ref="actor",
+				command_receipt=receipt(seq="1", key="winner")))
+
+	second = open_store(store_path, fault=interleave)
+	second._check_lock = lambda: None  # simulate a writer that ignores the lock name
+	first._check_lock = lambda: None
+	with pytest.raises(JournalError) as error:
+		second.append([event()], actor_ref="actor", command_receipt=receipt(seq="1", key="loser"))
+	assert error.value.code == "store_in_use" and acknowledged
+	first.close(); second.close()
+	with open_store(store_path) as journal:
+		assert journal.watermark == "1"
+		assert journal.records()[0]["record_hash"] == acknowledged["record_hash"]
+		assert journal.get_receipt("actor", "loser") is None
+		# A visible existing destination is also refused definitively.
+		with pytest.raises(JournalError) as error:
+			journal._publish(journal._record_path(1), b"{}", "record")
+		assert error.value.code == "store_in_use"
+
+
+def test_missing_no_replace_primitive_refuses_instead_of_falling_back(store_path):
+	from contexture.server import managed_journal as module
+	with open_store(store_path) as journal:
+		with patch.object(module, "_renameat2", return_value=None):
+			with pytest.raises(JournalError) as error:
+				journal.append([event()], actor_ref="actor", command_receipt=receipt())
+		assert error.value.code == "durability_unsupported"
+		assert journal.watermark == "0"
+		# Definitely unpublished, so the owner is not stuck in unknown.
+		journal.append([event()], actor_ref="actor", command_receipt=receipt())
+		assert journal.watermark == "1"
+
 def test_blob_bytes_canonical_json_and_required_closure(store_path):
 	with open_store(store_path) as journal:
 		raw = "Unicode 原字节\r\n".encode()
@@ -392,7 +455,7 @@ def test_short_writes_complete_and_failed_rename_unknown(store_path):
 	with open_store(store_path) as journal:
 		with patch("os.write", side_effect=short):
 			journal.append([event()], actor_ref="actor")
-		with patch("os.rename", side_effect=OSError("ambiguous syscall")):
+		with patch("contexture.server.managed_journal._rename_noreplace", side_effect=OSError("ambiguous syscall")):
 			with pytest.raises(CommitUnknown): journal.append([event()], actor_ref="actor")
 		assert journal.watermark == "1"
 	with open_store(store_path) as recovered:

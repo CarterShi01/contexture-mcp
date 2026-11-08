@@ -276,6 +276,8 @@ async def test_unknown_during_ready_never_loses_lkg_and_refused_retry_is_truthfu
     m.retry_desired()
     await idle(m)
     assert m.status().last_attempt == ("2", "refused")
+    # The cause stays observable: the journal needs recovery, not "busy".
+    assert m.status().last_error == "commit_unknown"
     assert m.status().serving_epoch == "1"
     system[1]._fault = None
     await m.shutdown()

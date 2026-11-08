@@ -50,6 +50,43 @@ _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _PAD = re.compile(r"[0-9]{20}\Z")
 
 
+@lru_cache(maxsize=1)
+def _renameat2() -> Callable[..., int] | None:
+	"""glibc renameat2, or None where unavailable (callers must refuse)."""
+	import ctypes
+
+	try:
+		function = ctypes.CDLL(None, use_errno=True).renameat2
+	except (AttributeError, OSError):
+		return None
+	function.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+	function.restype = ctypes.c_int
+	return function
+
+
+def _rename_noreplace(source: Path, destination: Path) -> None:
+	"""Atomically publish source at destination, never replacing an existing file.
+
+	Windows os.rename already refuses an existing destination. On Linux use
+	renameat2(RENAME_NOREPLACE): no check-then-rename race and no transient
+	second hard link. FileExistsError is a DEFINITE non-publication.
+	"""
+	if os.name == "nt":
+		os.rename(source, destination)
+		return
+	function = _renameat2()
+	if function is None:
+		raise JournalError("durability_unsupported", "No-replace rename primitive unavailable")
+	import ctypes
+
+	at_fdcwd, rename_noreplace = -100, 1
+	if function(at_fdcwd, os.fsencode(source), at_fdcwd, os.fsencode(destination), rename_noreplace) != 0:
+		code = ctypes.get_errno()
+		if code in (errno.ENOSYS, errno.EINVAL):
+			raise JournalError("durability_unsupported", "Filesystem lacks no-replace rename")
+		raise OSError(code, os.strerror(code), str(destination))
+
+
 class JournalError(RuntimeError):
 	"""Storage error with a stable diagnostic code and no payload disclosure."""
 
@@ -135,6 +172,7 @@ class FileJournal:
 		self._meta: dict[str, Any] = {}
 		self._mutex = RLock()
 		self._lock_fd: int | None = None
+		self._lock_identity: tuple[int, int] | None = None
 		self._closed = False
 		self._unknown = False
 		self._records: list[dict[str, Any]] = []
@@ -340,7 +378,24 @@ class FileJournal:
 			raise
 		self._lock_fd = fd
 		self._check_path(path)
+		self._lock_identity = (os.fstat(fd).st_dev, os.fstat(fd).st_ino)
+		self._check_lock()
 		self._sync_dir(self.root)
+
+	def _check_lock(self) -> None:
+		"""The lock PATH must still name the inode we hold.
+
+		flock protects an inode, not a name. If an operator deletes or replaces
+		writer.lock, a second process could lock a new inode and write too.
+		Refusing here makes the original owner stop before its next write.
+		"""
+		try:
+			info = (self.root / "writer.lock").lstat()
+		except FileNotFoundError:
+			info = None
+		if info is None or (info.st_dev, info.st_ino) != self._lock_identity:
+			self._unknown = True
+			raise JournalError("store_in_use", "Writer lock was removed or replaced; owner stopped")
 
 	def close(self) -> None:
 		with self._mutex:
@@ -362,6 +417,8 @@ class FileJournal:
 				raise JournalError("closed", "Store owner is closed")
 			if write and self._unknown:
 				raise CommitUnknown()
+			if write:
+				self._check_lock()
 			yield
 
 	def _read_bytes(self, path: Path) -> bytes:
@@ -389,10 +446,10 @@ class FileJournal:
 	def _publish(self, final: Path, raw: bytes, kind: str) -> None:
 		"""Immutable publish with exclusive-owner conflict detection.
 
-		os.rename is no-replace on Windows. POSIX rename can replace, so the
-		stable exclusive owner checks final absence immediately before it;
-		noncooperating external writers are explicitly outside this guarantee.
-		A rename exception itself is ambiguous (e.g. interrupted syscall).
+		Publication never replaces an existing name (renameat2 NOREPLACE on
+		Linux, rename on Windows), so even a second writer that bypassed the
+		lifetime lock cannot overwrite an acknowledged record. Other rename
+		exceptions remain ambiguous (e.g. interrupted syscall) => unknown.
 		"""
 		self._mkdir(final.parent)
 		# Also confirm an already existing bucket: an earlier failed mkdir
@@ -417,15 +474,37 @@ class FileJournal:
 			finally:
 				os.close(fd)
 			if final.exists():
-				raise JournalError("corruption", "Immutable destination already exists")
+				# An exclusive owner never finds its next name taken: another
+				# writer exists. Refuse definitively and stop writing.
+				self._unknown = True
+				raise JournalError("store_in_use", "Immutable destination already exists")
 			self._hit(kind + ".before_rename")
 			attempted = True
-			os.rename(temp, final)
+			try:
+				_rename_noreplace(temp, final)
+			except FileExistsError:
+				# Definite: another writer published this name. Our bytes were
+				# NOT published; stop all writes rather than report unknown.
+				self._unknown = True
+				raise JournalError("store_in_use", "Another writer published the same immutable name") from None
+			except JournalError:
+				# Unsupported primitive: definitely nothing was published.
+				attempted = False
+				raise
 			self._hit(kind + ".renamed")
 			self._sync_dir(final.parent)
 			# The rename removes a tmp directory entry as well.
 			self._sync_dir(temp.parent)
 			self._hit(kind + ".directory_synced")
+		except JournalError as exc:
+			if exc.code in ("store_in_use", "durability_unsupported", "corruption"):
+				raise
+			if attempted and kind == "record":
+				self._unknown = True
+				raise CommitUnknown() from exc
+			if attempted:
+				self._unknown = True
+			raise
 		except BaseException as exc:
 			if attempted and kind == "record":
 				self._unknown = True
@@ -583,7 +662,7 @@ class FileJournal:
 			# Evidence is durable before moving work, so even a crash during
 			# quarantine has a diagnosed original source and byte digest.
 			self._publish(target.with_suffix(".json"), canonical_json(evidence), "recovery")
-			os.rename(path, target)
+			_rename_noreplace(path, target)
 			self._sync_dir(target.parent)
 			self._sync_dir(path.parent)
 			self.recovery_actions.append(evidence)
