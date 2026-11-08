@@ -26,13 +26,17 @@ def surface(index: GraphIndex, identity: str) -> bytes:
         refs.extend(n for _, _, n in spec.members.placements())
     if spec.instruction_template:
         refs.extend(p.target_id for p in spec.instruction_template.parts if isinstance(p, NodeRefPart))
+    loc = index.locations[identity]
     return canonical_json({"node": spec.as_json(), "path": index.path(identity),
-        "plane": index.locations[identity].plane,
+        "parent_id": loc.parent_id, "slot": loc.slot, "plane": loc.plane,
         "default_locale": graph.presentations.default_locale, "mode": graph.mode,
         "graph_extensions": graph.extensions,
-        "cards": [{"node_id": n, "name": graph.nodes[n].name, "path": index.path(n),
+        # One-hop reachable context: target card, definition and publications.
+        "view": [{"node_id": n, "name": graph.nodes[n].name, "path": index.path(n),
             "plane": index.locations[n].plane, "description": graph.nodes[n].description,
-            "kind": graph.nodes[n].kind} for n in refs],
+            "kind": graph.nodes[n].kind, "node": graph.nodes[n].as_json(),
+            "publications": [p.as_json() for p in graph.publications if p.opens_id == n]}
+            for n in refs],
         "publications": [p.as_json() for p in graph.publications if p.opens_id == identity],
         "presentations": [{"locale": c.locale, "entry": e.as_json()}
             for c in graph.presentations.catalogs for e in c.entries if e.node_id == identity]})
@@ -75,7 +79,7 @@ def test_surface_tokens_equal_original_canonical_oracle(shape: str, edit: str) -
     after = GraphDefinition.from_json(raw)
     old, new = GraphIndex.build(before), GraphIndex.build(after)
     paths: dict[tuple[int, str], int] = {}
-    left, right = policy._surfaces(old, paths), policy._surfaces(new, paths)
+    left, right = policy._surfaces(old, paths, frozenset()), policy._surfaces(new, paths, frozenset())
     for identity in before.nodes:
         assert (left[identity] == right[identity]) == (surface(old, identity) == surface(new, identity))
 
@@ -93,7 +97,7 @@ def test_surface_work_counts_each_node_and_relation_once(size: int) -> None:
     paths: dict[tuple[int, str], int] = {}
     with patch.object(policy, "canonical_json", wraps=canonical_json) as encode, patch.object(
             GraphIndex, "path", side_effect=AssertionError("No repeated path materialization")):
-        result = policy._surfaces(index, paths)
+        result = policy._surfaces(index, paths, frozenset())
     assert len(result) == len(paths) == size
     assert encode.call_count == 3 * size + 1  # N nodes + P publications + T translations + metadata.
 
@@ -103,9 +107,12 @@ def test_same_names_under_replaced_ancestor_ids_keep_same_path_token() -> None:
     new = state(node("other", name="r", mutable=True, members={"children": ["a"]}), node("a"),
         roots=[{"node_id": "other", "plane": "model"}])
     paths: dict[tuple[int, str], int] = {}
-    a = policy._surfaces(GraphIndex.build(old.definition), paths)
-    b = policy._surfaces(GraphIndex.build(new.definition), paths)
-    assert a["a"] == b["a"]
+    a = policy._surfaces(GraphIndex.build(old.definition), paths, frozenset())
+    b = policy._surfaces(GraphIndex.build(new.definition), paths, frozenset())
+    # Equal name sequences share a path token although ancestry IDs differ;
+    # the parent identity itself is a separate own-surface component.
+    assert a["a"].own[1] == b["a"].own[1] and a["a"].view == b["a"].view
+    assert a["a"].own[2] != b["a"].own[2]
 
 
 def test_draft_metadata_does_not_duplicate_node_pool_or_mutate_base() -> None:

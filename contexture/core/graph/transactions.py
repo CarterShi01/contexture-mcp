@@ -805,6 +805,7 @@ class Preview:
         return {"schema": "contexture.preview-receipt/v1", **{key: subject[key] for key in (
             "base_revision", "base_digest", "candidate_digest", "command_digest", "resolved_fact_digest")},
             "definition_diff": p.definition_diff.as_json(), "impact": list(p.protection.impact),
+            "protected_dependents": list(p.protection.protected_dependents),
             "validation_report": [], "approval_subject": thaw_json(subject), "expires_at": self.expires_at}
 
 

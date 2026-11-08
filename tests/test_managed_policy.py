@@ -16,12 +16,17 @@ from tests.test_managed_transactions import (
 
 
 @pytest.mark.parametrize("op", ["replace_subtree", "import", "reconcile"])
-def test_partial_payload_protected_external_reference_atomic_fail(op: str) -> None:
+def test_partial_payload_mutable_use_target_change_reports_locked_dependent(op: str) -> None:
+    # A locked node protects its own definition, not the mutable nodes it uses:
+    # renaming a mutable use target is allowed, and the locked user is reported.
     base = state(node("r", mutable=True, members={"children": ["a", "locked"]}),
         node("a"), node("locked", mutable=False, uses=["a"]))
     target: Any = base.definition.as_json()
     next(n for n in target["nodes"] if n["node_id"] == "a")["name"] = "renamed"
-    protected(scoped_command(op, target), base=base)
+    prepared = build(base, scoped_command(op, target))
+    assert prepared.protection.protected_dependents == ("locked",)
+    assert {"a", "locked"} <= set(prepared.protection.impact)
+    assert roundtrip(prepared).definition.nodes["a"].name == "renamed"
     assert base.definition.nodes["a"].name == "a" and base.tombstones == ()
 
 
@@ -75,12 +80,22 @@ def test_revert_uses_current_protected_reference_surface_not_historical_permissi
         node("a", name="old"), node("locked", mutable=False, uses=["a"]))
     current = state(node("r", mutable=True, members={"children": ["a", "locked"]}),
         node("a", name="current"), node("locked", mutable=False, uses=["a"]), revision="2")
+    prepared = prepare_revert(current, "1", node_ids=("a",), context=CTX, admission=Allow(),
+        history=History.seed(historical, journal_seq="1"), idempotency_key="undo",
+        reason="test", correlation_id="trace")
+    # Revert is judged against the CURRENT protection surface: the locked user
+    # is an affected dependent needing admission, not a historical permission.
+    assert prepared.protection.protected_dependents == ("locked",)
+    assert prepared.change.candidate.nodes["a"].name == "old"
+    assert current.definition.nodes["a"].name == "current"
+    barrier = state(node("r", mutable=False, members={"children": ["a"]}), node("a", name="current"),
+                    revision="2")
     with pytest.raises(GraphError) as error:
-        prepare_revert(current, "1", node_ids=("a",), context=CTX, admission=Allow(),
-            history=History.seed(historical, journal_seq="1"), idempotency_key="undo",
+        prepare_revert(barrier, "1", node_ids=("a",), context=CTX, admission=Allow(),
+            history=History.seed(state(node("r", mutable=False, members={"children": ["a"]}),
+                node("a", name="old")), journal_seq="1"), idempotency_key="undo",
             reason="test", correlation_id="trace")
     assert error.value.code == "mutation_protected"
-    assert current.definition.nodes["a"].name == "current"
 
 
 def protected(*commands: dict[str, Any], base: Any) -> None:
@@ -151,8 +166,11 @@ def test_locked_publication_presentation_and_reference_surface() -> None:
         "node_id": "locked", "title": "new"}}, base=base)
     protected({"op": "put_publication", "publication": {"kind": "prompt", "publication_id": "p",
         "name": "entry", "description": "entry", "opens_id": "locked", "model_may_open": False}}, base=base)
-    protected({"op": "rename_node", "node_id": "a", "new_name": "new"}, base=base)
-    protected({"op": "move_node", "node_id": "a", "target": {"plane": "prompt", "position": 1}}, base=base)
+    for command in ({"op": "rename_node", "node_id": "a", "new_name": "new"},
+                    {"op": "move_node", "node_id": "a", "target": {"plane": "prompt", "position": 1}}):
+        prepared = build(base, command)
+        assert prepared.protection.protected_dependents == ("locked",)
+        roundtrip(prepared)
 
 
 @pytest.mark.parametrize("op", ["replace_subtree", "import", "reconcile"])

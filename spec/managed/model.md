@@ -224,15 +224,33 @@ descendants, including a later true; otherwise true enables inheritance. Store
 the declaration, not just its effective value. Ordinary mutation cannot edit it.
 Bootstrap/root creation requires separate host authority, not a self-grant.
 
-Update/rename requires a mutable base target. Create requires a mutable parent
-and current admission. Move requires mutable base node, source parent and target
-parent and checks candidate subtree inheritance. Reorder protects containment
-and relative order among existing members, not absolute ordinal shifts caused
-by insertion. Parent must be mutable; moving a locked member relative to another
-existing member is forbidden. Root add/remove/reorder additionally requires
-`graph.roots`. Delete/cascade checks the full impact closure; link/unlink requires
-mutable source and separately permitted target reference. Presentation and
-publication changes affecting protected targets also require protection checks.
+Protection is judged on the final base/candidate diff, in this fixed order, with
+one structured diagnostic `{code: <rule>, node_id}` under `mutation_protected`:
+
+1. `locked_deletion`: the deletion closure contains an effectively locked node.
+2. `creation_policy` (`identity_conflict`): kind, role variant or declared
+   mutability changed.
+3. `barrier_move`: a node leaves or enters a parent at/under `mutable=false`.
+4. `locked_surface`: a locked node's OWN surface changed. That surface is its
+   definition with only its locked members, its display path, parent/slot,
+   plane, graph metadata, publications and presentations.
+5. `effective_mutability`: an existing node's effective mutability flipped,
+   except inside a subtree whose root membership changed (host-gated
+   `graph.roots` bootstrap authority).
+6. `barrier_create` / `locked_create`: a new node's parent is at/under a
+   barrier, or the parent is locked and the new node is not effectively mutable.
+7. `locked_order`: a locked member changed relative order or was crossed.
+
+Consequently, mutable members of a locked (non-barrier) parent are fully
+editable: rename, description/instructions, reorder among themselves, move
+between non-barrier parents and delete; a locked parent may gain new mutable
+members. A locked node's effective agent context may change through a mutable
+direct member/use/template target (its card, definition or publications).
+Such locked nodes are not refused; they are reported as `protected_dependents`
+in the protection report and preview receipt and are part of admission
+`impact`, so current admission/approval must cover them. This is one hop, not
+transitive. Root add/remove/reorder additionally requires `graph.roots`;
+link/unlink requires a separately permitted target reference.
 
 Replace/restore/import/revert all pass the same base/candidate diff checks: no
 same-ID recreation, kind switch or creation-policy reset. Ancestor edits that

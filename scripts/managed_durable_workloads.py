@@ -639,7 +639,8 @@ def main():
             and all(10 <= n <= 100000 for n in args.sizes)):
         parser.error("Bounded sizes 10..100000, cycles 1..1000, repetitions 1..5 required")
     if args.profile == "native":
-        if args.native_root is None or not str(args.native_root).startswith("/tmp/"):
+        if (args.native_root is None or not str(args.native_root).startswith("/tmp/")
+                or args.native_root.resolve().is_relative_to(ROOT)):
             parser.error("Explicit isolated native /tmp root required; no repository/9p Journal")
         if args.worker in ("history", "churn") and args.native_root.exists():
             parser.error("Native sample must create a fresh isolated store, never reuse historical data")
