@@ -56,8 +56,9 @@ async with ManagedGraphHost.open("/var/lib/my-app/graph", graph_id="assistant",
         await host.wait_ready()              # resume the durable desired release
 ```
 
-* **Store**: a private directory on local ext4/xfs/btrfs (strict durability),
-  outside any git checkout. One process owns it (an OS lock on `writer.lock`).
+* **Store**: a private directory on local ext4/xfs/btrfs or Windows NTFS
+  (strict durability), outside any git checkout. Windows additionally requires
+  an inheritance-protected owner DACL. One process owns it (an OS lock on `writer.lock`).
   Never delete `writer.lock` while a process runs: the running owner stops
   writing as soon as its lock file is removed or replaced.
 * **Registry**: every deployed executable binding (code you ship). Graph edits

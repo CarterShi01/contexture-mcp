@@ -230,6 +230,203 @@ def _utc() -> str:
 	return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _windows_sid_string(pointer: object) -> str:
+	"""Return the canonical string form of a Windows SID pointer."""
+	import ctypes
+	from ctypes import wintypes
+
+	win_dll = getattr(ctypes, "WinDLL")
+	last_error = getattr(ctypes, "get_last_error")
+	win_error = getattr(ctypes, "WinError")
+	advapi32 = win_dll("advapi32", use_last_error=True)
+	kernel32 = win_dll("kernel32", use_last_error=True)
+	convert = advapi32.ConvertSidToStringSidW
+	convert.argtypes = [ctypes.c_void_p, ctypes.POINTER(wintypes.LPWSTR)]
+	convert.restype = wintypes.BOOL
+	local_free = kernel32.LocalFree
+	local_free.argtypes = [wintypes.HLOCAL]
+	local_free.restype = wintypes.HLOCAL
+	value = wintypes.LPWSTR()
+	if not convert(pointer, ctypes.byref(value)):
+		raise win_error(last_error())
+	try:
+		if value.value is None:
+			raise OSError("Windows returned an empty SID string")
+		return value.value
+	finally:
+		local_free(value)
+
+
+@lru_cache(maxsize=1)
+def _windows_current_user_sid() -> str:
+	"""Read the current process token owner without account-name resolution."""
+	import ctypes
+	from ctypes import wintypes
+
+	class SID_AND_ATTRIBUTES(ctypes.Structure):
+		_fields_ = [("Sid", ctypes.c_void_p), ("Attributes", wintypes.DWORD)]
+
+	class TOKEN_USER(ctypes.Structure):
+		_fields_ = [("User", SID_AND_ATTRIBUTES)]
+
+	win_dll = getattr(ctypes, "WinDLL")
+	last_error = getattr(ctypes, "get_last_error")
+	win_error = getattr(ctypes, "WinError")
+	advapi32 = win_dll("advapi32", use_last_error=True)
+	kernel32 = win_dll("kernel32", use_last_error=True)
+	open_token = advapi32.OpenProcessToken
+	open_token.argtypes = [wintypes.HANDLE, wintypes.DWORD, ctypes.POINTER(wintypes.HANDLE)]
+	open_token.restype = wintypes.BOOL
+	get_token = advapi32.GetTokenInformation
+	get_token.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p,
+					  wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+	get_token.restype = wintypes.BOOL
+	get_process = kernel32.GetCurrentProcess
+	get_process.restype = wintypes.HANDLE
+	close = kernel32.CloseHandle
+	close.argtypes = [wintypes.HANDLE]
+	close.restype = wintypes.BOOL
+	token = wintypes.HANDLE()
+	if not open_token(get_process(), 0x0008, ctypes.byref(token)):  # TOKEN_QUERY
+		raise win_error(last_error())
+	try:
+		required = wintypes.DWORD()
+		get_token(token, 1, None, 0, ctypes.byref(required))  # TokenUser
+		if last_error() != 122 or required.value == 0:  # ERROR_INSUFFICIENT_BUFFER
+			raise win_error(last_error())
+		buffer = ctypes.create_string_buffer(required.value)
+		if not get_token(token, 1, buffer, required, ctypes.byref(required)):
+			raise win_error(last_error())
+		return _windows_sid_string(ctypes.cast(buffer, ctypes.POINTER(TOKEN_USER)).contents.User.Sid)
+	finally:
+		close(token)
+
+
+def _windows_check_private(path: Path, *, protected: bool) -> None:
+	"""Fail closed unless a path is owned by this token and has a private DACL.
+
+	The journal root must be inheritance-protected. Descendants may inherit from
+	that protected root, but no allow ACE may name a principal other than the
+	owner, OWNER RIGHTS, LocalSystem or the local Administrators group.
+	"""
+	import ctypes
+	from ctypes import wintypes
+
+	class ACL_SIZE_INFORMATION(ctypes.Structure):
+		_fields_ = [("AceCount", wintypes.DWORD), ("AclBytesInUse", wintypes.DWORD),
+					("AclBytesFree", wintypes.DWORD)]
+
+	class ACE_HEADER(ctypes.Structure):
+		_fields_ = [("AceType", ctypes.c_ubyte), ("AceFlags", ctypes.c_ubyte),
+					("AceSize", ctypes.c_ushort)]
+
+	win_dll = getattr(ctypes, "WinDLL")
+	last_error = getattr(ctypes, "get_last_error")
+	win_error = getattr(ctypes, "WinError")
+	format_error = getattr(ctypes, "FormatError")
+	advapi32 = win_dll("advapi32", use_last_error=True)
+	kernel32 = win_dll("kernel32", use_last_error=True)
+	get_security = advapi32.GetNamedSecurityInfoW
+	get_security.argtypes = [wintypes.LPWSTR, ctypes.c_int, wintypes.DWORD,
+		ctypes.POINTER(ctypes.c_void_p), ctypes.c_void_p,
+		ctypes.POINTER(ctypes.c_void_p), ctypes.c_void_p,
+		ctypes.POINTER(ctypes.c_void_p)]
+	get_security.restype = wintypes.DWORD
+	get_control = advapi32.GetSecurityDescriptorControl
+	get_control.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ushort),
+						ctypes.POINTER(wintypes.DWORD)]
+	get_control.restype = wintypes.BOOL
+	get_acl = advapi32.GetAclInformation
+	get_acl.argtypes = [ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, ctypes.c_int]
+	get_acl.restype = wintypes.BOOL
+	get_ace = advapi32.GetAce
+	get_ace.argtypes = [ctypes.c_void_p, wintypes.DWORD, ctypes.POINTER(ctypes.c_void_p)]
+	get_ace.restype = wintypes.BOOL
+	local_free = kernel32.LocalFree
+	local_free.argtypes = [wintypes.HLOCAL]
+	local_free.restype = wintypes.HLOCAL
+
+	owner, dacl, descriptor = ctypes.c_void_p(), ctypes.c_void_p(), ctypes.c_void_p()
+	code = get_security(str(path), 1, 0x00000005, ctypes.byref(owner), None,
+					ctypes.byref(dacl), None, ctypes.byref(descriptor))
+	if code:
+		raise OSError(code, format_error(code), str(path))
+	try:
+		owner_sid = _windows_sid_string(owner)
+		if owner_sid != _windows_current_user_sid() or not dacl.value:
+			raise JournalError("unsafe_permissions", "Store assets must have a private owner DACL")
+		if protected:
+			control, revision = ctypes.c_ushort(), wintypes.DWORD()
+			if not get_control(descriptor, ctypes.byref(control), ctypes.byref(revision)):
+				raise win_error(last_error())
+			if not control.value & 0x1000:  # SE_DACL_PROTECTED
+				raise JournalError("unsafe_permissions", "Journal root DACL must block inheritance")
+		information = ACL_SIZE_INFORMATION()
+		if not get_acl(dacl, ctypes.byref(information), ctypes.sizeof(information), 2):
+			raise win_error(last_error())
+		allowed = {owner_sid, "S-1-3-4", "S-1-5-18", "S-1-5-32-544"}
+		owner_allowed = False
+		for index in range(information.AceCount):
+			ace = ctypes.c_void_p()
+			if not get_ace(dacl, index, ctypes.byref(ace)):
+				raise win_error(last_error())
+			if ace.value is None:
+				raise OSError("Windows returned an empty ACL entry")
+			header = ctypes.cast(ace, ctypes.POINTER(ACE_HEADER)).contents
+			if header.AceType not in (0, 1):  # ACCESS_ALLOWED_ACE / ACCESS_DENIED_ACE
+				raise JournalError("unsafe_permissions", "Unsupported journal DACL entry")
+			if header.AceType == 0:
+				sid = _windows_sid_string(ctypes.c_void_p(ace.value + 8))
+				if sid not in allowed:
+					raise JournalError("unsafe_permissions", "Journal DACL grants another principal access")
+				owner_allowed |= sid in {owner_sid, "S-1-3-4"}
+		if not owner_allowed:
+			raise JournalError("unsafe_permissions", "Journal DACL does not grant its owner access")
+	finally:
+		local_free(descriptor)
+
+
+def _windows_sync_directory(path: Path) -> None:
+	"""Flush an NTFS directory handle after an entry mutation."""
+	import ctypes
+	from ctypes import wintypes
+
+	class FILE_ATTRIBUTE_TAG_INFO(ctypes.Structure):
+		_fields_ = [("FileAttributes", wintypes.DWORD), ("ReparseTag", wintypes.DWORD)]
+
+	win_dll = getattr(ctypes, "WinDLL")
+	last_error = getattr(ctypes, "get_last_error")
+	win_error = getattr(ctypes, "WinError")
+	kernel32 = win_dll("kernel32", use_last_error=True)
+	create = kernel32.CreateFileW
+	create.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+		ctypes.c_void_p, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+	create.restype = wintypes.HANDLE
+	get_info = kernel32.GetFileInformationByHandleEx
+	get_info.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+	get_info.restype = wintypes.BOOL
+	flush = kernel32.FlushFileBuffers
+	flush.argtypes = [wintypes.HANDLE]
+	flush.restype = wintypes.BOOL
+	close = kernel32.CloseHandle
+	close.argtypes = [wintypes.HANDLE]
+	close.restype = wintypes.BOOL
+	handle = create(str(path), 0x40000000, 0x00000007, None, 3,
+				0x02000000 | 0x00200000, None)  # WRITE, share R/W/D, OPEN, BACKUP, OPEN_REPARSE
+	if handle == wintypes.HANDLE(-1).value:
+		raise win_error(last_error())
+	try:
+		information = FILE_ATTRIBUTE_TAG_INFO()
+		if not get_info(handle, 9, ctypes.byref(information), ctypes.sizeof(information)):
+			raise win_error(last_error())
+		if not information.FileAttributes & 0x10 or information.FileAttributes & 0x400:
+			raise JournalError("unsafe_path", "Directory handles must not be reparse points")
+		if not flush(handle):
+			raise win_error(last_error())
+	finally:
+		close(handle)
+
+
 def _detach(value: object) -> Any:
 	return decode_json(canonical_json(value))
 
@@ -259,10 +456,11 @@ class FileJournal:
 	attempt freezes writes, including blob/checkpoint/backup operations. The
 	watermark is not advanced until directory confirmation. No blind retry.
 
-	Strict currently supports Linux ext4/xfs/btrfs with file+directory fsync.
+	Strict currently supports Linux ext4/xfs/btrfs with file+directory fsync,
+	and local Windows NTFS with file flush plus a flushed directory handle.
 	This is primitive capability detection, not a certified hardware matrix.
-	Windows strict and macOS refuse; Windows process_crash uses a native byte
-	range lock and explicitly promises no power-loss survival. WSL drvfs/9p,
+	Windows also requires an inheritance-protected private DACL. macOS refuses;
+	Windows process_crash uses the same native byte-range owner lock. WSL drvfs/9p,
 	network/FUSE/cloud-synced stores are refused even in process_crash mode.
 	External privileged directory replacement/tampering is outside the owner
 	guarantee. Every adapter path is lstat-checked, never caller-selected.
@@ -402,12 +600,13 @@ class FileJournal:
 			drive = self.root.drive + "\\"
 			if not self.root.drive or ctypes.windll.kernel32.GetDriveTypeW(drive) != 3:
 				raise JournalError("durability_unsupported", "Only local fixed Windows volumes are supported")
-			if self.durability == "strict":
-				raise JournalError("durability_unsupported", "Windows strict directory durability is unproven")
-			# mode=0700/0600 does not establish a private Windows DACL. Do not
-			# pretend it does. Enable this profile only with a reviewed native
-			# ACL boundary; the native locking branch is ready, not certified.
-			raise JournalError("durability_unsupported", "Windows private DACL boundary is not yet verified")
+			filesystem = ctypes.create_unicode_buffer(64)
+			get_volume = ctypes.windll.kernel32.GetVolumeInformationW
+			if not get_volume(drive, None, 0, None, None, None, filesystem, len(filesystem)):
+				raise ctypes.WinError(ctypes.get_last_error())
+			if filesystem.value.upper() != "NTFS":
+				raise JournalError("durability_unsupported", "Windows journals require local NTFS")
+			return
 		if not sys.platform.startswith("linux"):
 			raise JournalError("durability_unsupported", "No proven primitives for this platform")
 		# Longest lexical mount prefix; do not resolve away symlinks.
@@ -439,6 +638,8 @@ class FileJournal:
 			if component.is_relative_to(self.root):
 				if os.name == "posix" and (info.st_uid != os.geteuid() or info.st_mode & 0o077):
 					raise JournalError("unsafe_permissions", "Store assets must be private to the owner")
+				if os.name == "nt":
+					_windows_check_private(component, protected=component == self.root)
 				if not stat.S_ISDIR(info.st_mode) and (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1):
 					raise JournalError("unsafe_path", "Only single-link regular files are allowed")
 
@@ -462,6 +663,9 @@ class FileJournal:
 	def _sync_dir(self, path: Path) -> None:
 		self._check_path(path, directory=True)
 		if self.durability == "strict":
+			if os.name == "nt":
+				_windows_sync_directory(path)
+				return
 			fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
 			try:
 				os.fsync(fd)

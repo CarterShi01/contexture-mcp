@@ -6,6 +6,13 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Strict managed journals now support local Windows NTFS with native file and
+  directory-handle flushes, byte-range owner locking, and fail-closed owner
+  and DACL validation. Reparse points, inherited journal-root permissions and
+  allow entries for other principals remain refused.
+
 ## [2.1.1] - 2026-11-08
 
 ### Fixed

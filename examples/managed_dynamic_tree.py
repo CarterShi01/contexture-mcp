@@ -2,8 +2,8 @@
 
 Run: python examples/managed_dynamic_tree.py [store-directory]
 
-The store must be on a local ext4/xfs/btrfs filesystem (strict durability) and
-outside any git checkout. A temporary directory is used by default.
+The store must be on local ext4/xfs/btrfs or Windows NTFS (strict durability)
+and outside any git checkout. A temporary directory is used by default.
 
 Steps:
  1. register deployed Python Tool code in a pinned registry

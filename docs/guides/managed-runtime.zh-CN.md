@@ -29,8 +29,9 @@ seed → publish → 在请求打开期间新增 Skill 和新 Tool → publish�
 
 `ManagedGraphHost` 是官方组装入口（完整代码见英文版与示例）：
 
-* **存储**：本地 ext4/xfs/btrfs 上的私有目录（strict 耐久），不在 git 工作树内；单进程独占
-  （`writer.lock` 上的 OS 锁）。运行中不要删除 `writer.lock`：锁文件一旦被删或替换，原 owner 立即停写。
+* **存储**：本地 ext4/xfs/btrfs 或 Windows NTFS 上的私有目录（strict 耐久），不在 git
+  工作树内；Windows 还要求阻止继承、仅属主可访问的 DACL；单进程独占（`writer.lock` 上的 OS
+  锁）。运行中不要删除 `writer.lock`：锁文件一旦被删或替换，原 owner 立即停写。
 * **注册表（Registry）**：所有已部署的可执行绑定（你发布的代码）。图编辑只能*引用*已注册绑定；
   新代码属于部署，不是编辑。执行按精确绑定契约认证而非按节点，所以运行中新建、绑定到已部署实现的
   Tool 节点无需重启即可执行。
