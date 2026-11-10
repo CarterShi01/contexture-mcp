@@ -88,6 +88,28 @@ seed → publish → 在请求打开期间新增 Skill 和新 Tool → publish�
 * CLI：`contexture managed` 读命令 `export`、`export-history`、`plan-import`、`plan-merge`（plan 返回事务，
   再走 `preview`/`commit`），写命令 `import-history`。
 
+### 目录形态
+
+`contexture.directory/v1` 把选中的节点写成人能直接阅读和编辑的普通文件，并把编辑后的目录还原成一次普通事务。
+框架只认识 Role、Skill、Tool；导出*哪些*节点由应用决定。
+
+* `host.export_directory(mutable_only=True, changed_since="1")` 返回 `{相对路径: bytes}`；
+  `host.import_directory(files, reason=..., preview=True)` 先预览，去掉 `preview` 即提交；
+  `host.provenance()` 给出每个 revision 的 `actor_ref`、`written_at`、`reason`。
+* 布局：`.contexture/directory.json`（schema、graph_id、revision、导出的节点 ID、占位目录）；
+  `<root>/ROLE.md`；`<role>/roles/<child>/ROLE.md`；`<role>/skills/<name>/SKILL.md`（与 Agent Skill 头部兼容）；
+  `<role>/tools/<name>.json`（Tool 卡片，只含 binding 引用，不含代码）。
+* 选择：`mutable_only` 只取实际可改的节点；`changed_since` 只取相对该 revision 新增或变化的节点；
+  仅仅增减了成员的父节点不算变化，其内容不会被导出。
+  不在选择内的祖先只是空目录，记为 `placeholders`，内容从不写出。
+* 头部每行 `key: value`，值是 JSON 或一行纯文本（YAML 子集，不引入 YAML 依赖）。正文即 instructions；
+  模板引用写作 `{{node:<id>|<label>}}`；只有 JSON 能保持正文精确时（回车符、字面标记）改写进头部。
+* 身份：带 `id` 的文件更新该节点，不带的新建（`id_factory`），导出清单里有而目录中消失的节点连同其未导出的后代删除。
+  改目录名即改名，除非头部写了 `name`。文件系统不接受的字符做百分号转义，大小写冲突加 `~2` 后缀。
+  目录外的成员保持原位置；`order_roles`/`order_skills`/`order_tools` 决定其余成员的顺序。
+* 导入把文件覆盖到当前版本上，以 reconcile 事务提交完整候选：锁定节点照样拒绝（`mutation_protected`），
+  准入与审批照常生效。无法识别的文件报告为 `ignored`。纯函数位于 `contexture.core.graph.directory`。
+
 ## 发布与热切换
 
 `await host.publish()` 用注册表编译 head，在 owner 锁外准备资源，原子切换本地指针。切换前打开的请求

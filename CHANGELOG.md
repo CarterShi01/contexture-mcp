@@ -6,6 +6,21 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-10
+
+### Added
+
+- Directory form `contexture.directory/v1` (`contexture.core.graph.directory`):
+  `encode_directory` writes selected nodes as plain Markdown/JSON files
+  (Role folders with `ROLE.md`, Agent Skill compatible `SKILL.md`, Tool cards),
+  `select_nodes(mutable_only=..., changed_since=...)` chooses business-neutral
+  scopes, and `overlay_directory` turns an edited directory into a complete
+  candidate. `ManagedGraphHost.export_directory` / `import_directory` commit
+  it through the ordinary reconcile transaction, so protection and admission
+  still decide.
+- `GraphOwner.provenance` / `ManagedGraphHost.provenance()`: the journal's
+  `actor_ref`, `written_at` and `reason` for every committed revision.
+
 ### Fixed
 
 - Strict managed journals now support local Windows NTFS with native file and
@@ -299,7 +314,8 @@ managed graph APIs that were introduced as candidates after 1.1.
 - Established the application-first authoring path and current
   register–compile–disclose architecture.
 
-[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/CarterShi01/contexture-mcp/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/CarterShi01/contexture-mcp/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/CarterShi01/contexture-mcp/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/CarterShi01/contexture-mcp/compare/v2.0.0...v2.0.1

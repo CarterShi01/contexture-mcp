@@ -175,6 +175,49 @@ fresh_host.import_history(history.canonical_bytes()) # recreate graph + history 
   `plan-import`, `plan-merge` (the plans return a transaction to `preview` and
   `commit`), and the write command `import-history`.
 
+### Directory form
+
+`contexture.directory/v1` writes selected nodes as plain files a person can read
+and edit, and turns an edited directory back into one ordinary transaction.
+The framework knows only Roles, Skills and Tools; *which* nodes to export is the
+application's choice.
+
+```python
+files = host.export_directory(mutable_only=True, changed_since="1")  # {path: bytes}
+overlay, preview = host.import_directory(edited_files, reason="edit", preview=True)
+overlay, receipt = host.import_directory(edited_files, reason="edit")
+host.provenance()["7"]   # {"actor_ref", "written_at", "reason"} of revision 7
+```
+
+```text
+.contexture/directory.json      schema, graph_id, revision, exported ids, placeholders
+<root>/ROLE.md                  front matter + instructions
+<role>/roles/<child>/ROLE.md    child Roles ("slot" names a process slot)
+<role>/skills/<name>/SKILL.md   Skills (Agent Skill compatible front matter)
+<role>/tools/<name>.json        Tool cards (binding references only, no code)
+```
+
+* **Selection**: `mutable_only` keeps effectively mutable nodes;
+  `changed_since` keeps nodes that are new or changed since that revision (for
+  example the seed: only what an author added); a parent that only gained or
+  lost members is not selected, so its content stays unexported. Ancestors outside the selection
+  are bare folders recorded as `placeholders`; their content is never written.
+* **Front matter** is `key: value` per line with a JSON value or plain text (a
+  YAML subset, no YAML dependency). Instructions are the body; a template's
+  references read `{{node:<id>|<label>}}`. When only JSON can keep a body exact
+  (carriage returns, a literal marker), it moves into the front matter.
+* **Identity**: a file with `id` updates that node, one without creates a node
+  (`id_factory`), an exported id missing from the directory is deleted with its
+  unexported descendants. Renaming a folder renames the node unless the front
+  matter states `name`. Names are percent-escaped where file systems refuse them
+  and suffixed `~2` on case-insensitive clashes. Members outside the directory
+  keep their positions; `order_roles`/`order_skills`/`order_tools` order the rest.
+* **Import** overlays the files on the head and commits the complete candidate
+  through the reconcile path: locked nodes still refuse (`mutation_protected`),
+  admission and approval still decide. Unrecognized files are reported as
+  `ignored`. Pure functions: `contexture.core.graph.directory`
+  (`select_nodes`, `encode_directory`, `overlay_directory`).
+
 ## Publish and hot swap
 
 ```python

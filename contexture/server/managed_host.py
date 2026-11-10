@@ -62,6 +62,7 @@ from contexture.core.graph.model import Portability
 from contexture.core.graph.bundles import GraphBundle, HistoryBundle, bootstrap_definition
 from contexture.core.graph.compiler import GraphCompiler, StructuralPlan
 from contexture.core.graph.diff import DefinitionDiff
+from contexture.core.graph.directory import DirectoryOverlay, encode_directory, overlay_directory, select_nodes
 from contexture.core.graph.errors import GraphError
 from contexture.core.graph.events import RevisionState
 from contexture.core.graph.history import History, RevisionRecord
@@ -519,6 +520,45 @@ class ManagedGraphHost:
         receipt = self.owner.commit(proposal)
         self._snapshot()
         return result, receipt
+
+    def provenance(self) -> dict[str, dict[str, Any]]:
+        """``{revision: {actor_ref, written_at, reason}}`` for committed revisions."""
+        return cast(dict[str, dict[str, Any]], self.owner.provenance(self.graph_id))
+
+    # -- directory form (contexture.directory/v1) -------------------------
+
+    def export_directory(self, *, node_ids: Sequence[str] | None = None, mutable_only: bool = False,
+                         changed_since: str | None = None, revision: str | None = None) -> dict[str, bytes]:
+        """Selected nodes as ``{relative path: bytes}``; the caller writes or zips them.
+
+        Without ``node_ids`` the selection is the whole graph narrowed by
+        ``mutable_only`` (effectively mutable nodes) and ``changed_since`` (new or
+        changed since that retained revision, e.g. the seed).
+        """
+        state = self.read(revision)
+        if node_ids is None and (mutable_only or changed_since is not None):
+            base = None if changed_since is None else self.read(changed_since).definition
+            node_ids = select_nodes(state.definition, mutable_only=mutable_only, changed_since=base)
+        return encode_directory(state.definition, node_ids=node_ids, revision=state.revision)
+
+    def import_directory(self, files: Mapping[str, bytes], *, reason: str, preview: bool = False,
+                         id_factory: Callable[[], str] | None = None) -> tuple[DirectoryOverlay, Any]:
+        """Apply an edited directory as one ordinary reconcile transaction.
+
+        Returns ``(overlay, None)`` when nothing changed, else ``(overlay, preview)``
+        with ``preview=True`` or ``(overlay, receipt)`` after commit. Protection,
+        admission, approval and CAS apply exactly as for any other change.
+        """
+        head = self.read()
+        overlay = overlay_directory(head.definition, files, id_factory=id_factory)
+        if not overlay.changed:
+            return overlay, None
+        result, outcome = self.merge(overlay.candidate, reason=reason, base_revision=head.revision,
+                                     preview=preview)
+        if outcome is None:
+            conflicts = "; ".join(c.message for c in result.conflicts)[:900]
+            raise GraphError("revision_conflict", f"Directory import conflicts with the head: {conflicts}")
+        return overlay, outcome
 
     def export_history(self) -> HistoryBundle:
         return self.owner.export_history(self.graph_id)

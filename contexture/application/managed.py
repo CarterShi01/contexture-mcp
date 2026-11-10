@@ -566,6 +566,24 @@ class GraphOwner:
                 read_snapshot(record.state, context=context, admission=self._admission)
             return history
 
+    def provenance(self, graph_id: str) -> dict[str, Wire]:
+        """Who accepted each committed revision, from the journal records.
+
+        ``{revision: {"actor_ref", "written_at", "reason"}}``; the same read
+        authority as ``history``. Facts only; no permission is implied.
+        """
+        with self._authorized() as context:
+            read_snapshot(self._history(graph_id).head, context=context, admission=self._admission)
+            result: dict[str, Wire] = {}
+            for sequence, raw in enumerate(self._stream("0"), 1):
+                if sequence > parse_counter(self._watermark):
+                    break
+                for event in raw.get("events", ()):
+                    if event.get("type") == "GraphChangeCommitted" and event.get("graph_id") == graph_id:
+                        result[str(event["result_revision"])] = {"actor_ref": raw.get("actor_ref"),
+                            "written_at": raw.get("written_at"), "reason": event.get("reason")}
+            return result
+
     def receipt(self, graph_id: str, idempotency_key: str) -> Wire | None:
         with self._authorized() as context:
             read_snapshot(self._history(graph_id).head, context=context, admission=self._admission)
