@@ -48,6 +48,7 @@ _EXPORTS = {
     "InMemoryTelemetry": "..core.model.telemetry",
     "NodeUsage": "..core.model.telemetry",
     "Telemetry": "..core.model.telemetry",
+    "SqliteUsageLedger": ".usage_store",
     "CompiledApplication": ".application",
     "CompiledDisclosureApplication": ".application",
     "build_server": ".application",

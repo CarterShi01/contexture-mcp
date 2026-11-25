@@ -6,6 +6,7 @@ from ..core.model.telemetry import (
     NodeUsage as NodeUsage,
     Telemetry as Telemetry,
 )
+from .usage_store import SqliteUsageLedger as SqliteUsageLedger
 from .application import (
     CompiledApplication as CompiledApplication,
     CompiledDisclosureApplication as CompiledDisclosureApplication,
@@ -57,6 +58,7 @@ __all__ = [
     "FixedRootSelector",
     "HeaderRootSelector",
     "InMemoryTelemetry",
+    "SqliteUsageLedger",
     "LOOPBACK",
     "Launch",
     "NodeUsage",

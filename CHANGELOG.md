@@ -6,6 +6,17 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Subject usage beside telemetry (ADR 026): a Tool declares which business
+  objects one call touched (`subjects = Subjects.template("project://{project}")`,
+  `Subjects.result("ref")`); `LedgerTelemetry(ledger)` records one use after
+  every invocation and lets an application's own HTTP handlers record into the
+  same ledger. Repeats within ten minutes count once, failed calls are not uses,
+  and only per-day totals are kept (`InMemoryUsageLedger`, `SqliteUsageLedger`).
+  `query()` returns windows, last read and write, and a decaying score.
+  Import from `contexture.usage`.
+
 ### Fixed
 
 - Managed MCP now distinguishes caller JSON Schema failures, stable revision

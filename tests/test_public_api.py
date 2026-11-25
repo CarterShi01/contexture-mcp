@@ -42,6 +42,8 @@ AUTHORING_API = {
 
 SERVER_API = {
     "ApplicationRuntime",
+    # The durable subject-usage ledger (ADR 026); the model is `contexture.usage`.
+    "SqliteUsageLedger",
     "Auth",
     "CompiledApplication",
     "CompiledDisclosureApplication",

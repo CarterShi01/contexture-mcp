@@ -710,3 +710,34 @@ async def test_failed_preflight_is_never_remembered(system):
         assert system[2].calls == []
     finally:
         await coordinator.shutdown()
+
+@pytest.mark.asyncio
+async def test_registered_subjects_are_reported_to_the_usage_ledger(system):
+    """ADR 026: a managed call reports the subjects its Tool declared; a ledger never changes a result."""
+    from contexture.core.principal import Principal, bound
+    from contexture.usage import InMemoryUsageLedger, LedgerTelemetry, Subjects
+
+    provider = system[3]
+    subjects = Subjects(lambda arguments, result: [f"count://{arguments.get('count', 'default')}"])
+    adapters = tuple(ExecutionAdapterRegistration(r.binding_id, r.binding_id, r.version, r.abi, r.contract_digest,
+                                                  PythonManagedCallAdapter(), subjects=subjects)
+                     for r in provider.registrations)
+    ledger = InMemoryUsageLedger()
+    coordinator, _, _ = await setup(system, adapters=adapters)
+    runtime = ManagedRuntime(coordinator, contexts=system[1], authority=Authority(system[1]),
+                             adapters=adapters, usage=LedgerTelemetry(ledger))
+    try:
+        with bound(Principal(subject="alice", client_id="codex")):
+            async with runtime.request() as request:
+                await request.invoke_read_only(ref(), {"count": 3})
+                await request.invoke(ref("w"), {"count": 4})
+                with pytest.raises(GraphError):
+                    await request.invoke_read_only(ref(), {"count": "-1"})
+        rows = {row.subject: row for row in ledger.query()}
+        assert rows["count://3"].counts["1d"] == {"read": 1, "write": 0}
+        assert rows["count://4"].counts["1d"] == {"read": 0, "write": 1}
+        assert rows["count://4"].last_actor == "agent"
+        # A refused call (native validator) is a failure, never a use: it does not appear.
+        assert "count://-1" not in rows
+    finally:
+        await coordinator.shutdown()

@@ -11,6 +11,7 @@ from .graph_context import bound_graph
 from .index import Index
 from .root_selection import RootSelection, SelectedGraph, current_root_selection
 from .telemetry import InMemoryTelemetry, Telemetry, bound_telemetry, report
+from .usage import report_use
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,8 +63,12 @@ class ApplicationRuntime:
                 result = await self.index.binding_of(ref).call(arguments, context)
         except Exception:
             report(self.telemetry, ref, failed=True)
+            report_use(self.telemetry, tool, ref, arguments, None, read_only=read_only,
+                       principal=principal, failed=True)
             raise
         report(self.telemetry, ref)
+        # Which business objects this call touched, when the Tool says so (usage.py).
+        report_use(self.telemetry, tool, ref, arguments, result, read_only=read_only, principal=principal)
         return result
 
 

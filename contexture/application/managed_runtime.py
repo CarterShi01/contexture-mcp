@@ -26,6 +26,8 @@ from contexture.core.graph.index import GraphIndex
 from contexture.core.graph.model import PromptPublication, ResourcePublication, RoutePublication
 from contexture.core.graph.policy import AdmissionDecision, VerifiedContext
 from contexture.core.graph.references import ManagedReference, format_reference, parse_reference
+from contexture.core.model.usage import Subjects
+from contexture.core.principal import Principal, current_principal
 
 
 def _deny(message: str, code: str = "permission_denied") -> GraphError:
@@ -104,6 +106,9 @@ class ExecutionAdapterRegistration:
     abi: str
     contract_digest: str
     adapter: ExecutionAdapter = field(repr=False, compare=False)
+    #: Which business objects one call touched (ADR 026), copied from the
+    #: Tool's `subjects`. Evidence only: outside equality and the contract.
+    subjects: Subjects | None = field(default=None, repr=False, compare=False)
 
     def verify(self, node_id: str, binding: ResolvedBinding) -> None:
         entry, registration = binding.entry, binding.registration
@@ -163,8 +168,12 @@ class ManagedRuntime:
 
     def __init__(self, coordinator: LocalServingCoordinator, *,
                  contexts: CurrentRequestContext, authority: RequestAuthority,
-                 adapters: tuple[ExecutionAdapterRegistration, ...]) -> None:
+                 adapters: tuple[ExecutionAdapterRegistration, ...],
+                 usage: object | None = None) -> None:
         self._coordinator, self._contexts, self._authority = coordinator, contexts, authority
+        #: Anything with `record_use` (a `LedgerTelemetry`): where the subjects
+        #: of each invocation are reported. None keeps no usage (ADR 026).
+        self._usage = usage
         captured: dict[tuple[str | None, str, str, str, str], ExecutionAdapterRegistration] = {}
         for registration in adapters:
             if not isinstance(registration, ExecutionAdapterRegistration):
@@ -515,4 +524,30 @@ class ManagedRequest:
             raise _deny("Current authority no longer permits the target")
         # No scheduling boundary before the explicitly trusted adapter enters
         # its synchronous validation/handler-dispatch prefix.
-        return await self._adapters[node_id].adapter.call(binding, raw, context, lease.handles[node_id])
+        registration = self._adapters[node_id]
+        try:
+            result = await registration.adapter.call(binding, raw, context, lease.handles[node_id])
+        except Exception:
+            self._report_use(registration, node_id, raw, None, effect, failed=True)
+            raise
+        self._report_use(registration, node_id, raw, result, effect)
+        return result
+
+    def _report_use(self, registration: ExecutionAdapterRegistration, node_id: str, raw: FrozenJSON,
+                    result: object, effect: str, *, failed: bool = False) -> None:
+        """Record the subjects of one call; never changes its outcome (ADR 026)."""
+        recorder = getattr(self._runtime._usage, "record_use", None)
+        if not callable(recorder) or registration.subjects is None:
+            return
+        try:
+            arguments = thaw_json(raw)
+            subjects = registration.subjects(arguments if isinstance(arguments, Mapping) else {},
+                                             None if failed else result)
+            if subjects:
+                # The host binds the request's Principal (client and person) around
+                # the managed request; the verified actor id is the fallback.
+                principal = current_principal() or Principal(subject=self._identity.actor_id)
+                recorder(subjects=subjects, action="read" if effect == "read_only" else "write",
+                         node=node_id, principal=principal, failed=failed)
+        except Exception:
+            return

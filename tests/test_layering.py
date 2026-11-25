@@ -70,6 +70,10 @@ ALLOWED: dict[str, set[str]] = {
     # A stable read model over one compiled graph. It joins model facts but
     # imports neither an application declaration nor a transport.
     "introspection": {"core.__base__", "core.model"},
+    # The public import path for subject usage (`contexture.usage`). It
+    # re-exports the ledger kept beside telemetry in the object model and
+    # imports neither an application nor a transport.
+    "usage": {"core.__base__", "core.model"},
     # Local, read-only HTTP adapter over the introspection read model. It owns
     # no graph rules and has no dependency on the MCP server layer.
     "debug": {"core.__base__", "introspection"},
@@ -499,6 +503,8 @@ class IOBoundaryTests(unittest.TestCase):
 
     FILESYSTEM_WRITERS = {
         "cli/scaffold.py", "server/managed_journal.py", "server/managed_store_ops.py",
+        # The durable usage ledger (ADR 026): one SQLite file the host chose.
+        "server/usage_store.py",
     }
     # `web.surface` imports urllib only for standards-compliant query decoding;
     # it is itself the human-facing inbound transport and opens no connection.
@@ -566,7 +572,8 @@ class IOBoundaryTests(unittest.TestCase):
 
     def test_journal_filesystem_exception_is_exact_not_server_wide(self) -> None:
         self.assertEqual(self.FILESYSTEM_WRITERS,
-                         {"cli/scaffold.py", "server/managed_journal.py", "server/managed_store_ops.py"})
+                         {"cli/scaffold.py", "server/managed_journal.py", "server/managed_store_ops.py",
+                          "server/usage_store.py"})
         for relative in ("application/managed.py", "server/other_journal.py",
                          "server/managed_journal/helpers.py", "core/graph/transactions.py",
                          "server/managed_store_ops_helpers.py", "server/managed_store_ops/helpers.py",
