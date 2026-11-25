@@ -140,12 +140,12 @@ def _schema(value: object) -> Schema:
     return schema
 
 
-def _validate(schema: Schema, value: object) -> None:
+def _validate(schema: Schema, value: object, *, failure_code: str = "binding_contract_invalid") -> None:
     try:
         _validator(schema).validate(thaw_json(value))
     except (ValidationError, Unresolvable, NoSuchResource):
         # Do not echo instance data, configuration values or secret handles.
-        raise _fail("Value does not satisfy the registered schema") from None
+        raise _fail("Value does not satisfy the registered schema", failure_code) from None
     except RecursionError:
         raise _fail("Schema validation exceeds processing budget", "limit_exceeded") from None
 

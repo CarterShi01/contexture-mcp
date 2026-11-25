@@ -230,7 +230,7 @@ async def test_http_same_client_swap_fresh_reference_and_current_revocation(endp
         assert fresh == ref(generation=102) and fresh != old
         schema = payload(await call(client, "contexture_open", {"ref": fresh}))["input_schema"]
         assert schema["required"] == ["count"]
-        refused(await call(client, "contexture_invoke_read_only", {"ref": fresh}), "binding_contract_invalid")
+        refused(await call(client, "contexture_invoke_read_only", {"ref": fresh}), "schema_invalid")
         assert payload(await call(client, "contexture_invoke_read_only",
                                   {"ref": fresh, "arguments": {"count": 7}}))["version"] == "B"
         lists_before = methods.count("tools/list")

@@ -29,7 +29,7 @@ from contexture.application.managed_run_leases import RunLeaseService
 from contexture.core.graph.errors import GraphDiagnostic, GraphError
 from contexture.core.model.system_api import GATEWAY
 from contexture.demo.server import build as static_build
-from contexture.server.managed import ManagedMCPServer, RUN_META_KEY
+from contexture.server.managed import ManagedMCPServer, RUN_META_KEY, _tool_error_code
 from tests.test_managed_runtime import (
     binding_switch, ref, setup, swap, system as system,
 )
@@ -75,6 +75,21 @@ def refused(result, code):
 
 def handlers(state):
     return [call for call in state[2].calls if call[2] == "handler"]
+
+
+@pytest.mark.parametrize(("cause", "expected"), [
+    (GraphError("revision_conflict"), "revision_conflict"),
+    (GraphError("secret_policy_identifier"), "internal_error"),
+    (PermissionError("SECRET-denial"), "permission_denied"),
+    (ValueError("SECRET-invalid"), "internal_error"),
+    (RuntimeError("SECRET-crash"), "internal_error"),
+])
+def test_sdk_tool_failure_classification_is_bounded_and_keeps_stable_codes(cause, expected):
+    try:
+        raise ToolError("SECRET-sdk") from cause
+    except ToolError as error:
+        assert _tool_error_code(error) == expected
+    assert _tool_error_code(ToolError("SECRET-direct")) == "permission_denied"
 
 
 @pytest.mark.asyncio
@@ -161,7 +176,7 @@ async def test_real_gateway_navigation_execution_and_fixed_static_schema(system,
     ("contexture_invoke_read_only", {"ref": ref("reserved")}, "permission_denied"),
     ("contexture_inspect", {"refs": [ref(), ref("p")]}, "permission_denied"),
     ("contexture_inspect", {"refs": [ref(), ref()]}, "schema_invalid"),
-    ("contexture_invoke_read_only", {"ref": ref(), "arguments": {"tenant_id": "forged"}}, "binding_contract_invalid"),
+    ("contexture_invoke_read_only", {"ref": ref(), "arguments": {"tenant_id": "forged"}}, "schema_invalid"),
 ])
 async def test_wire_refusal_is_atomic_and_never_dispatches(system, tool, arguments, code):
     coordinator, authority, runtime = await setup(system)
@@ -190,7 +205,7 @@ async def test_swap_between_wire_calls_stale_and_fresh_schema(system):
             assert fresh == ref(generation=102) and fresh != old
             schema = payload(await client.call_tool("contexture_open", {"ref": fresh}))["input_schema"]
             assert schema["required"] == ["count"]
-            refused(await client.call_tool("contexture_invoke_read_only", {"ref": fresh}), "binding_contract_invalid")
+            refused(await client.call_tool("contexture_invoke_read_only", {"ref": fresh}), "schema_invalid")
             assert payload(await client.call_tool("contexture_invoke_read_only",
                 {"ref": fresh, "arguments": {"count": 7}}))["version"] == "B"
             assert (await client.list_tools()).tools == before_tools

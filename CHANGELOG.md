@@ -6,6 +6,13 @@ public API changes require a new major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Managed MCP now distinguishes caller JSON Schema failures, stable revision
+  conflicts, authorization refusals, and internal handler failures without
+  exposing handler diagnostics. Previously SDK-wrapped failures were all
+  reported as `permission_denied`.
+
 ## [2.2.0] - 2026-11-10
 
 ### Added

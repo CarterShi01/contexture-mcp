@@ -491,7 +491,11 @@ class ManagedRequest:
         raw = freeze_json({} if arguments is None else arguments)
         if not isinstance(raw, Mapping):
             raise _deny("Tool arguments must be a JSON object", "schema_invalid")
-        _validate(binding.registration.input_schema, raw)
+        # The registered schema is already verified when the generation is
+        # prepared. Keep caller input distinct from a broken binding without
+        # forcing every Host surface to publish the same external failure.
+        _validate(binding.registration.input_schema, raw,
+                  failure_code="argument_schema_invalid")
         context, current = await self._runtime._authorize(
             self._identity, "invoke_read_only" if effect == "read_only" else "invoke", self._ceiling,
             publication_audience=publication_audience)

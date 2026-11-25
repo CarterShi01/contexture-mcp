@@ -42,6 +42,25 @@ def _request_principal():
     principal = principal_of(get_access_token())
     return nullcontext() if principal is None else bound(principal)
 
+
+def _tool_error_code(error: ToolError) -> str:
+    """Classify an SDK boundary failure without disclosing its text.
+
+    Type-hint bindings preserve the original handler failure as ``__cause__``.
+    Keep authorization and stable Graph failures distinct while continuing to
+    redact every diagnostic message and unknown exception. A direct ToolError
+    has no trustworthy classification and retains the historical fail-closed
+    permission refusal.
+    """
+
+    cause = error.__cause__
+    if isinstance(cause, GraphError):
+        return cause.code if cause.code in PUBLIC_ERROR_CODES else "internal_error"
+    if isinstance(cause, PermissionError):
+        return "permission_denied"
+    return "permission_denied" if cause is None else "internal_error"
+
+
 class RunContextResolver(Protocol):
     """Explicit trusted Host port, called once per tool request, never cached.
 
@@ -139,11 +158,13 @@ class ManagedMCPServer:
                     return await request.invoke(args[0], args[1])
         except GraphError as error:
             # Never render messages, locations, global diagnostics or reprs.
-            code = error.code if error.code in PUBLIC_ERROR_CODES else "internal_error"
+            code = ("schema_invalid" if error.code == "argument_schema_invalid"
+                    else error.code if error.code in PUBLIC_ERROR_CODES else "internal_error")
             raise ToolError(f"{code}: Managed request refused") from None
-        except ToolError:
-            # Resolver errors are untrusted diagnostic text too.
-            raise ToolError("permission_denied: Managed context refused") from None
+        except ToolError as error:
+            # SDK/handler text remains untrusted. Only the bounded failure class
+            # crosses the managed wire; messages and tracebacks stay redacted.
+            raise ToolError(f"{_tool_error_code(error)}: Managed request refused") from None
         except Exception:
             # Prevent SDK crash logging from exposing handler/port tracebacks.
             raise ToolError("internal_error: Managed request failed") from None

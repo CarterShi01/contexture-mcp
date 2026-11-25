@@ -27,7 +27,7 @@ MAX_PUBLICATIONS = 1000
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 PUBLIC_ERROR_CODES = frozenset({"permission_denied", "unsupported_context", "schema_invalid",
     "stale_reference", "too_large", "wrong_door", "binding_contract_invalid",
-    "generation_unavailable", "resource_busy", "limit_exceeded"})
+    "generation_unavailable", "resource_busy", "limit_exceeded", "revision_conflict"})
 
 
 def bounded(value: Any) -> Any:
