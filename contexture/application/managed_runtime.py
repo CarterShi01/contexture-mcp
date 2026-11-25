@@ -177,6 +177,11 @@ class ManagedRuntime:
                 raise _deny("Duplicate execution registration", "binding_contract_invalid")
             captured[key] = registration
         self._adapters = MappingProxyType(captured)
+        # The generation last preflighted and its verified adapters. Both a
+        # generation's plan and these registrations are immutable, so the
+        # verdict holds for every later request that leases the same
+        # generation; any other generation is verified in full again.
+        self._preflighted: tuple[object, Mapping[str, ExecutionAdapterRegistration]] | None = None
 
     @property
     def graph_id(self) -> str:
@@ -193,6 +198,9 @@ class ManagedRuntime:
         plan = lease.generation.plan
         if set(lease.handles) != set(plan.bindings):
             raise _deny("Generation resource handles differ", "binding_contract_invalid")
+        cached = self._preflighted
+        if cached is not None and cached[0] is lease.generation:
+            return cached[1]
         result: dict[str, ExecutionAdapterRegistration] = {}
         for node_id, binding in plan.bindings.items():
             entry = binding.entry
@@ -203,7 +211,9 @@ class ManagedRuntime:
                 raise _deny("No exact execution adapter", "binding_contract_invalid")
             registration.verify(node_id, binding)
             result[node_id] = registration
-        return MappingProxyType(result)
+        verified = MappingProxyType(result)
+        self._preflighted = (lease.generation, verified)
+        return verified
 
     async def _authorize(self, identity: VerifiedContext, operation: str,
                          requested: frozenset[str], *, visibility_only: bool = False,

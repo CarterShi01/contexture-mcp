@@ -669,3 +669,44 @@ async def test_explicit_opaque_adapter_receives_exact_captured_binding_and_resou
         assert not system[2].calls  # no implicit decoder/validator/handler ABI
     finally:
         await coordinator.shutdown()
+
+
+@pytest.mark.asyncio
+async def test_preflight_verifies_each_generation_once(system, monkeypatch):
+    verified: list[str] = []
+    original = ExecutionAdapterRegistration.verify
+
+    def counting(self, node_id, binding):
+        verified.append(node_id)
+        return original(self, node_id, binding)
+
+    monkeypatch.setattr(ExecutionAdapterRegistration, "verify", counting)
+    coordinator, _, runtime = await setup(system)
+    try:
+        for _ in range(3):
+            async with runtime.request() as request:
+                assert request.generation_uuid == uid(101)
+        first = len(verified)
+        assert first > 0
+        assert sorted(verified) == sorted(set(verified))  # each binding once, not per request
+        await swap(system, coordinator)
+        for _ in range(2):
+            async with runtime.request() as request:
+                assert request.generation_uuid == uid(102)
+        assert len(verified) == 2 * first  # a new generation is verified in full again
+    finally:
+        await coordinator.shutdown()
+
+
+@pytest.mark.asyncio
+async def test_failed_preflight_is_never_remembered(system):
+    registrations = [r for r in system[3].execution_adapters() if r.node_id != "w"]
+    coordinator, _, runtime = await setup(system, adapters=tuple(registrations))
+    try:
+        for _ in range(2):
+            with pytest.raises(GraphError, match="adapter"):
+                async with runtime.request():
+                    pytest.fail("Incomplete preflight admitted")
+        assert system[2].calls == []
+    finally:
+        await coordinator.shutdown()

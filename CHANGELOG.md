@@ -13,6 +13,17 @@ public API changes require a new major version.
   exposing handler diagnostics. Previously SDK-wrapped failures were all
   reported as `permission_denied`.
 
+### Performance
+
+- `ManagedRuntime` verifies a generation's execution adapters (registration
+  match and full input-schema check for every binding) once per generation
+  instead of on every request. Both the generation's plan and the adapter
+  registrations are immutable, so the verdict is reused only for the same
+  generation object; a new generation is verified in full and a failed
+  preflight is never remembered. With about 120 Tools this removed roughly
+  180 ms of synchronous event-loop work from every managed request and Tool
+  call.
+
 ## [2.2.0] - 2026-11-10
 
 ### Added
